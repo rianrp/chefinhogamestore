@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KKs Rucoy Online - Chefinho Gaming Store</title>
+    <meta name="description" content="Compre KKs (moedas) para Rucoy Online na Chefinho. 1KK por apenas R$ 1,45. Entrega rápida e segura.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-gamepad"></i>
+                    Chefinho
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="produtos.html">Produtos</a></li>
+                    <li><a href="rucoy.html" class="active">Rucoy KKs</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+                
+                <a href="carrinho.html" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <div class="page-header-content">
+                <h1 class="page-title">
+                    <i class="fas fa-coins"></i>
+                    KKs Rucoy Online
+                </h1>
+                <p class="page-description">Compre moedas KK para Rucoy Online com os melhores preços e entrega rápida</p>
+                <nav class="breadcrumb">
+                    <a href="index.html">Início</a>
+                    <span>/</span>
+                    <span>Rucoy KKs</span>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rucoy KKs Section -->
+    <main class="main">
+        <div class="container">
+            <!-- Produto KK -->
+            <div class="rucoy-product-section">
+                <div class="rucoy-product-card">
+                    <div class="product-badges">
+                        <span class="badge badge-hot">🔥 Mais Vendido</span>
+                        <span class="badge badge-fast">⚡ Entrega Rápida</span>
+                    </div>
+                    
+                    <div class="product-image-section">
+                        <img src="img/rucoyonline.png" 
+                             alt="Rucoy Online KKs" 
+                             class="rucoy-product-image">
+                    </div>
+                    
+                    <div class="product-details-section">
+                        <h2 class="product-title">KKs Rucoy Online</h2>
+                        <p class="product-subtitle">Moedas do jogo Rucoy Online</p>
+                        
+                        <div class="price-section">
+                            <div class="price-info">
+                                <span class="price-label">Preço por 1KK:</span>
+                                <span class="price-value">R$ 1,45</span>
+                            </div>
+                        </div>
+                        
+                        <div class="quantity-section">
+                            <label for="kkQuantity" class="quantity-label">
+                                <i class="fas fa-coins"></i>
+                                Quantidade de KKs:
+                            </label>
+                            <div class="quantity-controls">
+                                <button type="button" class="qty-btn" id="decreaseQty">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" id="kkQuantity" class="quantity-input" value="1" min="1" max="999">
+                                <button type="button" class="qty-btn" id="increaseQty">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="quantity-info">
+                                <span id="totalKks">1KK</span> = <span id="totalPrice">R$ 1,45</span>
+                            </div>
+                        </div>
+                        
+                        <div class="character-section">
+                            <label for="characterName" class="character-label">
+                                <i class="fas fa-user"></i>
+                                Nome do Personagem:
+                            </label>
+                            <input type="text" 
+                                   id="characterName" 
+                                   class="character-input" 
+                                   placeholder="Digite o nome do seu personagem no Rucoy"
+                                   required>
+                            <small class="character-help">
+                                <i class="fas fa-info-circle"></i>
+                                Digite exatamente como aparece no jogo
+                            </small>
+                        </div>
+                        
+                        <div class="delivery-info">
+                            <h3>
+                                <i class="fas fa-truck"></i>
+                                Informações de Entrega
+                            </h3>
+                            <ul>
+                                <li><i class="fas fa-clock"></i> Entrega em até 30 minutos</li>
+                                <li><i class="fas fa-shield-alt"></i> 100% seguro e confiável</li>
+                                <li><i class="fas fa-headset"></i> Suporte 24/7</li>
+                                <li><i class="fas fa-redo"></i> Garantia de entrega</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-primary btn-large" id="buyNowBtn">
+                                <i class="fas fa-bolt"></i>
+                                Comprar Agora
+                            </button>
+                            <button class="btn btn-secondary btn-large" id="addToCartBtn">
+                                <i class="fas fa-shopping-cart"></i>
+                                Adicionar ao Carrinho
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Informações Adicionais -->
+            <div class="additional-info">
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <h3>Como Funciona?</h3>
+                        <p>Após a compra, nossos vendedores entrarão em contato via WhatsApp para combinar a entrega das moedas no seu personagem.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Tempo de Entrega</h3>
+                        <p>A entrega é feita em até 30 minutos após a confirmação do pagamento, dependendo da disponibilidade online.</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <h3>Segurança</h3>
+                        <p>Todas as transações são seguras e as moedas são obtidas de forma legítima dentro do jogo.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" id="contato">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>
+                        <i class="fas fa-gamepad"></i>
+                        Chefinho
+                    </h3>
+                    <p>Sua loja gamer de confiança. Personagens, contas e itens para seus jogos favoritos com os melhores preços do mercado.</p>
+                    <div class="social-links">
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" title="Twitch"><i class="fab fa-twitch"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Atendimento</h3>
+                    <p><i class="fab fa-whatsapp"></i> +55 69 9345-0986</p>
+                    <p><i class="fas fa-envelope"></i> contato@chefinho.com</p>
+                    <p><strong>Horários:</strong></p>
+                    <p>Segunda à Sexta: 8h às 18h</p>
+                    <p>Sábado: 8h às 14h</p>
+                    <p>Domingo: Fechado</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <p><a href="index.html">Início</a></p>
+                    <p><a href="produtos.html">Produtos</a></p>
+                    <p><a href="rucoy.html">Rucoy KKs</a></p>
+                    <p><a href="produtos.html?category=freefire">Free Fire</a></p>
+                    <p><a href="produtos.html?category=mage">Rucoy Mage</a></p>
+                    <p><a href="produtos.html?category=kina">Rucoy Knight</a></p>
+                    <p><a href="produtos.html?category=pally">Rucoy Paladin</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Como Funciona</h3>
+                    <p>1. Escolha seus itens</p>
+                    <p>2. Adicione ao carrinho</p>
+                    <p>3. Finalize no WhatsApp</p>
+                    <p>4. Receba seus dados</p>
+                    <br>
+                    <p><strong>Pagamento:</strong> PIX, Cartão, Boleto</p>
+                    <p><strong>Entrega:</strong> Imediata via WhatsApp</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Chefinho Gaming Store. Todos os direitos reservados.</p>
+                <p>Desenvolvido com 💜 para gamers brasileiros</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Float Button -->
+    <a href="#" onclick="generateWhatsAppMessage(); return false;" class="whatsapp-float" title="Falar no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+</html>

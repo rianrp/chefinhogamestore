@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produto - Chefinho Gaming Store</title>
+    <meta name="description" content="Veja os detalhes completos do produto na Chefinho Gaming Store.">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-gamepad"></i>
+                    Chefinho
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="produtos.html">Produtos</a></li>
+                    <li><a href="rucoy.html">Rucoy KKs</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+                
+                <a href="carrinho.html" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Product Details Section -->
+    <section class="product-section">
+        <div class="container">
+            <nav class="breadcrumb">
+                <a href="index.html">Início</a>
+                <span>/</span>
+                <a href="produtos.html">Produtos</a>
+                <span>/</span>
+                <span>Produto</span>
+            </nav>
+            
+            <div id="productDetails">
+                <!-- Detalhes do produto carregados via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Produtos Relacionados</h2>
+            <div class="products-grid" id="relatedProducts">
+                <!-- Produtos relacionados carregados via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>
+                        <i class="fas fa-gamepad"></i>
+                        Chefinho
+                    </h3>
+                    <p>Sua loja gamer de confiança. Personagens, contas e itens para seus jogos favoritos com os melhores preços do mercado.</p>
+                    <div class="social-links">
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" title="Twitch"><i class="fab fa-twitch"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Atendimento</h3>
+                    <p><i class="fab fa-whatsapp"></i> +55 69 9345-0986</p>
+                    <p><i class="fas fa-envelope"></i> contato@chefinho.com</p>
+                    <p><strong>Horários:</strong></p>
+                    <p>Segunda à Sexta: 8h às 18h</p>
+                    <p>Sábado: 8h às 14h</p>
+                    <p>Domingo: Fechado</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <p><a href="index.html">Início</a></p>
+                    <p><a href="produtos.html">Produtos</a></p>
+                    <p><a href="produtos.html?category=freefire">Free Fire</a></p>
+                    <p><a href="produtos.html?category=mage">Rucoy Mage</a></p>
+                    <p><a href="produtos.html?category=kina">Rucoy Knight</a></p>
+                    <p><a href="produtos.html?category=pally">Rucoy Paladin</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Como Funciona</h3>
+                    <p>1. Escolha seus itens</p>
+                    <p>2. Adicione ao carrinho</p>
+                    <p>3. Finalize no WhatsApp</p>
+                    <p>4. Receba seus dados</p>
+                    <br>
+                    <p><strong>Pagamento:</strong> PIX, Cartão, Boleto</p>
+                    <p><strong>Entrega:</strong> Imediata via WhatsApp</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Chefinho Gaming Store. Todos os direitos reservados.</p>
+                <p>Desenvolvido com 💜 para gamers brasileiros</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Float Button -->
+    <a href="#" onclick="generateWhatsAppMessage(); return false;" class="whatsapp-float" title="Falar no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    
+    <!-- Page Specific Styles -->
+    <style>
+        .product-section {
+            padding: 120px 0 60px;
+            background: var(--darker);
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 40px;
+            font-size: 0.9rem;
+        }
+        
+        .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumb span {
+            color: var(--text-muted);
+        }
+        
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 80px;
+        }
+        
+        .product-image-container {
+            position: relative;
+        }
+        
+        .product-detail-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .product-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+        
+        .product-prices {
+            margin-bottom: 30px;
+        }
+        
+        .product-prices .price {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .product-prices .price-rl {
+            color: var(--danger);
+            text-decoration: line-through;
+            font-size: 1.1rem;
+        }
+        
+        .product-prices .price-parcelado {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        
+        .product-prices .price-kks {
+            color: var(--yellow);
+            font-size: 2rem;
+            font-weight: 800;
+        }
+        
+        .product-description {
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary);
+        }
+        
+        .product-meta {
+            background: var(--gray);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+        }
+        
+        .product-meta p {
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        .product-meta p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .product-meta strong {
+            color: var(--yellow);
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .product-actions .btn {
+            flex: 1;
+            min-width: 200px;
+            justify-content: center;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+        
+        .back-to-products {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 30px;
+            transition: color 0.3s ease;
+        }
+        
+        .back-to-products:hover {
+            color: var(--yellow);
+        }
+        
+        /* Features */
+        .product-features {
+            background: var(--dark);
+            padding: 40px 0;
+            margin: 60px 0;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .feature-item {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(139, 92, 246, 0.05);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(139, 92, 246, 0.1);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--yellow);
+            margin-bottom: 15px;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+        
+        .feature-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+        }
+        
+        .notification-success {
+            background: var(--success);
+        }
+        
+        .notification-info {
+            background: var(--primary);
+        }
+        
+        .notification-warning {
+            background: var(--warning);
+        }
+        
+        .notification-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification-content button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+        
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .product-title {
+                font-size: 2rem;
+            }
+            
+            .product-actions {
+                flex-direction: column;
+            }
+            
+            .product-actions .btn {
+                min-width: auto;
+            }
+            
+            .product-detail-image {
+                height: 300px;
+            }
+        }
+    </style>
+
+    <!-- Product Features Section -->
+    <section class="product-features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4 class="feature-title">Entrega Imediata</h4>
+                    <p class="feature-description">Receba seus dados na hora via WhatsApp</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="feature-title">Contas Originais</h4>
+                    <p class="feature-description">Todos os itens são legítimos e seguros</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h4 class="feature-title">Suporte 24/7</h4>
+                    <p class="feature-description">Atendimento completo via WhatsApp</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h4 class="feature-title">Pagamento Seguro</h4>
+                    <p class="feature-description">PIX, Cartão, Boleto - Parcelamento disponível</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

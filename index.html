@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chefinho - Gaming Store | A Maior Loja Gamer do Brasil</title>
+    <meta name="description" content="Encontre os melhores equipamentos gaming com preços exclusivos na Chefinho Gaming Store. Periféricos, Hardware, Setup e muito mais!">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-gamepad"></i>
+                    Chefinho
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="produtos.html">Produtos</a></li>
+                    <li><a href="rucoy.html">Rucoy KKs</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+                
+                <a href="carrinho.html" class="cart-icon">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="tagline">Gaming Store</div>
+                <h1>Chefinho</h1>
+                <p class="description">
+                    Sua loja gamer de confiança - Personagens, contas e itens para seus jogos favoritos com os melhores preços
+                </p>
+                <div class="hero-actions">
+                    <a href="produtos.html" class="btn btn-primary btn-round">
+                        <i class="fas fa-shopping-bag"></i>
+                        Ver Produtos
+                    </a>
+                    <a href="#categorias" class="btn btn-outline btn-round">
+                        <i class="fas fa-list"></i>
+                        Categorias
+                    </a>
+                </div>
+                
+                <!-- Stats -->
+                <div class="stats">
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Produtos</span>
+                    </div>
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number">50K+</span>
+                        <span class="stat-label">Clientes</span>
+                    </div>
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Suporte</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorias -->
+    <section id="categorias" class="section">
+        <div class="container">
+            <h2 class="section-title">Categorias</h2>
+            <div class="categories" id="categoriesGrid">
+                <!-- Categorias carregadas via JavaScript -->
+                <div class="loading-message">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Carregando categorias...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Produtos em Destaque -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">Produtos em Destaque</h2>
+            <div class="products-grid" id="featuredProducts">
+                <!-- Produtos carregados via JavaScript -->
+                <div class="loading-message">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Carregando produtos em destaque...</p>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="produtos.html" class="btn btn-yellow btn-round">
+                    <i class="fas fa-arrow-right"></i>
+                    Ver Todos os Produtos
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section" style="background: var(--gradient-primary); padding: 60px 0;">
+        <div class="container text-center">
+            <h2 style="color: white; font-size: 2.5rem; margin-bottom: 20px;">
+                Pronto para Dominar os Games?
+            </h2>
+            <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Encontre os melhores personagens, contas e itens para seus jogos favoritos. 
+                Compra rápida e segura direto no WhatsApp!
+            </p>
+            <a href="produtos.html" class="btn btn-yellow btn-round" style="font-size: 1.1rem; padding: 15px 40px;">
+                <i class="fas fa-rocket"></i>
+                Ver Produtos
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contato">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>
+                        <i class="fas fa-gamepad"></i>
+                        Chefinho
+                    </h3>
+                    <p>Sua loja gamer de confiança. Personagens, contas e itens para seus jogos favoritos com os melhores preços do mercado.</p>
+                    <div class="social-links">
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" title="Twitch"><i class="fab fa-twitch"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Atendimento</h3>
+                    <p><i class="fab fa-whatsapp"></i> +55 69 9345-0986</p>
+                    <p><i class="fas fa-envelope"></i> contato@chefinho.com</p>
+                    <p><strong>Horários:</strong></p>
+                    <p>Segunda à Sexta: 8h às 18h</p>
+                    <p>Sábado: 8h às 14h</p>
+                    <p>Domingo: Fechado</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <p><a href="index.html">Início</a></p>
+                    <p><a href="produtos.html">Produtos</a></p>
+                    <p><a href="produtos.html?category=freefire">Free Fire</a></p>
+                    <p><a href="produtos.html?category=mage">Rucoy Mage</a></p>
+                    <p><a href="produtos.html?category=kina">Rucoy Knight</a></p>
+                    <p><a href="produtos.html?category=pally">Rucoy Paladin</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Como Funciona</h3>
+                    <p>1. Escolha seus itens</p>
+                    <p>2. Adicione ao carrinho</p>
+                    <p>3. Finalize no WhatsApp</p>
+                    <p>4. Receba seus dados</p>
+                    <br>
+                    <p><strong>Pagamento:</strong> PIX, Cartão, Boleto</p>
+                    <p><strong>Entrega:</strong> Imediata via WhatsApp</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Chefinho Gaming Store. Todos os direitos reservados.</p>
+                <p>Desenvolvido com 💜 para gamers brasileiros</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Float Button -->
+    <a href="#" onclick="generateWhatsAppMessage(); return false;" class="whatsapp-float" title="Falar no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    
+    <!-- Notification Styles -->
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: var(--border-radius);
+            color: white;
+            font-weight: 600;
+            z-index: 9999;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+        }
+        
+        .notification-success {
+            background: var(--success);
+        }
+        
+        .notification-info {
+            background: var(--primary);
+        }
+        
+        .notification-warning {
+            background: var(--warning);
+        }
+        
+        .notification-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .notification-content button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+        
+        .whatsapp-float:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .no-products {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        
+        .flex-1 {
+            flex: 1;
+        }
+        
+        .w-100 {
+            width: 100%;
+        }
+        
+        .loading-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        
+        .loading-message i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+    </style>
+</body>
+</html>
