@@ -251,6 +251,117 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// Gerar URL de compartilhamento do produto
+function generateShareableProductUrl(product) {
+    if (!product) return '';
+    
+    const baseUrl = window.location.origin;
+    const productUrl = `${baseUrl}/produto.html?id=${product.id}`;
+    
+    return productUrl;
+}
+
+// Compartilhar produto específico
+function shareProduct(product, platform = 'whatsapp') {
+    const productUrl = generateShareableProductUrl(product);
+    const shareText = `Olha esse produto incrível: ${product.name} por R$ ${product.kks_price.toFixed(2)}! 🎮`;
+    
+    let shareUrl = '';
+    
+    switch (platform) {
+        case 'whatsapp':
+            const whatsappNumber = siteData?.site?.whatsapp || '556993450986';
+            const message = `${shareText}\n\nVeja mais detalhes: ${productUrl}`;
+            shareUrl = `https://api.whatsapp.com/send/?phone=${whatsappNumber}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
+            break;
+            
+        case 'facebook':
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
+            break;
+            
+        case 'twitter':
+            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(productUrl)}`;
+            break;
+            
+        case 'telegram':
+            shareUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(shareText)}`;
+            break;
+            
+        case 'copy':
+            navigator.clipboard.writeText(productUrl).then(() => {
+                showNotification('Link copiado para a área de transferência!', 'success');
+            });
+            return;
+            
+        default:
+            shareUrl = productUrl;
+    }
+    
+    if (shareUrl) {
+        window.open(shareUrl, '_blank');
+        showNotification(`Compartilhando via ${platform}...`, 'info');
+    }
+}
+
+// Atualizar meta tags Open Graph para produto
+function updateProductMetaTags(product) {
+    if (!product) return;
+    
+    const siteUrl = window.location.origin;
+    const currentUrl = window.location.href;
+    const productTitle = `${product.name} - Chefinho Gaming Store`;
+    const productDescription = product.description || `${product.name} por apenas R$ ${product.kks_price.toFixed(2)}. Compre agora na Chefinho Gaming Store!`;
+    const productImage = product.image_url.startsWith('http') ? product.image_url : `${siteUrl}/${product.image_url}`;
+    
+    // Atualizar title da página
+    document.title = productTitle;
+    
+    // Atualizar meta description
+    let metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) {
+        metaDesc.setAttribute('content', productDescription);
+    }
+    
+    // Atualizar Open Graph tags
+    const ogTags = {
+        'og:url': currentUrl,
+        'og:title': productTitle,
+        'og:description': productDescription,
+        'og:image': productImage
+    };
+    
+    // Atualizar Twitter tags
+    const twitterTags = {
+        'twitter:url': currentUrl,
+        'twitter:title': productTitle,
+        'twitter:description': productDescription,
+        'twitter:image': productImage
+    };
+    
+    // Atualizar product tags
+    const productTags = {
+        'product:price:amount': product.kks_price.toFixed(2)
+    };
+    
+    // Aplicar todas as tags
+    const allTags = { ...ogTags, ...twitterTags, ...productTags };
+    
+    Object.entries(allTags).forEach(([property, content]) => {
+        let metaTag = document.querySelector(`meta[property="${property}"]`);
+        if (metaTag) {
+            metaTag.setAttribute('content', content);
+        } else {
+            // Criar tag se não existir
+            metaTag = document.createElement('meta');
+            metaTag.setAttribute('property', property);
+            metaTag.setAttribute('content', content);
+            document.head.appendChild(metaTag);
+        }
+    });
+    
+    console.log('Meta tags Open Graph atualizadas para:', productTitle);
+}
+
 // Obter nome da categoria
 function getCategoryName(categoryId) {
     if (!siteData.categories) return categoryId;
@@ -595,6 +706,9 @@ const PageHandlers = {
         
         console.log('Produto encontrado:', product.name);
         
+        // Atualizar meta tags Open Graph
+        updateProductMetaTags(product);
+        
         // Renderizar detalhes do produto
         const container = document.getElementById('productDetails');
         if (container) {
@@ -625,6 +739,26 @@ const PageHandlers = {
                                 <i class="fab fa-whatsapp"></i>
                                 Comprar Agora
                             </button>
+                        </div>
+                        <div class="product-share mt-4">
+                            <h4>Compartilhar este produto:</h4>
+                            <div class="share-buttons">
+                                <button class="btn btn-outline btn-sm" onclick="shareProduct(siteData.products.find(p => p.id === '${product.id}'), 'whatsapp')" title="Compartilhar no WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="shareProduct(siteData.products.find(p => p.id === '${product.id}'), 'facebook')" title="Compartilhar no Facebook">
+                                    <i class="fab fa-facebook"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="shareProduct(siteData.products.find(p => p.id === '${product.id}'), 'twitter')" title="Compartilhar no Twitter">
+                                    <i class="fab fa-twitter"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="shareProduct(siteData.products.find(p => p.id === '${product.id}'), 'telegram')" title="Compartilhar no Telegram">
+                                    <i class="fab fa-telegram"></i>
+                                </button>
+                                <button class="btn btn-outline btn-sm" onclick="shareProduct(siteData.products.find(p => p.id === '${product.id}'), 'copy')" title="Copiar link">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
