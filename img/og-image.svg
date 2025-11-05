@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" style="background: linear-gradient(135deg, #0F0F23 0%, #8B5CF6 100%);">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F0F23;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Game Controller Icon -->
+  <g transform="translate(100, 150)">
+    <path fill="#FCD34D" d="M80 60c-44.18 0-80 35.82-80 80v80c0 17.67 14.33 32 32 32h16c17.67 0 32-14.33 32-32v-48h128v48c0 17.67 14.33 32 32 32h16c17.67 0 32-14.33 32-32v-80c0-44.18-35.82-80-80-80H80z"/>
+    <circle fill="#8B5CF6" cx="120" cy="180" r="12"/>
+    <circle fill="#8B5CF6" cx="168" cy="180" r="12"/>
+    <rect fill="#8B5CF6" x="200" y="168" width="8" height="24" rx="4"/>
+    <rect fill="#8B5CF6" x="192" y="176" width="24" height="8" rx="4"/>
+  </g>
+  
+  <!-- Main Text -->
+  <text x="600" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="bold" fill="white">
+    Chefinho
+  </text>
+  <text x="600" y="340" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="normal" fill="#FCD34D">
+    Gaming Store
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="white">
+    A Maior Loja de Produtos Digitais
+  </text>
+  <text x="600" y="480" text-anchor="middle" font-family="Arial, sans-serif" font-size="28" fill="#FCD34D">
+    Rucoy Online • Free Fire • Clash Royale
+  </text>
+</svg>
