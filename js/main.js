@@ -79,7 +79,7 @@ function addToCart(productId, productData = null) {
         const cartItem = {
             id: product.id,
             name: product.name,
-            price: product.kks_price || product.price,
+            price: product.rl_price || product.price,
             image: product.image_url || product.image,
             quantity: 1,
             type: product.type || 'digital'
@@ -264,7 +264,7 @@ function generateShareableProductUrl(product) {
 // Compartilhar produto específico
 function shareProduct(product, platform = 'whatsapp') {
     const productUrl = generateShareableProductUrl(product);
-    const shareText = `Olha esse produto incrível: ${product.name} por R$ ${product.kks_price.toFixed(2)}! 🎮`;
+    const shareText = `Olha esse produto incrível: ${product.name} por R$ ${product.rl_price.toFixed(2)}! 🎮`;
     
     let shareUrl = '';
     
@@ -310,7 +310,7 @@ function updateProductMetaTags(product) {
     const siteUrl = window.location.origin;
     const currentUrl = window.location.href;
     const productTitle = `${product.name} - Chefinho Gaming Store`;
-    const productDescription = product.description || `${product.name} por apenas R$ ${product.kks_price.toFixed(2)}. Compre agora na Chefinho Gaming Store!`;
+    const productDescription = product.description || `${product.name} por apenas R$ ${product.rl_price.toFixed(2)}. Compre agora na Chefinho Gaming Store!`;
     const productImage = product.image_url.startsWith('http') ? product.image_url : `${siteUrl}/${product.image_url}`;
     
     // Atualizar title da página
@@ -340,7 +340,7 @@ function updateProductMetaTags(product) {
     
     // Atualizar product tags
     const productTags = {
-        'product:price:amount': product.kks_price.toFixed(2)
+        'product:price:amount': product.rl_price.toFixed(2)
     };
     
     // Aplicar todas as tags
@@ -416,9 +416,9 @@ function renderProducts(products, containerId) {
             <div class="card-body">
                 <h3 class="product-name">${product.name}</h3>
                 <div class="product-prices">
-                    ${product.rl_price > 0 ? `<span class="price price-rl">De: R$ ${product.rl_price.toFixed(2)}</span>` : ''}
+                    ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
                     ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                    <span class="price price-kks">R$ ${product.kks_price.toFixed(2)}</span>
+                    <span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>
                 </div>
                 ${product.description ? `<p class="product-description">${product.description.substring(0, 100)}...</p>` : ''}
             </div>
@@ -485,9 +485,12 @@ function initializeEventListeners() {
     
     // Botões de visualização (grid/lista)
     const viewButtons = document.querySelectorAll('.view-btn');
+    console.log('Configurando event listeners para botões de visualização. Botões encontrados:', viewButtons.length);
     viewButtons.forEach(btn => {
+        console.log('Configurando botão:', btn.dataset.view);
         btn.addEventListener('click', function() {
             const viewType = this.dataset.view;
+            console.log('Botão clicado:', viewType);
             
             // Atualizar botões ativos
             viewButtons.forEach(b => b.classList.remove('active'));
@@ -501,42 +504,58 @@ function initializeEventListeners() {
 
 // Alternar entre visualização grid e lista
 function toggleView(viewType) {
+    console.log('toggleView chamado com tipo:', viewType);
     const container = document.getElementById('productsGrid');
-    if (!container) return;
+    if (!container) {
+        console.error('Container productsGrid não encontrado');
+        return;
+    }
+    
+    console.log('Container encontrado:', container);
     
     // Remover classes de visualização existentes
     container.classList.remove('products-grid', 'products-list');
     
     if (viewType === 'list') {
+        console.log('Mudando para modo lista');
         container.classList.add('products-list');
         // Re-renderizar produtos no modo lista
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category');
         const searchTerm = document.getElementById('searchInput')?.value || '';
         const filteredProducts = filterProducts(category, searchTerm);
+        console.log('Produtos filtrados para lista:', filteredProducts.length);
         renderProductsList(filteredProducts, 'productsGrid');
     } else {
+        console.log('Mudando para modo grid');
         container.classList.add('products-grid');
         // Re-renderizar produtos no modo grid
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category');
         const searchTerm = document.getElementById('searchInput')?.value || '';
         const filteredProducts = filterProducts(category, searchTerm);
+        console.log('Produtos filtrados para grid:', filteredProducts.length);
         renderProducts(filteredProducts, 'productsGrid');
     }
 }
 
 // Renderizar produtos no modo lista
 function renderProductsList(products, containerId) {
+    console.log('=== RENDER PRODUCTS LIST ===');
+    console.log('Produtos recebidos:', products?.length || 0);
+    console.log('Container ID:', containerId);
+    
     const container = document.getElementById(containerId);
     if (!container) {
-        console.log('Container não encontrado:', containerId);
+        console.error('Container não encontrado:', containerId);
         return;
     }
     
+    console.log('Container encontrado:', container);
     console.log('Renderizando produtos em lista:', products?.length || 0, 'no container:', containerId);
     
     if (!products || products.length === 0) {
+        console.log('Nenhum produto para renderizar em lista');
         container.innerHTML = `
             <div class="no-products">
                 <i class="fas fa-search" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
@@ -545,7 +564,8 @@ function renderProductsList(products, containerId) {
         `;
         return;
     }
-    
+
+    console.log('Gerando HTML para produtos em lista...');
     container.innerHTML = products.map(product => `
         <div class="card product-card-list">
             <div class="product-list-content">
@@ -560,9 +580,9 @@ function renderProductsList(products, containerId) {
                     </div>
                 </div>
                 <div class="product-prices-list">
-                    ${product.rl_price > 0 ? `<span class="price price-rl">De: R$ ${product.rl_price.toFixed(2)}</span>` : ''}
+                    ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
                     ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                    <span class="price price-kks">R$ ${product.kks_price.toFixed(2)}</span>
+                    <span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>
                 </div>
                 <div class="product-actions-list">
                     <button class="btn btn-primary btn-round" onclick="addToCart('${product.id}')">
@@ -577,6 +597,8 @@ function renderProductsList(products, containerId) {
             </div>
         </div>
     `).join('');
+    
+    console.log('HTML gerado e inserido no container');
 }
 
 // Funções para páginas específicas
@@ -658,6 +680,13 @@ const PageHandlers = {
             }
         }
         
+        // Garantir que o container está no modo grid inicialmente
+        const container = document.getElementById('productsGrid');
+        if (container) {
+            container.classList.remove('products-list');
+            container.classList.add('products-grid');
+        }
+        
         // Renderizar produtos filtrados
         const filteredProducts = filterProducts(category, searchTerm);
         console.log('Produtos filtrados:', filteredProducts.length);
@@ -721,9 +750,9 @@ const PageHandlers = {
                     <div class="product-info">
                         <h1 class="product-title">${product.name}</h1>
                         <div class="product-prices mb-4">
-                            ${product.rl_price > 0 ? `<span class="price price-rl">De: R$ ${product.rl_price.toFixed(2)}</span>` : ''}
+                            ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
                             ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                            <span class="price price-kks">R$ ${product.kks_price.toFixed(2)}</span>
+                            <span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>
                         </div>
                         ${product.description ? `<div class="product-description mb-4"><p>${product.description}</p></div>` : ''}
                         <div class="product-meta mb-4">

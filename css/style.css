@@ -511,6 +511,12 @@ body {
   font-size: 0.9rem;
 }
 
+.price-main {
+  color: var(--yellow);
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
 .price-parcelado {
   color: var(--text-muted);
   font-size: 0.9rem;
@@ -519,6 +525,11 @@ body {
 .price-kks {
   color: var(--yellow);
   font-size: 1.2rem;
+}
+
+.price-kks-secondary {
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
 /* Footer */
@@ -1031,4 +1042,122 @@ body {
     font-size: 0.8rem;
     font-weight: 600;
     text-align: center;
+}
+
+/* Modo Lista de Produtos */
+.products-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.product-card-list {
+    width: 100%;
+    background: var(--card-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    transition: var(--transition);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+}
+
+.product-card-list:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(139, 92, 246, 0.2);
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.product-list-content {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.product-image-list {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+    flex-shrink: 0;
+}
+
+.product-info-list {
+    flex: 1;
+    min-width: 0;
+}
+
+.product-info-list .product-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.product-description-list {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 15px;
+}
+
+.product-meta-list {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.product-category {
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--primary);
+    padding: 4px 8px;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.product-availability {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.product-prices-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-end;
+    margin-right: 20px;
+}
+
+.product-actions-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 120px;
+}
+
+/* Responsividade para modo lista */
+@media (max-width: 768px) {
+    .product-list-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .product-image-list {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto;
+    }
+    
+    .product-prices-list {
+        align-items: center;
+        margin-right: 0;
+    }
+    
+    .product-actions-list {
+        flex-direction: row;
+        justify-content: center;
+        min-width: auto;
+    }
 }
