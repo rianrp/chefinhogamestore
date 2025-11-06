@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Permitir crawlers de redes sociais
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+# Sitemap (opcional)
+# Sitemap: https://chefinhogamestore.netlify.app/sitemap.xml
