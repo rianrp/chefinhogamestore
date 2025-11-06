@@ -251,12 +251,22 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+// Criar slug amigável para URLs
+function createProductSlug(productName) {
+    return productName.toLowerCase()
+        .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
+        .replace(/\s+/g, '-')      // Substitui espaços por hífens
+        .replace(/-+/g, '-')       // Remove hífens duplos
+        .trim();
+}
+
 // Gerar URL de compartilhamento do produto
 function generateShareableProductUrl(product) {
     if (!product) return '';
     
     const baseUrl = window.location.origin;
-    const productUrl = `${baseUrl}/produto.html?id=${product.id}`;
+    const slug = createProductSlug(product.name);
+    const productUrl = `${baseUrl}/produto/${slug}`;
     
     return productUrl;
 }
@@ -436,7 +446,7 @@ function renderProducts(products, containerId) {
                         <i class="fas fa-cart-plus"></i>
                         Adicionar
                     </button>
-                    <a href="produto.html?id=${product.id}" class="btn btn-outline btn-round">
+                    <a href="produto/${createProductSlug(product.name)}" class="btn btn-outline btn-round">
                         <i class="fas fa-eye"></i>
                     </a>
                 </div>
@@ -597,7 +607,7 @@ function renderProductsList(products, containerId) {
                         <i class="fas fa-cart-plus"></i>
                         Adicionar
                     </button>
-                    <a href="produto.html?id=${product.id}" class="btn btn-outline btn-round">
+                    <a href="produto/${createProductSlug(product.name)}" class="btn btn-outline btn-round">
                         <i class="fas fa-eye"></i>
                         Ver
                     </a>
@@ -725,18 +735,36 @@ const PageHandlers = {
         }
         
         const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id');
+        let productId = urlParams.get('id');
+        let productSlug = urlParams.get('img');
+        
+        // Verificar se é uma URL amigável /produto/slug
+        const pathMatch = window.location.pathname.match(/\/produto\/(.+)/);
+        if (pathMatch) {
+            productSlug = pathMatch[1];
+        }
         
         console.log('ID do produto:', productId);
+        console.log('Slug do produto:', productSlug);
         
-        if (!productId) {
+        if (!productId && !productSlug) {
             window.location.href = 'produtos.html';
             return;
         }
         
-        const product = siteData.products?.find(p => p.id === productId);
+        // Buscar produto por ID ou slug
+        let product;
+        if (productId) {
+            product = siteData.products?.find(p => p.id === parseInt(productId));
+        } else if (productSlug) {
+            product = siteData.products?.find(p => {
+                const slug = createProductSlug(p.name);
+                return slug === productSlug || slug.includes(productSlug) || productSlug.includes(slug);
+            });
+        }
+        
         if (!product) {
-            console.log('Produto não encontrado:', productId);
+            console.log('Produto não encontrado:', productId || productSlug);
             window.location.href = 'produtos.html';
             return;
         }

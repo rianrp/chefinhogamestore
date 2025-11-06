@@ -1,9 +1,18 @@
 export default async (request, context) => {
   const url = new URL(request.url);
-  const productId = url.searchParams.get('id');
   
-  // Se não há ID do produto, retorna a página normal
-  if (!productId) {
+  // Suporta tanto ?id= quanto ?img= quanto /produto/slug
+  let productId = url.searchParams.get('id');
+  let productSlug = url.searchParams.get('img');
+  
+  // Se é uma URL como /produto/nome-do-produto
+  const pathMatch = url.pathname.match(/\/produto\/(.+)$/);
+  if (pathMatch) {
+    productSlug = pathMatch[1].replace('.html', '');
+  }
+  
+  // Se não há identificador do produto, retorna a página normal
+  if (!productId && !productSlug) {
     return context.next();
   }
   
@@ -12,8 +21,23 @@ export default async (request, context) => {
     const dataResponse = await fetch(`${url.origin}/data.json`);
     const siteData = await dataResponse.json();
     
-    // Encontrar o produto
-    const product = siteData.products?.find(p => p.id === parseInt(productId));
+    // Encontrar o produto por ID ou slug
+    let product;
+    if (productId) {
+      product = siteData.products?.find(p => p.id === parseInt(productId));
+    } else if (productSlug) {
+      // Criar slug do produto para comparação
+      const createSlug = (text) => text.toLowerCase()
+        .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
+        .replace(/\s+/g, '-')      // Substitui espaços por hífens
+        .replace(/-+/g, '-')       // Remove hífens duplos
+        .trim();
+      
+      product = siteData.products?.find(p => {
+        const slug = createSlug(p.name);
+        return slug === productSlug || slug.includes(productSlug) || productSlug.includes(slug);
+      });
+    }
     
     if (!product) {
       return context.next();
