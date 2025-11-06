@@ -305,13 +305,21 @@ function shareProduct(product, platform = 'whatsapp') {
 
 // Atualizar meta tags Open Graph para produto
 function updateProductMetaTags(product) {
-    if (!product) return;
+    if (!product) {
+        console.log('❌ Produto não fornecido para updateProductMetaTags');
+        return;
+    }
+    
+    console.log('🔄 Atualizando meta tags para produto:', product.name);
+    console.log('📸 Imagem do produto:', product.image_url);
     
     const siteUrl = window.location.origin;
     const currentUrl = window.location.href;
     const productTitle = `${product.name} - Chefinho Gaming Store`;
     const productDescription = product.description || `${product.name} por apenas R$ ${product.rl_price.toFixed(2)}. Compre agora na Chefinho Gaming Store!`;
     const productImage = product.image_url.startsWith('http') ? product.image_url : `${siteUrl}/${product.image_url}`;
+    
+    console.log('🌐 URL final da imagem:', productImage);
     
     // Atualizar title da página
     document.title = productTitle;
@@ -736,6 +744,7 @@ const PageHandlers = {
         console.log('Produto encontrado:', product.name);
         
         // Atualizar meta tags Open Graph
+        console.log('🏷️ Chamando updateProductMetaTags...');
         updateProductMetaTags(product);
         
         // Renderizar detalhes do produto
