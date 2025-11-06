@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 async function loadSiteData() {
     try {
         console.log('Tentando carregar data.json...');
-        const response = await fetch('./data.json');
+        const response = await fetch('/data.json');
         console.log('Resposta recebida:', response.status);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -311,73 +311,6 @@ function shareProduct(product, platform = 'whatsapp') {
         window.open(shareUrl, '_blank');
         showNotification(`Compartilhando via ${platform}...`, 'info');
     }
-}
-
-// Atualizar meta tags Open Graph para produto
-function updateProductMetaTags(product) {
-    if (!product) {
-        console.log('❌ Produto não fornecido para updateProductMetaTags');
-        return;
-    }
-    
-    console.log('🔄 Atualizando meta tags para produto:', product.name);
-    console.log('📸 Imagem do produto:', product.image_url);
-    
-    const siteUrl = window.location.origin;
-    const currentUrl = window.location.href;
-    const productTitle = `${product.name} - Chefinho Gaming Store`;
-    const productDescription = product.description || `${product.name} por apenas R$ ${product.rl_price.toFixed(2)}. Compre agora na Chefinho Gaming Store!`;
-    const productImage = product.image_url.startsWith('http') ? product.image_url : `${siteUrl}/${product.image_url}`;
-    
-    console.log('🌐 URL final da imagem:', productImage);
-    
-    // Atualizar title da página
-    document.title = productTitle;
-    
-    // Atualizar meta description
-    let metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-        metaDesc.setAttribute('content', productDescription);
-    }
-    
-    // Atualizar Open Graph tags
-    const ogTags = {
-        'og:url': currentUrl,
-        'og:title': productTitle,
-        'og:description': productDescription,
-        'og:image': productImage
-    };
-    
-    // Atualizar Twitter tags
-    const twitterTags = {
-        'twitter:url': currentUrl,
-        'twitter:title': productTitle,
-        'twitter:description': productDescription,
-        'twitter:image': productImage
-    };
-    
-    // Atualizar product tags
-    const productTags = {
-        'product:price:amount': product.rl_price.toFixed(2)
-    };
-    
-    // Aplicar todas as tags
-    const allTags = { ...ogTags, ...twitterTags, ...productTags };
-    
-    Object.entries(allTags).forEach(([property, content]) => {
-        let metaTag = document.querySelector(`meta[property="${property}"]`);
-        if (metaTag) {
-            metaTag.setAttribute('content', content);
-        } else {
-            // Criar tag se não existir
-            metaTag = document.createElement('meta');
-            metaTag.setAttribute('property', property);
-            metaTag.setAttribute('content', content);
-            document.head.appendChild(metaTag);
-        }
-    });
-    
-    console.log('Meta tags Open Graph atualizadas para:', productTitle);
 }
 
 // Obter nome da categoria
@@ -771,9 +704,8 @@ const PageHandlers = {
         
         console.log('Produto encontrado:', product.name);
         
-        // Atualizar meta tags Open Graph
-        console.log('🏷️ Chamando updateProductMetaTags...');
-        updateProductMetaTags(product);
+        // Meta tags são atualizadas automaticamente pela Edge Function no servidor
+        // Não é necessário JavaScript para isso
         
         // Renderizar detalhes do produto
         const container = document.getElementById('productDetails');
