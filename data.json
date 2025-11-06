@@ -81,20 +81,6 @@
   },
   "products": [
     {
-      "id": "1",
-      "name": "Rucoy Online - Conta Level 365 Magic",
-      "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/23eab8cf-90d6-447b-8005-4bb1c5474b03.jpg",
-      "rl_price": 80.00,
-      "parcelado_price": 0.00,
-      "kks_price": 55.17,
-      "quantity": 1,
-      "purchased_value": 0,
-      "category": "mage",
-      "description": "Conta do jogo Rucoy Online",
-      "created_at": "2025-11-05",
-      "is_active": true
-    },
-    {
       "id": "2",
       "name": "Rucoy Online - Conta Level 450 Distance, ideal para farmar gold",
       "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/46a4ee2a-7732-4e61-937f-249f628a400b.jpg",
