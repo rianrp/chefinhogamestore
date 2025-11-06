@@ -35,7 +35,11 @@ export default async (request, context) => {
       
       product = siteData.products?.find(p => {
         const slug = createSlug(p.name);
-        return slug === productSlug || slug.includes(productSlug) || productSlug.includes(slug);
+        // Busca mais flexível
+        const exactMatch = slug === productSlug;
+        const containsMatch = slug.includes(productSlug) || productSlug.includes(slug);
+        const partialMatch = slug.substring(0, productSlug.length) === productSlug;
+        return exactMatch || containsMatch || partialMatch;
       });
     }
     

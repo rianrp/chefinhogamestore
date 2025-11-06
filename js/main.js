@@ -28,12 +28,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Aguardar um pouco para garantir que todos os dados estejam carregados
     setTimeout(() => {
         // Executar handler da página atual após carregar os dados
-        const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+        let page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+        
+        // Se a URL é /produto/algo, considerar como página 'produto'
+        if (window.location.pathname.startsWith('/produto/')) {
+            page = 'produto';
+        }
+        
         console.log('Página atual:', page);
+        console.log('Pathname completo:', window.location.pathname);
+        
         if (PageHandlers[page]) {
             console.log('Executando handler para página:', page);
             PageHandlers[page]();
-        } 
+        } else {
+            console.log('Handler não encontrado para página:', page);
+        }
     }, 100);
 });
 
@@ -253,11 +263,13 @@ function showNotification(message, type = 'info') {
 
 // Criar slug amigável para URLs
 function createProductSlug(productName) {
-    return productName.toLowerCase()
+    const slug = productName.toLowerCase()
         .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
         .replace(/\s+/g, '-')      // Substitui espaços por hífens
         .replace(/-+/g, '-')       // Remove hífens duplos
         .trim();
+    console.log(`🏭 createProductSlug: "${productName}" → "${slug}"`);
+    return slug;
 }
 
 // Gerar URL de compartilhamento do produto
@@ -690,9 +702,24 @@ const PageHandlers = {
         if (productId) {
             product = siteData.products?.find(p => p.id === parseInt(productId));
         } else if (productSlug) {
+            console.log('🔍 Buscando produto por slug:', productSlug);
+            console.log('📋 Produtos disponíveis:', siteData.products?.length);
+            
             product = siteData.products?.find(p => {
                 const slug = createProductSlug(p.name);
-                return slug === productSlug || slug.includes(productSlug) || productSlug.includes(slug);
+                console.log(`🏷️ Produto: "${p.name}" → Slug: "${slug}"`);
+                
+                // Busca mais flexível: verifica se o slug do produto contém o slug da URL
+                // ou se o slug da URL contém parte do slug do produto
+                const exactMatch = slug === productSlug;
+                const containsMatch = slug.includes(productSlug) || productSlug.includes(slug);
+                const partialMatch = slug.substring(0, productSlug.length) === productSlug;
+                
+                const match = exactMatch || containsMatch || partialMatch;
+                if (match) {
+                    console.log('✅ Match encontrado!', { exactMatch, containsMatch, partialMatch });
+                }
+                return match;
             });
         }
         
