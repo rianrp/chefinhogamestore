@@ -344,6 +344,32 @@ function filterProducts(category = '', searchTerm = '') {
     });
 }
 
+// Função auxiliar para obter URL da imagem do produto
+function getImageUrl(product) {
+    console.log('🖼️ getImageUrl chamado para:', product.name);
+    console.log('   - image_url:', product.image_url);
+    console.log('   - video_url:', product.video_url);
+    
+    if (product.image_url && product.image_url.trim() !== '') {
+        console.log('   ✅ Usando image_url:', product.image_url);
+        return product.image_url;
+    }
+    
+    // Se não tem imagem mas tem vídeo, criar placeholder específico
+    if (product.video_url) {
+        const shortName = product.name.substring(0, 20).replace(/[^\w\s]/g, '');
+        const placeholder = `https://via.placeholder.com/500x400/8B5CF6/ffffff?text=📹+${encodeURIComponent(shortName)}`;
+        console.log('   📹 Usando placeholder de vídeo:', placeholder);
+        return placeholder;
+    }
+    
+    // Fallback genérico
+    const shortName = product.name.substring(0, 20).replace(/[^\w\s]/g, '');
+    const fallback = `https://via.placeholder.com/500x400/8B5CF6/ffffff?text=${encodeURIComponent(shortName)}`;
+    console.log('   🔄 Usando fallback genérico:', fallback);
+    return fallback;
+}
+
 // Renderizar produtos
 function renderProducts(products, containerId) {
     console.log('=== RENDER PRODUCTS ===');
@@ -374,8 +400,8 @@ function renderProducts(products, containerId) {
     
     container.innerHTML = products.map(product => `
         <div class="card product-card">
-            <img src="${getProductImage(product, 'medium')}" alt="${product.name}" class="product-image" 
-                 onclick="openImageModal('${getProductImage(product, 'large')}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
+            <img src="${getImageUrl(product)}" alt="${product.name}" class="product-image" 
+                 onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
                  title="Clique para ver em tela cheia"
                  onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Erro+ao+Carregar'">
             <div class="card-body">
@@ -534,8 +560,8 @@ function renderProductsList(products, containerId) {
     container.innerHTML = products.map(product => `
         <div class="card product-card-list">
             <div class="product-list-content">
-                <img src="${getProductImage(product, 'small')}" alt="${product.name}" class="product-image-list" 
-                     onclick="openImageModal('${getProductImage(product, 'large')}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
+                <img src="${getImageUrl(product)}" alt="${product.name}" class="product-image-list" 
+                     onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
                      title="Clique para ver em tela cheia"
                      onerror="this.src='https://via.placeholder.com/120x120/8B5CF6/ffffff?text=Erro+ao+Carregar'">
                 <div class="product-info-list">
@@ -744,8 +770,8 @@ const PageHandlers = {
                                 </div>
                                 <div class="media-content">
                                     <div id="image-${product.id}" class="media-item active">
-                                        <img src="${getProductImage(product, 'large')}" alt="${product.name}" class="product-detail-image"
-                                             onclick="openImageModal('${getProductImage(product, 'large')}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
+                                        <img src="${getImageUrl(product)}" alt="${product.name}" class="product-detail-image"
+                                             onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
                                              title="Clique para ver em tela cheia"
                                              onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
                                     </div>
@@ -758,8 +784,8 @@ const PageHandlers = {
                                 </div>
                             </div>
                         ` : `
-                            <img src="${getProductImage(product, 'large')}" alt="${product.name}" class="product-detail-image"
-                                 onclick="openImageModal('${getProductImage(product, 'large')}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
+                            <img src="${getImageUrl(product)}" alt="${product.name}" class="product-detail-image"
+                                 onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
                                  title="Clique para ver em tela cheia"
                                  onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
                         `}
