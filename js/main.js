@@ -344,8 +344,74 @@ function filterProducts(category = '', searchTerm = '') {
     });
 }
 
+// Cache de thumbnails gerados
+const thumbnailCache = new Map();
+
+// Gerar thumbnail automaticamente do vídeo
+function generateVideoThumbnail(videoUrl, callback, timeOffset = 5) {
+    console.log('🎬 Gerando thumbnail do vídeo:', videoUrl);
+    
+    // Verificar cache primeiro
+    const cacheKey = `${videoUrl}_${timeOffset}`;
+    if (thumbnailCache.has(cacheKey)) {
+        console.log('✅ Thumbnail encontrado no cache');
+        callback(thumbnailCache.get(cacheKey));
+        return;
+    }
+    
+    const video = document.createElement('video');
+    video.crossOrigin = 'anonymous';
+    video.muted = true; // Importante para alguns navegadores
+    video.preload = 'metadata';
+    
+    video.onloadedmetadata = () => {
+        // Definir tempo para captura (5 segundos ou 10% do vídeo)
+        const captureTime = Math.min(timeOffset, video.duration * 0.1);
+        video.currentTime = captureTime;
+    };
+    
+    video.onseeked = () => {
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth || 800;
+            canvas.height = video.videoHeight || 600;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Adicionar overlay indicando que é vídeo
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            ctx.fillRect(canvas.width - 80, canvas.height - 80, 80, 80);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 40px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('▶️', canvas.width - 40, canvas.height - 30);
+            
+            const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Salvar no cache
+            thumbnailCache.set(cacheKey, thumbnailUrl);
+            
+            console.log('✅ Thumbnail gerado com sucesso');
+            callback(thumbnailUrl);
+            
+        } catch (error) {
+            console.error('❌ Erro ao gerar thumbnail:', error);
+            callback(null);
+        }
+    };
+    
+    video.onerror = (error) => {
+        console.error('❌ Erro ao carregar vídeo:', error);
+        callback(null);
+    };
+    
+    video.src = videoUrl;
+}
+
 // Função auxiliar para obter URL da imagem do produto
-function getImageUrl(product) {
+function getImageUrl(product, callback = null) {
     console.log('🖼️ getImageUrl chamado para:', product.name);
     console.log('   - image_url:', product.image_url);
     console.log('   - video_url:', product.video_url);
@@ -353,14 +419,48 @@ function getImageUrl(product) {
     // Se tem image_url válida, usar ela
     if (product.image_url && product.image_url.trim() !== '') {
         console.log('   ✅ Usando image_url:', product.image_url);
+        if (callback) callback(product.image_url);
         return product.image_url;
     }
     
-    // Se não tem imagem, usar uma imagem padrão que sabemos que funciona
-    // Vamos usar uma das imagens do Supabase que já existem
+    // Se não tem imagem mas tem vídeo, gerar thumbnail
+    if (product.video_url && callback) {
+        console.log('   📹 Gerando thumbnail do vídeo...');
+        generateVideoThumbnail(product.video_url, (thumbnailUrl) => {
+            if (thumbnailUrl) {
+                callback(thumbnailUrl);
+            } else {
+                // Fallback se não conseguir gerar thumbnail
+                const fallback = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
+                callback(fallback);
+            }
+        });
+        return null; // Indica que será assíncrono
+    }
+    
+    // Fallback padrão
     const defaultImage = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
     console.log('   🔄 Usando imagem padrão:', defaultImage);
+    if (callback) callback(defaultImage);
     return defaultImage;
+}
+
+// Aplicar imagem no elemento de forma assíncrona
+function setProductImage(imgElement, product) {
+    // Primeiro, definir uma imagem temporária
+    const tempImage = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
+    imgElement.src = tempImage;
+    
+    // Depois, obter a imagem correta (possivelmente gerando thumbnail)
+    getImageUrl(product, (finalImageUrl) => {
+        imgElement.src = finalImageUrl;
+        
+        // Adicionar classe para indicar que é thumbnail de vídeo
+        if (!product.image_url && product.video_url) {
+            imgElement.classList.add('video-thumbnail');
+            imgElement.setAttribute('title', 'Thumbnail gerado do vídeo - Clique para ver em tela cheia');
+        }
+    });
 }
 
 // Renderizar produtos
@@ -391,10 +491,10 @@ function renderProducts(products, containerId) {
 
     console.log('Primeiros 2 produtos a serem renderizados:', products.slice(0, 2));
     
+    // Renderizar estrutura básica dos produtos primeiro
     container.innerHTML = products.map(product => `
-        <div class="card product-card">
-            <img src="${getImageUrl(product)}" alt="${product.name}" class="product-image" 
-                 onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
+        <div class="card product-card" data-product-id="${product.id}">
+            <img alt="${product.name}" class="product-image" 
                  title="Clique para ver em tela cheia"
                  onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Erro+ao+Carregar'">
             <div class="card-body">
@@ -419,6 +519,29 @@ function renderProducts(products, containerId) {
             </div>
         </div>
     `).join('');
+    
+    // Depois processar as imagens de forma assíncrona
+    products.forEach(product => {
+        const productCard = container.querySelector(`[data-product-id="${product.id}"]`);
+        if (productCard) {
+            const imgElement = productCard.querySelector('img');
+            
+            // Configurar imagem
+            setProductImage(imgElement, product);
+            
+            // Configurar clique no modal após obter a imagem final
+            getImageUrl(product, (finalImageUrl) => {
+                imgElement.onclick = () => {
+                    openImageModal(
+                        finalImageUrl, 
+                        product.name.replace(/'/g, "\\'"), 
+                        (product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' '), 
+                        product.video_url || ''
+                    );
+                };
+            });
+        }
+    });
 }
 
 // Renderizar categorias
@@ -550,11 +673,12 @@ function renderProductsList(products, containerId) {
     }
 
     console.log('Gerando HTML para produtos em lista...');
+    
+    // Renderizar estrutura básica primeiro
     container.innerHTML = products.map(product => `
-        <div class="card product-card-list">
+        <div class="card product-card-list" data-product-id="${product.id}">
             <div class="product-list-content">
-                <img src="${getImageUrl(product)}" alt="${product.name}" class="product-image-list" 
-                     onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
+                <img alt="${product.name}" class="product-image-list" 
                      title="Clique para ver em tela cheia"
                      onerror="this.src='https://via.placeholder.com/120x120/8B5CF6/ffffff?text=Erro+ao+Carregar'">
                 <div class="product-info-list">
@@ -583,6 +707,29 @@ function renderProductsList(products, containerId) {
             </div>
         </div>
     `).join('');
+    
+    // Depois processar as imagens de forma assíncrona
+    products.forEach(product => {
+        const productCard = container.querySelector(`[data-product-id="${product.id}"]`);
+        if (productCard) {
+            const imgElement = productCard.querySelector('img');
+            
+            // Configurar imagem
+            setProductImage(imgElement, product);
+            
+            // Configurar clique no modal
+            getImageUrl(product, (finalImageUrl) => {
+                imgElement.onclick = () => {
+                    openImageModal(
+                        finalImageUrl, 
+                        product.name.replace(/'/g, "\\'"), 
+                        (product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' '), 
+                        product.video_url || ''
+                    );
+                };
+            });
+        }
+    });
     
     console.log('HTML gerado e inserido no container');
 }

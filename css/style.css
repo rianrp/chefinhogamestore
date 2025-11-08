@@ -1337,6 +1337,53 @@ body {
     opacity: 1;
 }
 
+/* Estilos específicos para thumbnails de vídeo */
+.video-thumbnail {
+    position: relative;
+    border: 2px solid var(--primary);
+}
+
+.video-thumbnail::before {
+    content: '\f04b';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(139, 92, 246, 0.9);
+    color: white;
+    padding: 12px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+
+.video-thumbnail:hover::before {
+    background: var(--primary);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.video-thumbnail::after {
+    content: '\f03d';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    background: rgba(139, 92, 246, 0.8) !important;
+}
+
+/* Loading state para thumbnails */
+.video-thumbnail-loading {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
 /* Responsivo para modal */
 @media (max-width: 768px) {
     .image-modal-close {
