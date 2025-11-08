@@ -25,6 +25,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     updateCartCount();
     initializeEventListeners();
     
+    // Log do sistema de categorias dinâmicas
+    if (siteData) {
+        console.log('🏷️ Sistema de Categorias Dinâmicas Ativo');
+        console.log('📋 Categorias encontradas:', getAllCategories());
+    }
+    
     // Aguardar um pouco para garantir que todos os dados estejam carregados
     setTimeout(() => {
         // Executar handler da página atual após carregar os dados
@@ -325,11 +331,114 @@ function shareProduct(product, platform = 'whatsapp') {
     }
 }
 
-// Obter nome da categoria
+// Obter todas as categorias (principais + dinâmicas)
+function getAllCategories() {
+    const allCategories = new Map();
+    
+    // Primeiro, adicionar as categorias principais definidas no data.json
+    if (siteData.categories) {
+        siteData.categories.forEach(cat => {
+            allCategories.set(cat.id, {
+                id: cat.id,
+                name: cat.name,
+                description: cat.description,
+                icon: cat.icon,
+                type: 'main', // Categoria principal
+                productCount: 0
+            });
+        });
+    }
+    
+    // Depois, adicionar categorias dinâmicas baseadas nos produtos
+    if (siteData.products) {
+        siteData.products.forEach(product => {
+            if (product.category && product.is_active) {
+                if (allCategories.has(product.category)) {
+                    // Incrementar contador se já existe
+                    allCategories.get(product.category).productCount++;
+                } else {
+                    // Criar categoria dinâmica se não existe
+                    allCategories.set(product.category, {
+                        id: product.category,
+                        name: formatCategoryName(product.category),
+                        description: `Produtos de ${formatCategoryName(product.category)}`,
+                        icon: getDefaultCategoryIcon(product.category),
+                        type: 'dynamic', // Categoria dinâmica
+                        productCount: 1
+                    });
+                }
+            }
+        });
+    }
+    
+    return Array.from(allCategories.values()).sort((a, b) => {
+        // Categorias principais primeiro, depois dinâmicas
+        if (a.type === 'main' && b.type === 'dynamic') return -1;
+        if (a.type === 'dynamic' && b.type === 'main') return 1;
+        // Dentro do mesmo tipo, ordenar por nome
+        return a.name.localeCompare(b.name);
+    });
+}
+
+// Formatar nome da categoria dinâmica
+function formatCategoryName(categoryId) {
+    // Mapear IDs conhecidos para nomes amigáveis
+    const knownCategories = {
+        'roblox': 'Roblox',
+        'clash royale': 'Clash Royale',
+        'clash of clans': 'Clash of Clans',
+        'brawl stars': 'Brawl Stars',
+        'gta v': 'GTA V',
+        'fifa': 'FIFA',
+        'fortnite': 'Fortnite',
+        'minecraft': 'Minecraft',
+        'valorant': 'Valorant',
+        'cs2': 'Counter-Strike 2',
+        'lol': 'League of Legends'
+    };
+    
+    if (knownCategories[categoryId.toLowerCase()]) {
+        return knownCategories[categoryId.toLowerCase()];
+    }
+    
+    // Para categorias não mapeadas, fazer capitalização automática
+    return categoryId
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+}
+
+// Obter ícone padrão para categoria dinâmica
+function getDefaultCategoryIcon(categoryId) {
+    const iconMap = {
+        'roblox': 'fas fa-cube',
+        'clash royale': 'fas fa-crown',
+        'clash of clans': 'fas fa-castle',
+        'brawl stars': 'fas fa-fist-raised',
+        'gta v': 'fas fa-car',
+        'fifa': 'fas fa-futbol',
+        'fortnite': 'fas fa-crosshairs',
+        'minecraft': 'fas fa-cubes',
+        'valorant': 'fas fa-bullseye',
+        'cs2': 'fas fa-bomb',
+        'lol': 'fas fa-dragon'
+    };
+    
+    return iconMap[categoryId.toLowerCase()] || 'fas fa-gamepad';
+}
+
+// Obter nome da categoria (melhorado)
 function getCategoryName(categoryId) {
-    if (!siteData.categories) return categoryId;
-    const category = siteData.categories.find(cat => cat.id === categoryId);
-    return category ? category.name : categoryId;
+    if (!categoryId) return 'Sem categoria';
+    
+    // Primeiro tentar encontrar nas categorias principais
+    if (siteData.categories) {
+        const mainCategory = siteData.categories.find(cat => cat.id === categoryId);
+        if (mainCategory) return mainCategory.name;
+    }
+    
+    // Se não encontrou, usar formatação dinâmica
+    return formatCategoryName(categoryId);
 }
 
 // Filtrar produtos
@@ -544,23 +653,36 @@ function renderProducts(products, containerId) {
     });
 }
 
-// Renderizar categorias
+// Renderizar categorias (melhorado para usar sistema dinâmico)
 function renderCategories(containerId) {
     const container = document.getElementById(containerId);
-    if (!container || !siteData.categories) {
-        console.log('Container ou categorias não encontradas:', containerId, !!siteData.categories);
+    if (!container) {
+        console.log('Container não encontrado:', containerId);
         return;
     }
     
-    console.log('Renderizando categorias:', siteData.categories.length);
+    const allCategories = getAllCategories();
+    console.log('Renderizando categorias:', allCategories.length, '(principais + dinâmicas)');
     
-    container.innerHTML = siteData.categories.map(category => `
-        <a href="produtos.html?category=${category.id}" class="card category-card">
+    // Filtrar apenas categorias que têm produtos
+    const categoriesWithProducts = allCategories.filter(cat => cat.productCount > 0);
+    
+    if (categoriesWithProducts.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhuma categoria disponível</p>';
+        return;
+    }
+    
+    container.innerHTML = categoriesWithProducts.map(category => `
+        <a href="produtos.html?category=${category.id}" class="card category-card ${category.type === 'dynamic' ? 'dynamic-category' : 'main-category'}">
             <div class="category-icon">
                 <i class="${category.icon}"></i>
             </div>
             <h3>${category.name}</h3>
             <p>${category.description}</p>
+            <div class="category-meta">
+                <span class="product-count">${category.productCount} produto${category.productCount !== 1 ? 's' : ''}</span>
+                ${category.type === 'dynamic' ? '<span class="dynamic-badge">Auto</span>' : ''}
+            </div>
         </a>
     `).join('');
 }
@@ -826,13 +948,19 @@ const PageHandlers = {
         console.log('Primeiros 3 produtos:', filteredProducts.slice(0, 3));
         renderProducts(filteredProducts, 'productsGrid');
         
-        // Preencher select de categorias
+        // Preencher select de categorias (usando sistema dinâmico)
         const categoryFilter = document.getElementById('categoryFilter');
-        if (categoryFilter && siteData.categories) {
+        if (categoryFilter) {
+            const allCategories = getAllCategories();
+            const categoriesWithProducts = allCategories.filter(cat => cat.productCount > 0);
+            
             categoryFilter.innerHTML = `
-                <option value="">Todas as categorias</option>
-                ${siteData.categories.map(cat => 
-                    `<option value="${cat.id}" ${cat.id === category ? 'selected' : ''}>${cat.name}</option>`
+                <option value="">Todas as categorias (${siteData.products?.length || 0} produtos)</option>
+                ${categoriesWithProducts.map(cat => 
+                    `<option value="${cat.id}" ${cat.id === category ? 'selected' : ''}>
+                        ${cat.name} (${cat.productCount})
+                        ${cat.type === 'dynamic' ? ' 🔄' : ''}
+                    </option>`
                 ).join('')}
             `;
         }
@@ -1467,10 +1595,67 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Executar handler da página atual (removido - agora executado no DOMContentLoaded)
-// window.addEventListener('load', function() {
-//     const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-//     if (PageHandlers[page]) {
-//         PageHandlers[page]();
-//     }
-// });
+// === FUNÇÕES DE DEMONSTRAÇÃO - SISTEMA DE CATEGORIAS DINÂMICAS ===
+
+// Função demo para adicionar produto com nova categoria (apenas para demonstração)
+function addExampleProduct() {
+    if (!siteData || !siteData.products) return;
+    
+    const exampleProduct = {
+        "id": "demo-1",
+        "name": "GTA V - Conta com $500M + RP Boost",
+        "image_url": "https://via.placeholder.com/400x300/8B5CF6/ffffff?text=GTA+V+Demo",
+        "rl_price": 45.00,
+        "parcelado_price": 50.00,
+        "kks_price": 31.03,
+        "quantity": 1,
+        "purchased_value": 0,
+        "category": "gta v", // Nova categoria dinâmica!
+        "description": "Conta GTA V Online com dinheiro ilimitado, todos os veículos desbloqueados e RP boost para level up rápido.",
+        "created_at": "2025-11-08",
+        "is_active": true
+    };
+    
+    // Adicionar temporariamente para demonstração
+    siteData.products.push(exampleProduct);
+    
+    console.log('✅ Produto de exemplo adicionado com nova categoria "gta v"');
+    console.log('🔄 Sistema detectou automaticamente e criou categoria dinâmica');
+    console.log('📋 Categorias atualizadas:', getAllCategories());
+    
+    // Re-renderizar a página atual
+    const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+    if (PageHandlers[page]) {
+        PageHandlers[page]();
+    }
+    
+    showNotification('Produto de exemplo GTA V adicionado! Categoria criada automaticamente.', 'success');
+}
+
+// Função para mostrar estatísticas do sistema de categorias
+function showCategoryStats() {
+    if (!siteData) return;
+    
+    const allCategories = getAllCategories();
+    const mainCategories = allCategories.filter(cat => cat.type === 'main');
+    const dynamicCategories = allCategories.filter(cat => cat.type === 'dynamic');
+    
+    const stats = {
+        total: allCategories.length,
+        principais: mainCategories.length,
+        dinamicas: dynamicCategories.length,
+        totalProdutos: siteData.products?.length || 0,
+        categoriasComProdutos: allCategories.filter(cat => cat.productCount > 0).length
+    };
+    
+    console.log('📊 Estatísticas do Sistema de Categorias:', stats);
+    console.log('🏷️ Categorias Principais:', mainCategories);
+    console.log('🔄 Categorias Dinâmicas:', dynamicCategories);
+    
+    return stats;
+}
+
+// Tornar funções disponíveis globalmente para debug
+window.addExampleProduct = addExampleProduct;
+window.showCategoryStats = showCategoryStats;
+window.getAllCategories = getAllCategories;
