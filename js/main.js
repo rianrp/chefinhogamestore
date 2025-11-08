@@ -375,6 +375,8 @@ function renderProducts(products, containerId) {
     container.innerHTML = products.map(product => `
         <div class="card product-card">
             <img src="${product.image_url}" alt="${product.name}" class="product-image" 
+                 onclick="openImageModal('${product.image_url}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')"
+                 title="Clique para ver em tela cheia"
                  onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Sem+Imagem'">
             <div class="card-body">
                 <h3 class="product-name">${product.name}</h3>
@@ -533,6 +535,8 @@ function renderProductsList(products, containerId) {
         <div class="card product-card-list">
             <div class="product-list-content">
                 <img src="${product.image_url}" alt="${product.name}" class="product-image-list" 
+                     onclick="openImageModal('${product.image_url}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')"
+                     title="Clique para ver em tela cheia"
                      onerror="this.src='https://via.placeholder.com/120x120/8B5CF6/ffffff?text=Sem+Imagem'">
                 <div class="product-info-list">
                     <h3 class="product-name">${product.name}</h3>
@@ -741,6 +745,8 @@ const PageHandlers = {
                                 <div class="media-content">
                                     <div id="image-${product.id}" class="media-item active">
                                         <img src="${product.image_url}" alt="${product.name}" class="product-detail-image"
+                                             onclick="openImageModal('${product.image_url}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')"
+                                             title="Clique para ver em tela cheia"
                                              onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Sem+Imagem'">
                                     </div>
                                     <div id="video-${product.id}" class="media-item">
@@ -753,6 +759,8 @@ const PageHandlers = {
                             </div>
                         ` : `
                             <img src="${product.image_url}" alt="${product.name}" class="product-detail-image"
+                                 onclick="openImageModal('${product.image_url}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')"
+                                 title="Clique para ver em tela cheia"
                                  onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Sem+Imagem'">
                         `}
                     </div>
@@ -1176,6 +1184,63 @@ function showMedia(mediaId) {
         });
     }
 }
+
+// =============================================================================
+// Modal de Imagem / Lightbox
+// =============================================================================
+
+// Abrir modal de imagem
+function openImageModal(imageSrc, title, description) {
+    console.log('🖼️ Abrindo modal de imagem:', title);
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    
+    if (modal && modalImage) {
+        modalImage.src = imageSrc;
+        modalImage.alt = title || 'Imagem do produto';
+        
+        if (modalTitle) modalTitle.textContent = title || '';
+        if (modalDescription) modalDescription.textContent = description || '';
+        
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Prevenir scroll do fundo
+        
+        console.log('✅ Modal aberto com sucesso');
+    } else {
+        console.error('❌ Elementos do modal não encontrados');
+    }
+}
+
+// Fechar modal de imagem
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto'; // Restaurar scroll
+    }
+}
+
+// Event listeners para o modal
+document.addEventListener('DOMContentLoaded', function() {
+    // Fechar modal clicando no fundo
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeImageModal();
+            }
+        });
+    }
+    
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeImageModal();
+        }
+    });
+});
 
 // Executar handler da página atual (removido - agora executado no DOMContentLoaded)
 // window.addEventListener('load', function() {
