@@ -50,10 +50,28 @@ export default async (request, context) => {
     const htmlResponse = await context.next();
     const html = await htmlResponse.text();
     
+    // Função para obter a melhor imagem disponível
+    const getBestProductImage = (product) => {
+      // Se tem image_url e não está vazio, usar ela
+      if (product.image_url && product.image_url.trim() !== '') {
+        return product.image_url.startsWith('http') ? product.image_url : `${url.origin}${product.image_url.startsWith('/') ? '' : '/'}${product.image_url}`;
+      }
+      
+      // Se não tem imagem mas tem vídeo, usar placeholder específico
+      if (product.video_url) {
+        const encodedName = encodeURIComponent(product.name);
+        return `https://via.placeholder.com/1200x630/8B5CF6/ffffff?text=📹+${encodedName}`;
+      }
+      
+      // Fallback: placeholder genérico
+      const encodedName = encodeURIComponent(product.name);
+      return `https://via.placeholder.com/1200x630/8B5CF6/ffffff?text=${encodedName}`;
+    };
+
     // Gerar meta tags dinâmicas
     const productTitle = `${product.name} - Chefinho Gaming Store`;
     const productDescription = product.description || `${product.name} por apenas R$ ${product.rl_price.toFixed(2)}. Compre agora na Chefinho Gaming Store!`;
-    const productImage = product.image_url.startsWith('http') ? product.image_url : `${url.origin}${product.image_url.startsWith('/') ? '' : '/'}${product.image_url}`;
+    const productImage = getBestProductImage(product);
     const productUrl = `${url.origin}/produto/${createProductSlug(product.name)}`;
     const productPrice = product.rl_price.toFixed(2);
     const productVideo = product.video_url ? (product.video_url.startsWith('http') ? product.video_url : `${url.origin}${product.video_url.startsWith('/') ? '' : '/'}${product.video_url}`) : null;

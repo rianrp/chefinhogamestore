@@ -374,10 +374,10 @@ function renderProducts(products, containerId) {
     
     container.innerHTML = products.map(product => `
         <div class="card product-card">
-            <img src="${product.image_url}" alt="${product.name}" class="product-image" 
-                 onclick="openImageModal('${product.image_url}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')"
+            <img src="${getProductImage(product, 'medium')}" alt="${product.name}" class="product-image" 
+                 onclick="openImageModal('${getProductImage(product, 'large')}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
                  title="Clique para ver em tela cheia"
-                 onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Sem+Imagem'">
+                 onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Erro+ao+Carregar'">
             <div class="card-body">
                 <h3 class="product-name">${product.name}</h3>
                 <div class="product-prices">
@@ -534,10 +534,10 @@ function renderProductsList(products, containerId) {
     container.innerHTML = products.map(product => `
         <div class="card product-card-list">
             <div class="product-list-content">
-                <img src="${product.image_url}" alt="${product.name}" class="product-image-list" 
-                     onclick="openImageModal('${product.image_url}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')"
+                <img src="${getProductImage(product, 'small')}" alt="${product.name}" class="product-image-list" 
+                     onclick="openImageModal('${getProductImage(product, 'large')}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
                      title="Clique para ver em tela cheia"
-                     onerror="this.src='https://via.placeholder.com/120x120/8B5CF6/ffffff?text=Sem+Imagem'">
+                     onerror="this.src='https://via.placeholder.com/120x120/8B5CF6/ffffff?text=Erro+ao+Carregar'">
                 <div class="product-info-list">
                     <h3 class="product-name">${product.name}</h3>
                     ${product.description ? `<p class="product-description-list">${product.description.substring(0, 150)}...</p>` : ''}
@@ -744,10 +744,10 @@ const PageHandlers = {
                                 </div>
                                 <div class="media-content">
                                     <div id="image-${product.id}" class="media-item active">
-                                        <img src="${product.image_url}" alt="${product.name}" class="product-detail-image"
-                                             onclick="openImageModal('${product.image_url}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')"
+                                        <img src="${getProductImage(product, 'large')}" alt="${product.name}" class="product-detail-image"
+                                             onclick="openImageModal('${getProductImage(product, 'large')}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
                                              title="Clique para ver em tela cheia"
-                                             onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Sem+Imagem'">
+                                             onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
                                     </div>
                                     <div id="video-${product.id}" class="media-item">
                                         <video class="product-detail-video" controls preload="metadata">
@@ -758,10 +758,10 @@ const PageHandlers = {
                                 </div>
                             </div>
                         ` : `
-                            <img src="${product.image_url}" alt="${product.name}" class="product-detail-image"
-                                 onclick="openImageModal('${product.image_url}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}')"
+                            <img src="${getProductImage(product, 'large')}" alt="${product.name}" class="product-detail-image"
+                                 onclick="openImageModal('${getProductImage(product, 'large')}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
                                  title="Clique para ver em tela cheia"
-                                 onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Sem+Imagem'">
+                                 onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
                         `}
                     </div>
                     <div class="product-info">
@@ -1189,8 +1189,53 @@ function showMedia(mediaId) {
 // Modal de Imagem / Lightbox
 // =============================================================================
 
-// Abrir modal de imagem
-function openImageModal(imageSrc, title, description) {
+// Gerar URL de thumbnail do vídeo
+function getVideoThumbnail(videoUrl) {
+    if (!videoUrl) return null;
+    
+    // Se for um vídeo do Supabase, tentar gerar thumbnail
+    if (videoUrl.includes('supabase.co')) {
+        // Placeholder: em produção real, você poderia usar um serviço de thumbnail
+        return `https://via.placeholder.com/800x450/8B5CF6/ffffff?text=📹+Video+Preview`;
+    }
+    
+    // Para outros vídeos, retornar null para usar placeholder
+    return null;
+}
+
+// Obter a melhor imagem disponível para um produto
+function getProductImage(product, size = 'medium') {
+    // Definir tamanhos de placeholder
+    const sizes = {
+        small: '300x250',
+        medium: '500x400',
+        large: '800x600'
+    };
+    
+    const placeholderSize = sizes[size] || sizes.medium;
+    
+    // Se tem imagem, usar ela
+    if (product.image_url && product.image_url.trim() !== '') {
+        return product.image_url;
+    }
+    
+    // Se não tem imagem mas tem vídeo, tentar thumbnail
+    if (product.video_url) {
+        const thumbnail = getVideoThumbnail(product.video_url);
+        if (thumbnail) return thumbnail;
+        
+        // Fallback: placeholder específico para produtos com vídeo
+        const productName = encodeURIComponent(product.name || 'Produto');
+        return `https://via.placeholder.com/${placeholderSize}/8B5CF6/ffffff?text=📹+${productName}`;
+    }
+    
+    // Fallback final: placeholder genérico
+    const productName = encodeURIComponent(product.name || 'Produto');
+    return `https://via.placeholder.com/${placeholderSize}/8B5CF6/ffffff?text=${productName}`;
+}
+
+// Abrir modal de imagem (melhorado para lidar com vídeos)
+function openImageModal(imageSrc, title, description, videoUrl = null) {
     console.log('🖼️ Abrindo modal de imagem:', title);
     const modal = document.getElementById('imageModal');
     const modalImage = document.getElementById('modalImage');
@@ -1198,11 +1243,25 @@ function openImageModal(imageSrc, title, description) {
     const modalDescription = document.getElementById('modalDescription');
     
     if (modal && modalImage) {
+        // Se não há imagem mas há vídeo, usar thumbnail do vídeo
+        if ((!imageSrc || imageSrc === '') && videoUrl) {
+            const thumbnail = getVideoThumbnail(videoUrl);
+            imageSrc = thumbnail || `https://via.placeholder.com/800x450/8B5CF6/ffffff?text=${encodeURIComponent(title || 'Produto com Vídeo')}`;
+            console.log('📹 Usando thumbnail do vídeo:', imageSrc);
+        }
+        
         modalImage.src = imageSrc;
         modalImage.alt = title || 'Imagem do produto';
         
         if (modalTitle) modalTitle.textContent = title || '';
-        if (modalDescription) modalDescription.textContent = description || '';
+        if (modalDescription) {
+            let desc = description || '';
+            // Adicionar aviso se for thumbnail de vídeo
+            if (videoUrl && (!imageSrc || imageSrc.includes('placeholder'))) {
+                desc += (desc ? '\n\n' : '') + '📹 Este produto possui vídeo demonstrativo disponível.';
+            }
+            modalDescription.textContent = desc;
+        }
         
         modal.classList.add('active');
         document.body.style.overflow = 'hidden'; // Prevenir scroll do fundo

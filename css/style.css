@@ -1251,6 +1251,29 @@ body {
     color: var(--text-muted);
 }
 
+/* Indicador de vídeo no modal */
+.image-modal-image[src*="📹"],
+.image-modal-image[src*="Video"] {
+    border: 3px solid var(--yellow);
+    position: relative;
+}
+
+.image-modal-image[src*="📹"]::after,
+.image-modal-image[src*="Video"]::after {
+    content: '🎬 Este produto possui vídeo demonstrativo!';
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(252, 211, 77, 0.9);
+    color: var(--dark);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 /* Animações do modal */
 @keyframes fadeIn {
     from {
