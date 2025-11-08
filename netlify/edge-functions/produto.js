@@ -55,8 +55,9 @@ export default async (request, context) => {
     const productTitle = `${product.name} - Chefinho Gaming Store`;
     const productDescription = product.description || `${product.name} por apenas R$ ${product.rl_price.toFixed(2)}. Compre agora na Chefinho Gaming Store!`;
     const productImage = product.image_url.startsWith('http') ? product.image_url : `${url.origin}/${product.image_url}`;
-    const productUrl = `${url.origin}/produto.html?id=${product.id}`;
+    const productUrl = `${url.origin}/produto/${createSlug(product.name)}`;
     const productPrice = product.rl_price.toFixed(2);
+    const productVideo = product.video_url ? (product.video_url.startsWith('http') ? product.video_url : `${url.origin}/${product.video_url}`) : null;
     
     // Substituir meta tags no HTML
     let modifiedHtml = html
@@ -91,6 +92,19 @@ export default async (request, context) => {
       .replace(/<meta property="product:price:amount" content=".*?">/, 
         `<meta property="product:price:amount" content="${productPrice}">`);
     
+    // Adicionar meta tags de vídeo se disponível
+    if (productVideo) {
+      modifiedHtml = modifiedHtml
+        .replace('</head>', `
+          <meta property="og:video" content="${productVideo}">
+          <meta property="og:video:type" content="video/mp4">
+          <meta property="og:video:width" content="1280">
+          <meta property="og:video:height" content="720">
+          <meta property="twitter:player" content="${productVideo}">
+          <meta property="twitter:player:width" content="1280">
+          <meta property="twitter:player:height" content="720">
+        </head>`);
+    }
     // Retornar HTML modificado
     return new Response(modifiedHtml, {
       headers: {

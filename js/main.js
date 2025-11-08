@@ -30,12 +30,21 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Executar handler da página atual após carregar os dados
         let page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
         
-        // Se a URL é /produto/algo, considerar como página 'produto'
-        if (window.location.pathname.startsWith('/produto/')) {
+        // Detectar ambiente: local vs produção
+        const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+        
+        // Se a URL é /produto/algo e estamos em produção, considerar como página 'produto'
+        if (!isLocal && window.location.pathname.startsWith('/produto/')) {
             page = 'produto';
         }
         
+        // Se estamos em local e é produto.html, usar lógica local
+        if (isLocal && page === 'produto') {
+            console.log('🛠️ Ambiente local detectado - usando query parameters');
+        }
+        
         console.log('Página atual:', page);
+        console.log('Ambiente:', isLocal ? 'Local' : 'Produção');
         console.log('Pathname completo:', window.location.pathname);
         
         if (PageHandlers[page]) {
@@ -679,22 +688,54 @@ const PageHandlers = {
             return;
         }
         
+        // Detectar ambiente
+        const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
+        
         const urlParams = new URLSearchParams(window.location.search);
         let productId = urlParams.get('id');
-        let productSlug = urlParams.get('img');
+        let productSlug = urlParams.get('img') || urlParams.get('slug');
         
-        // Verificar se é uma URL amigável /produto/slug
-        const pathMatch = window.location.pathname.match(/\/produto\/(.+)/);
-        if (pathMatch) {
-            productSlug = pathMatch[1];
+        // Se estamos em produção, tentar extrair slug da URL
+        if (!isLocal && !productId && !productSlug) {
+            const pathMatch = window.location.pathname.match(/\/produto\/(.+)/);
+            if (pathMatch) {
+                productSlug = pathMatch[1];
+            }
+        }
+        
+        // Se estamos em local e não há parâmetros, usar produto padrão para teste
+        if (isLocal && !productId && !productSlug) {
+            productId = "1"; // Blox Fruit com vídeo por padrão
+            console.log('🛠️ Ambiente local: usando produto padrão ID 1 (Blox Fruit)');
         }
         
         console.log('ID do produto:', productId);
         console.log('Slug do produto:', productSlug);
+        console.log('Ambiente:', isLocal ? 'Local' : 'Produção');
         
         if (!productId && !productSlug) {
-            window.location.href = 'produtos.html';
-            return;
+            if (isLocal) {
+                // Em local, mostrar opções de teste
+                const container = document.getElementById('productDetails');
+                if (container) {
+                    container.innerHTML = `
+                        <div style="background: var(--dark); padding: 2rem; border-radius: 12px; border: 2px solid var(--primary);">
+                            <h3 style="color: var(--primary); margin-bottom: 1rem;">🛠️ Ambiente Local</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Use um destes links para testar:</p>
+                            <ul style="color: var(--text-secondary);">
+                                <li><a href="produto.html?id=1" style="color: var(--primary);">Blox Fruit (com vídeo)</a></li>
+                                <li><a href="produto.html?id=2" style="color: var(--primary);">Rucoy Level 450</a></li>
+                                <li><a href="produto.html?slug=blox-fruit-conta-level-2751-buddah-permanente" style="color: var(--primary);">Blox Fruit (por slug)</a></li>
+                            </ul>
+                        </div>
+                    `;
+                }
+                return;
+            } else {
+                // Em produção, redirecionar
+                window.location.href = '/produtos.html';
+                return;
+            }
         }
         
         // Buscar produto por ID ou slug
@@ -740,8 +781,33 @@ const PageHandlers = {
             container.innerHTML = `
                 <div class="product-detail-grid">
                     <div class="product-image-container">
-                        <img src="${product.image_url}" alt="${product.name}" class="product-detail-image"
-                             onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Sem+Imagem'">
+                        ${product.video_url ? `
+                            <div class="product-media-tabs">
+                                <div class="media-tab-buttons">
+                                    <button class="media-tab-btn active" onclick="showMedia('image-${product.id}')">
+                                        <i class="fas fa-image"></i> Imagem
+                                    </button>
+                                    <button class="media-tab-btn" onclick="showMedia('video-${product.id}')">
+                                        <i class="fas fa-play"></i> Vídeo
+                                    </button>
+                                </div>
+                                <div class="media-content">
+                                    <div id="image-${product.id}" class="media-item active">
+                                        <img src="${product.image_url}" alt="${product.name}" class="product-detail-image"
+                                             onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Sem+Imagem'">
+                                    </div>
+                                    <div id="video-${product.id}" class="media-item">
+                                        <video class="product-detail-video" controls preload="metadata">
+                                            <source src="${product.video_url}" type="video/mp4">
+                                            Seu navegador não suporta vídeo.
+                                        </video>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : `
+                            <img src="${product.image_url}" alt="${product.name}" class="product-detail-image"
+                                 onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Sem+Imagem'">
+                        `}
                     </div>
                     <div class="product-info">
                         <h1 class="product-title">${product.name}</h1>
@@ -1128,6 +1194,40 @@ function generateRucoyWhatsAppMessage(items) {
     message += `🛒 Pedido realizado através do site da Chefinho Gaming Store`;
     
     return message;
+}
+
+// Função para alternar entre imagem e vídeo na página do produto
+function showMedia(mediaId) {
+    // Remover classe active de todos os media items
+    document.querySelectorAll('.media-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    
+    // Remover classe active de todos os botões
+    document.querySelectorAll('.media-tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Ativar o media selecionado
+    const selectedMedia = document.getElementById(mediaId);
+    if (selectedMedia) {
+        selectedMedia.classList.add('active');
+    }
+    
+    // Ativar o botão correspondente
+    const isVideo = mediaId.includes('video');
+    const btnIndex = isVideo ? 1 : 0;
+    const buttons = document.querySelectorAll('.media-tab-btn');
+    if (buttons[btnIndex]) {
+        buttons[btnIndex].classList.add('active');
+    }
+    
+    // Pausar vídeo se trocar para imagem
+    if (!isVideo) {
+        document.querySelectorAll('.product-detail-video').forEach(video => {
+            video.pause();
+        });
+    }
 }
 
 // Executar handler da página atual (removido - agora executado no DOMContentLoaded)
