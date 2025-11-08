@@ -17,6 +17,13 @@ export default async (request, context) => {
   }
   
   try {
+    // Função para criar slug (mesma do JavaScript)
+    const createProductSlug = (text) => text.toLowerCase()
+      .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
+      .replace(/\s+/g, '-')      // Substitui espaços por hífens
+      .replace(/-+/g, '-')       // Remove hífens duplos
+      .trim();
+    
     // Carregar dados dos produtos
     const dataResponse = await fetch(`${url.origin}/data.json`);
     const siteData = await dataResponse.json();
@@ -26,26 +33,18 @@ export default async (request, context) => {
     if (productId) {
       product = siteData.products?.find(p => p.id === parseInt(productId));
     } else if (productSlug) {
-      // Criar slug do produto para comparação
-      const createSlug = (text) => text.toLowerCase()
-        .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
-        .replace(/\s+/g, '-')      // Substitui espaços por hífens
-        .replace(/-+/g, '-')       // Remove hífens duplos
-        .trim();
-      
       product = siteData.products?.find(p => {
-        const slug = createSlug(p.name);
-        // Busca mais flexível
-        const exactMatch = slug === productSlug;
-        const containsMatch = slug.includes(productSlug) || productSlug.includes(slug);
-        const partialMatch = slug.substring(0, productSlug.length) === productSlug;
-        return exactMatch || containsMatch || partialMatch;
+        const slug = createProductSlug(p.name);
+        return slug === productSlug;
       });
     }
     
     if (!product) {
+      console.log('Produto não encontrado. ID:', productId, 'Slug:', productSlug);
       return context.next();
     }
+    
+    console.log('Produto encontrado:', product.name, 'para URL:', url.pathname);
     
     // Buscar o HTML da página produto
     const htmlResponse = await context.next();
@@ -54,10 +53,18 @@ export default async (request, context) => {
     // Gerar meta tags dinâmicas
     const productTitle = `${product.name} - Chefinho Gaming Store`;
     const productDescription = product.description || `${product.name} por apenas R$ ${product.rl_price.toFixed(2)}. Compre agora na Chefinho Gaming Store!`;
-    const productImage = product.image_url.startsWith('http') ? product.image_url : `${url.origin}/${product.image_url}`;
-    const productUrl = `${url.origin}/produto/${createSlug(product.name)}`;
+    const productImage = product.image_url.startsWith('http') ? product.image_url : `${url.origin}${product.image_url.startsWith('/') ? '' : '/'}${product.image_url}`;
+    const productUrl = `${url.origin}/produto/${createProductSlug(product.name)}`;
     const productPrice = product.rl_price.toFixed(2);
-    const productVideo = product.video_url ? (product.video_url.startsWith('http') ? product.video_url : `${url.origin}/${product.video_url}`) : null;
+    const productVideo = product.video_url ? (product.video_url.startsWith('http') ? product.video_url : `${url.origin}${product.video_url.startsWith('/') ? '' : '/'}${product.video_url}`) : null;
+    
+    console.log('Meta tags geradas:', {
+      title: productTitle,
+      description: productDescription.substring(0, 100) + '...',
+      image: productImage,
+      url: productUrl,
+      price: productPrice
+    });
     
     // Substituir meta tags no HTML
     let modifiedHtml = html

@@ -30,21 +30,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Executar handler da página atual após carregar os dados
         let page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
         
-        // Detectar ambiente: local vs produção
-        const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
-        
-        // Se a URL é /produto/algo e estamos em produção, considerar como página 'produto'
-        if (!isLocal && window.location.pathname.startsWith('/produto/')) {
+        // Se a URL é /produto/algo, considerar como página 'produto'
+        if (window.location.pathname.startsWith('/produto/')) {
             page = 'produto';
         }
         
-        // Se estamos em local e é produto.html, usar lógica local
-        if (isLocal && page === 'produto') {
-            console.log('🛠️ Ambiente local detectado - usando query parameters');
-        }
-        
         console.log('Página atual:', page);
-        console.log('Ambiente:', isLocal ? 'Local' : 'Produção');
         console.log('Pathname completo:', window.location.pathname);
         
         if (PageHandlers[page]) {
@@ -688,79 +679,35 @@ const PageHandlers = {
             return;
         }
         
-        // Detectar ambiente
-        const isLocal = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost';
-        
         const urlParams = new URLSearchParams(window.location.search);
         let productId = urlParams.get('id');
         let productSlug = urlParams.get('img') || urlParams.get('slug');
         
-        // Se estamos em produção, tentar extrair slug da URL
-        if (!isLocal && !productId && !productSlug) {
+        // Tentar extrair slug da URL se não há parâmetros
+        if (!productId && !productSlug) {
             const pathMatch = window.location.pathname.match(/\/produto\/(.+)/);
             if (pathMatch) {
                 productSlug = pathMatch[1];
             }
         }
         
-        // Se estamos em local e não há parâmetros, usar produto padrão para teste
-        if (isLocal && !productId && !productSlug) {
-            productId = "1"; // Blox Fruit com vídeo por padrão
-            console.log('🛠️ Ambiente local: usando produto padrão ID 1 (Blox Fruit)');
-        }
-        
         console.log('ID do produto:', productId);
         console.log('Slug do produto:', productSlug);
-        console.log('Ambiente:', isLocal ? 'Local' : 'Produção');
         
         if (!productId && !productSlug) {
-            if (isLocal) {
-                // Em local, mostrar opções de teste
-                const container = document.getElementById('productDetails');
-                if (container) {
-                    container.innerHTML = `
-                        <div style="background: var(--dark); padding: 2rem; border-radius: 12px; border: 2px solid var(--primary);">
-                            <h3 style="color: var(--primary); margin-bottom: 1rem;">🛠️ Ambiente Local</h3>
-                            <p style="color: var(--text-secondary); margin-bottom: 1rem;">Use um destes links para testar:</p>
-                            <ul style="color: var(--text-secondary);">
-                                <li><a href="produto.html?id=1" style="color: var(--primary);">Blox Fruit (com vídeo)</a></li>
-                                <li><a href="produto.html?id=2" style="color: var(--primary);">Rucoy Level 450</a></li>
-                                <li><a href="produto.html?slug=blox-fruit-conta-level-2751-buddah-permanente" style="color: var(--primary);">Blox Fruit (por slug)</a></li>
-                            </ul>
-                        </div>
-                    `;
-                }
-                return;
-            } else {
-                // Em produção, redirecionar
-                window.location.href = '/produtos.html';
-                return;
-            }
+            console.log('Produto não encontrado na URL');
+            window.location.href = '/produtos.html';
+            return;
         }
         
         // Buscar produto por ID ou slug
         let product;
         if (productId) {
-            product = siteData.products?.find(p => p.id === parseInt(productId));
+            product = siteData.products?.find(p => p.id === productId || p.id === parseInt(productId));
         } else if (productSlug) {
-            console.log('🔍 Buscando produto por slug:', productSlug);
-            console.log('📋 Produtos disponíveis:', siteData.products?.length);
-            
             product = siteData.products?.find(p => {
                 const slug = createProductSlug(p.name);
-                console.log(`🏷️ Produto: "${p.name}" → Slug: "${slug}"`);
-                
-                // Busca mais flexível: verifica se o slug do produto contém o slug da URL
-                // ou se o slug da URL contém parte do slug do produto
-                const exactMatch = slug === productSlug;
-                const containsMatch = slug.includes(productSlug) || productSlug.includes(slug);
-                const partialMatch = slug.substring(0, productSlug.length) === productSlug;
-                
-                const match = exactMatch || containsMatch || partialMatch;
-                if (match) {
-                    console.log('✅ Match encontrado!', { exactMatch, containsMatch, partialMatch });
-                }
-                return match;
+                return slug === productSlug;
             });
         }
         
