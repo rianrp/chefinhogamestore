@@ -350,24 +350,17 @@ function getImageUrl(product) {
     console.log('   - image_url:', product.image_url);
     console.log('   - video_url:', product.video_url);
     
+    // Se tem image_url válida, usar ela
     if (product.image_url && product.image_url.trim() !== '') {
         console.log('   ✅ Usando image_url:', product.image_url);
         return product.image_url;
     }
     
-    // Se não tem imagem mas tem vídeo, criar placeholder específico
-    if (product.video_url) {
-        const shortName = product.name.substring(0, 20).replace(/[^\w\s]/g, '');
-        const placeholder = `https://via.placeholder.com/500x400/8B5CF6/ffffff?text=📹+${encodeURIComponent(shortName)}`;
-        console.log('   📹 Usando placeholder de vídeo:', placeholder);
-        return placeholder;
-    }
-    
-    // Fallback genérico
-    const shortName = product.name.substring(0, 20).replace(/[^\w\s]/g, '');
-    const fallback = `https://via.placeholder.com/500x400/8B5CF6/ffffff?text=${encodeURIComponent(shortName)}`;
-    console.log('   🔄 Usando fallback genérico:', fallback);
-    return fallback;
+    // Se não tem imagem, usar uma imagem padrão que sabemos que funciona
+    // Vamos usar uma das imagens do Supabase que já existem
+    const defaultImage = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
+    console.log('   🔄 Usando imagem padrão:', defaultImage);
+    return defaultImage;
 }
 
 // Renderizar produtos
