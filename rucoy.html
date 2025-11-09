@@ -37,6 +37,252 @@
     <link rel="manifest" href="/favicons/site.webmanifest">
     <link rel="shortcut icon" href="/favicons/favicon.ico">
     <meta name="theme-color" content="#8B5CF6">
+    
+    <style>
+        /* Mobile Menu Styles */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+            position: relative;
+        }
+        
+        .hamburger-line {
+            width: 25px;
+            height: 2px;
+            background: var(--text);
+            transition: all 0.3s ease;
+            margin: 3px 0;
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 320px;
+            height: 100vh;
+            background: var(--dark);
+            z-index: 1002;
+            transition: right 0.3s ease;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            background: var(--gradient-dark);
+        }
+        
+        .mobile-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .mobile-logo i {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+        
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-close:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+        }
+        
+        .mobile-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+        
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.05);
+        }
+        
+        .mobile-nav-item:hover,
+        .mobile-nav-item.active {
+            background: rgba(139, 92, 246, 0.1);
+            padding-left: 30px;
+        }
+        
+        .mobile-nav-item i {
+            width: 20px;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .mobile-nav-item span {
+            font-weight: 500;
+        }
+        
+        .mobile-cart-count {
+            background: var(--yellow);
+            color: var(--dark);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .mobile-quick-actions {
+            padding: 20px;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mobile-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: var(--border-radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-action-btn.whatsapp-btn {
+            background: #25D366;
+            color: white;
+        }
+        
+        .mobile-action-btn.whatsapp-btn:hover {
+            background: #1DA851;
+            color: white;
+        }
+        
+        .mobile-action-btn.primary-btn {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .mobile-action-btn.primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .mobile-contact-info {
+            padding: 20px;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            background: var(--gray);
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .contact-item i {
+            color: var(--primary);
+            width: 16px;
+        }
+        
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .cart-icon {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .mobile-menu {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -55,13 +301,88 @@
                     <li><a href="contato.html">Contato</a></li>
                 </ul>
                 
-                <a href="carrinho.html" class="cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </a>
+                <div class="nav-actions">
+                    <a href="carrinho.html" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
             </nav>
         </div>
     </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-header">
+                <div class="mobile-logo">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Chefinho</span>
+                </div>
+                <button class="mobile-menu-close" id="mobileMenuClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <nav class="mobile-nav">
+                <a href="index.html" class="mobile-nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Início</span>
+                </a>
+                <a href="produtos.html" class="mobile-nav-item">
+                    <i class="fas fa-gamepad"></i>
+                    <span>Produtos</span>
+                </a>
+                <a href="rucoy.html" class="mobile-nav-item active">
+                    <i class="fas fa-coins"></i>
+                    <span>Rucoy KKs</span>
+                </a>
+                <a href="contato.html" class="mobile-nav-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contato</span>
+                </a>
+                <a href="carrinho.html" class="mobile-nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Carrinho</span>
+                    <span class="mobile-cart-count">0</span>
+                </a>
+            </nav>
+            
+            <div class="mobile-quick-actions">
+                <a href="https://wa.me/5511999999999?text=Olá! Gostaria de comprar KKs para Rucoy Online" class="mobile-action-btn whatsapp-btn">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <a href="rucoy.html" class="mobile-action-btn primary-btn">
+                    <i class="fas fa-coins"></i>
+                    <span>Rucoy KKs</span>
+                </a>
+            </div>
+            
+            <div class="mobile-contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Atendimento: 9h às 18h</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-shipping-fast"></i>
+                    <span>Entrega em até 30min</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Compra 100% segura</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Page Header -->
     <section class="page-header">
@@ -267,5 +588,48 @@
 
     <!-- Scripts -->
     <script src="js/main.js"></script>
+    
+    <script>
+        // Mobile Menu Control
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuClose = document.getElementById('mobileMenuClose');
+            
+            function openMobileMenu() {
+                mobileMenuBtn.classList.add('active');
+                mobileMenu.classList.add('active');
+                mobileMenuOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            function closeMobileMenu() {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                mobileMenuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            if (mobileMenuBtn) {
+                mobileMenuBtn.addEventListener('click', openMobileMenu);
+            }
+            
+            if (mobileMenuClose) {
+                mobileMenuClose.addEventListener('click', closeMobileMenu);
+            }
+            
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+            }
+            
+            // Fechar menu com ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && mobileMenu.classList.contains('active')) {
+                    closeMobileMenu();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

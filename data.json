@@ -223,7 +223,7 @@
     },
     {
       "id": "11",
-      "name": "Rucoy Online - Conta Level 700 Knight, com skin LEGENDARY",
+      "name": "Rucoy Online - Conta Level 592 Knight, com skin LEGENDARY",
       "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/632b135c-e655-4ecb-beff-4e5a22511c33.jpg",
       "rl_price": 700.00,
       "parcelado_price": 0.00,
@@ -821,6 +821,48 @@
       "purchased_value": 0,
       "category": "roblox",
       "description": "Kit com 3 personagens Brainrot — Spaghetti Tualetti, Secret e Gold",
+      "created_at": "2025-11-08",
+      "is_active": true
+    },
+    {
+      "id": "56",
+      "name": "Rucoy Online - Conta Level 406 Knight, ideal para quem quer pular de nivel",
+      "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/rucoy-knight-120.jpeg",
+      "rl_price": 120,
+      "parcelado_price": 50,
+      "kks_price": 82.75,
+      "quantity": 1,
+      "purchased_value": 0,
+      "category": "kina",
+      "description": "Level 406 Melee 423 Distance 323 Magic 361 Defense 397 Ideal para quem quer pular de nivel bom e barato!!.",
+      "created_at": "2025-11-08",
+      "is_active": true
+    },
+    {
+      "id": "57",
+      "name": "Cv17 FULL (97%)",
+      "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/videos/cv17-full-97-850.mp4",
+      "rl_price": 850,
+      "parcelado_price": 850,
+      "kks_price": 586.20,
+      "quantity": 1,
+      "purchased_value": 0,
+      "category": "clash of clans",
+      "description": "Paisagem das Sombras • Heróis (100%) • Tropas (97%) • Feitiços (91%) • Casa do Construtor FULL",
+      "created_at": "2025-11-08",
+      "is_active": true
+    },
+    {
+      "id": "58",
+      "name": "Combo: Brawl Stars 22647 Troféus",
+      "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/videos/12000-130-brawlstars.mp4",
+      "rl_price": 130,
+      "parcelado_price": 130,
+      "kks_price": 89.65,
+      "quantity": 1,
+      "purchased_value": 0,
+      "category": "clash royale",
+      "description": "12000 Troféus • 7 Elite • 6 evo • 6 Anos de Jogo",
       "created_at": "2025-11-08",
       "is_active": true
     }
