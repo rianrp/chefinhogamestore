@@ -188,69 +188,7 @@
             font-weight: 600;
         }
 
-        /* Form de anúncio */
-        .advertise-form {
-            background: var(--gray);
-            padding: 40px;
-            border-radius: var(--border-radius);
-            margin-top: 60px;
-        }
 
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        .form-group label {
-            display: block;
-            color: var(--text);
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 15px;
-            background: var(--light-gray);
-            border: 1px solid rgba(139, 92, 246, 0.2);
-            border-radius: var(--border-radius-sm);
-            color: var(--text);
-            font-size: 1rem;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .selected-plan {
-            background: rgba(139, 92, 246, 0.1);
-            border: 2px solid var(--primary);
-            padding: 20px;
-            border-radius: var(--border-radius-sm);
-            margin-bottom: 30px;
-        }
-
-        .selected-plan h4 {
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
 
         /* Hero Actions com Gap */
         .hero-actions {
@@ -325,8 +263,6 @@
                         Falar com Suporte
                     </a>
                 </div>
-                
-                <!-- Stats -->
                 <div class="stats">
                     <div class="stat-item fade-in-up">
                         <span class="stat-number">10K+</span>
@@ -362,8 +298,9 @@
                         <li><i class="fas fa-check"></i> Visibilidade no feed principal</li>
                         <li><i class="fas fa-check"></i> Suporte via WhatsApp</li>
                     </ul>
-                    <button class="btn btn-primary plan-btn" onclick="selectPlan('basico', 'R$ 5', '2 dias')">
-                        Escolher Básico
+                    <button class="btn btn-primary plan-btn" onclick="contratarPlano('Básico', 'R$ 5', '2 dias')">
+                        <i class="fab fa-whatsapp"></i>
+                        Contratar Básico
                     </button>
                 </div>
 
@@ -379,8 +316,9 @@
                         <li><i class="fas fa-check"></i> Badge de "Destaque"</li>
                         <li><i class="fas fa-check"></i> Suporte prioritário</li>
                     </ul>
-                    <button class="btn btn-yellow plan-btn" onclick="selectPlan('pro', 'R$ 10', '5 dias')">
-                        Escolher Pro
+                    <button class="btn btn-yellow plan-btn" onclick="contratarPlano('Pro', 'R$ 10', '5 dias')">
+                        <i class="fab fa-whatsapp"></i>
+                        Contratar Pro
                     </button>
                 </div>
 
@@ -396,72 +334,14 @@
                         <li><i class="fas fa-check"></i> Analytics do anúncio</li>
                         <li><i class="fas fa-check"></i> Suporte VIP</li>
                     </ul>
-                    <button class="btn btn-primary plan-btn" onclick="selectPlan('elite', 'R$ 15', '30 dias')">
-                        Escolher Elite
-                    </button>
-                </div>
-            </div>
-
-            <!-- Formulário de Anúncio -->
-            <div class="advertise-form" id="advertiseForm" style="display: none;">
-                <h3 class="section-title" style="margin-bottom: 30px;">Dados do seu Anúncio</h3>
-                
-                <div class="selected-plan" id="selectedPlan">
-                    <!-- Plano selecionado será inserido aqui -->
-                </div>
-
-                <form id="advertiseFormData">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="productName">Nome do Produto/Conta *</label>
-                            <input type="text" id="productName" required placeholder="Ex: Conta Rucoy Level 500 Knight">
-                        </div>
-                        <div class="form-group">
-                            <label for="gameCategory">Jogo/Categoria *</label>
-                            <select id="gameCategory" required>
-                                <option value="">Selecione o jogo</option>
-                                <option value="rucoy">Rucoy Online</option>
-                                <option value="freefire">Free Fire</option>
-                                <option value="clash-royale">Clash Royale</option>
-                                <option value="clash-clans">Clash of Clans</option>
-                                <option value="brawl-stars">Brawl Stars</option>
-                                <option value="blox-fruits">Blox Fruits</option>
-                                <option value="outros">Outros</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="price">Preço (R$) *</label>
-                            <input type="number" id="price" required placeholder="Ex: 150.00" step="0.01">
-                        </div>
-                        <div class="form-group">
-                            <label for="contact">Seu WhatsApp *</label>
-                            <input type="tel" id="contact" required placeholder="(11) 99999-9999">
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="description">Descrição do Produto *</label>
-                        <textarea id="description" rows="5" required 
-                                placeholder="Descreva detalhadamente seu produto: level, itens, características especiais, etc."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="images">Imagens/Vídeos</label>
-                        <input type="file" id="images" multiple accept="image/*,video/*">
-                        <small style="color: var(--text-muted); margin-top: 5px; display: block;">
-                            Você pode anexar até 5 arquivos. Enviaremos por WhatsApp para análise.
-                        </small>
-                    </div>
-
-                    <button type="submit" class="btn btn-yellow btn-round" style="width: 100%; padding: 20px; font-size: 1.2rem;">
+                    <button class="btn btn-primary plan-btn" onclick="contratarPlano('Elite', 'R$ 15', '30 dias')">
                         <i class="fab fa-whatsapp"></i>
-                        Finalizar no WhatsApp
+                        Contratar Elite
                     </button>
-                </form>
+                </div>
             </div>
+
+
         </div>
     </section>
 
@@ -529,93 +409,31 @@
 
     <!-- Scripts -->
     <script>
-        let selectedPlanData = null;
+        // Função para contratar plano direto no WhatsApp
+        function contratarPlano(plano, preco, duracao) {
+            const message = `🎮 *QUERO ANUNCIAR - CHEFINHO GAMING STORE*
 
-        // Função para selecionar plano
-        function selectPlan(planType, price, duration) {
-            selectedPlanData = {
-                type: planType,
-                price: price,
-                duration: duration
-            };
+� *Plano:* ${plano}
+💰 *Valor:* ${preco}
+⏰ *Duração:* ${duracao}
 
-            // Mostrar plano selecionado
-            const selectedPlanDiv = document.getElementById('selectedPlan');
-            selectedPlanDiv.innerHTML = `
-                <h4><i class="fas fa-check-circle"></i> Plano ${planType.charAt(0).toUpperCase() + planType.slice(1)} Selecionado</h4>
-                <p><strong>Valor:</strong> ${price} | <strong>Duração:</strong> ${duration}</p>
-            `;
+Olá! Quero contratar o plano ${plano} para anunciar meu produto na loja. 
 
-            // Mostrar formulário
-            document.getElementById('advertiseForm').style.display = 'block';
-            
-            // Scroll suave para o formulário
-            document.getElementById('advertiseForm').scrollIntoView({ 
-                behavior: 'smooth' 
-            });
-
-            // Destacar plano selecionado
-            document.querySelectorAll('.plan-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            document.querySelector(`[data-plan="${planType}"]`).classList.add('selected');
-        }
-
-        // Função para enviar para WhatsApp
-        document.getElementById('advertiseFormData').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const formData = {
-                plan: selectedPlanData,
-                productName: document.getElementById('productName').value,
-                category: document.getElementById('gameCategory').value,
-                price: document.getElementById('price').value,
-                contact: document.getElementById('contact').value,
-                description: document.getElementById('description').value
-            };
-
-            // Montar mensagem para WhatsApp
-            const message = `🎮 *NOVO ANÚNCIO - CHEFINHO GAMING STORE*
-
-📦 *Produto:* ${formData.productName}
-🎯 *Categoria:* ${formData.category}
-💰 *Preço:* R$ ${formData.price}
-📱 *Contato:* ${formData.contact}
-
-📋 *Descrição:*
-${formData.description}
-
-💎 *Plano Escolhido:* ${formData.plan.type.toUpperCase()}
-💵 *Valor do Anúncio:* ${formData.plan.price}
-⏰ *Duração:* ${formData.plan.duration}
-
----
-*Aguardo confirmação para publicar o anúncio! 🚀*`;
+Aguardo retorno para enviar os detalhes do meu anúncio! 🚀`;
 
             // Codificar mensagem para URL
             const encodedMessage = encodeURIComponent(message);
-            const whatsappURL = `https://wa.me/5511987654321?text=${encodedMessage}`;
+            const whatsappURL = `https://wa.me/556993450986?text=${encodedMessage}`;
             
             // Abrir WhatsApp
             window.open(whatsappURL, '_blank');
-        });
+        }
 
         // Mobile Menu
         document.getElementById('mobileMenuBtn').addEventListener('click', function() {
             this.classList.toggle('active');
             document.querySelector('.nav-links').classList.toggle('active');
         });
-
-        // Adicionar classe selected quando plano é escolhido
-        const style = document.createElement('style');
-        style.textContent = `
-            .plan-card.selected {
-                transform: translateY(-5px);
-                border-color: var(--primary);
-                box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
