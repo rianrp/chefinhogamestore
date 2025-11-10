@@ -124,20 +124,6 @@
       "is_active": true
     },
     {
-      "id": "4",
-      "name": "Rucoy Online - Conta Level 209 Knight ou Distance, ideal para iniciantes",
-      "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/70d7970d-24a0-4f08-8716-e15f7c3c9d2e.jpg",
-      "rl_price": 30.00,
-      "parcelado_price": 0.00,
-      "kks_price": 20.69,
-      "quantity": 1,
-      "purchased_value": 0,
-      "category": "kina",
-      "description": "Conta do jogo Rucoy Online",
-      "created_at": "2025-11-05",
-      "is_active": true
-    },
-    {
       "id": "5",
       "name": "Rucoy Online - Conta Level 490 Knight para quem quer chegar no nivel 500 rapido",
       "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/f15608d4-e6bf-4c45-ae09-93bc7b34d92b.jpg",
