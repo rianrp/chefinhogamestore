@@ -18,12 +18,28 @@ const emojis = {
 let siteData = null;
 let cart = JSON.parse(localStorage.getItem('chefinho-cart')) || [];
 
+// Variáveis de paginação
+let currentPage = 1;
+let itemsPerPage = 12;
+let totalItems = 0;
+let filteredProducts = [];
+let currentFilters = {
+    category: '',
+    search: ''
+};
+
 // Inicialização
 document.addEventListener('DOMContentLoaded', async function() {
     console.log('DOM carregado, iniciando aplicação...');
     await loadSiteData();
     updateCartCount();
     initializeEventListeners();
+    
+    // Log do sistema de categorias dinâmicas
+    if (siteData) {
+        console.log('🏷️ Sistema de Categorias Dinâmicas Ativo');
+        console.log('📋 Categorias encontradas:', getAllCategories());
+    }
     
     // Aguardar um pouco para garantir que todos os dados estejam carregados
     setTimeout(() => {
@@ -325,11 +341,114 @@ function shareProduct(product, platform = 'whatsapp') {
     }
 }
 
-// Obter nome da categoria
+// Obter todas as categorias (principais + dinâmicas)
+function getAllCategories() {
+    const allCategories = new Map();
+    
+    // Primeiro, adicionar as categorias principais definidas no data.json
+    if (siteData.categories) {
+        siteData.categories.forEach(cat => {
+            allCategories.set(cat.id, {
+                id: cat.id,
+                name: cat.name,
+                description: cat.description,
+                icon: cat.icon,
+                type: 'main', // Categoria principal
+                productCount: 0
+            });
+        });
+    }
+    
+    // Depois, adicionar categorias dinâmicas baseadas nos produtos
+    if (siteData.products) {
+        siteData.products.forEach(product => {
+            if (product.category && product.is_active) {
+                if (allCategories.has(product.category)) {
+                    // Incrementar contador se já existe
+                    allCategories.get(product.category).productCount++;
+                } else {
+                    // Criar categoria dinâmica se não existe
+                    allCategories.set(product.category, {
+                        id: product.category,
+                        name: formatCategoryName(product.category),
+                        description: `Produtos de ${formatCategoryName(product.category)}`,
+                        icon: getDefaultCategoryIcon(product.category),
+                        type: 'dynamic', // Categoria dinâmica
+                        productCount: 1
+                    });
+                }
+            }
+        });
+    }
+    
+    return Array.from(allCategories.values()).sort((a, b) => {
+        // Categorias principais primeiro, depois dinâmicas
+        if (a.type === 'main' && b.type === 'dynamic') return -1;
+        if (a.type === 'dynamic' && b.type === 'main') return 1;
+        // Dentro do mesmo tipo, ordenar por nome
+        return a.name.localeCompare(b.name);
+    });
+}
+
+// Formatar nome da categoria dinâmica
+function formatCategoryName(categoryId) {
+    // Mapear IDs conhecidos para nomes amigáveis
+    const knownCategories = {
+        'roblox': 'Roblox',
+        'clash royale': 'Clash Royale',
+        'clash of clans': 'Clash of Clans',
+        'brawl stars': 'Brawl Stars',
+        'gta v': 'GTA V',
+        'fifa': 'FIFA',
+        'fortnite': 'Fortnite',
+        'minecraft': 'Minecraft',
+        'valorant': 'Valorant',
+        'cs2': 'Counter-Strike 2',
+        'lol': 'League of Legends'
+    };
+    
+    if (knownCategories[categoryId.toLowerCase()]) {
+        return knownCategories[categoryId.toLowerCase()];
+    }
+    
+    // Para categorias não mapeadas, fazer capitalização automática
+    return categoryId
+        .split(' ')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+}
+
+// Obter ícone padrão para categoria dinâmica
+function getDefaultCategoryIcon(categoryId) {
+    const iconMap = {
+        'roblox': 'fas fa-cube',
+        'clash royale': 'fas fa-crown',
+        'clash of clans': 'fas fa-castle',
+        'brawl stars': 'fas fa-fist-raised',
+        'gta v': 'fas fa-car',
+        'fifa': 'fas fa-futbol',
+        'fortnite': 'fas fa-crosshairs',
+        'minecraft': 'fas fa-cubes',
+        'valorant': 'fas fa-bullseye',
+        'cs2': 'fas fa-bomb',
+        'lol': 'fas fa-dragon'
+    };
+    
+    return iconMap[categoryId.toLowerCase()] || 'fas fa-gamepad';
+}
+
+// Obter nome da categoria (melhorado)
 function getCategoryName(categoryId) {
-    if (!siteData.categories) return categoryId;
-    const category = siteData.categories.find(cat => cat.id === categoryId);
-    return category ? category.name : categoryId;
+    if (!categoryId) return 'Sem categoria';
+    
+    // Primeiro tentar encontrar nas categorias principais
+    if (siteData.categories) {
+        const mainCategory = siteData.categories.find(cat => cat.id === categoryId);
+        if (mainCategory) return mainCategory.name;
+    }
+    
+    // Se não encontrou, usar formatação dinâmica
+    return formatCategoryName(categoryId);
 }
 
 // Filtrar produtos
@@ -544,38 +663,66 @@ function renderProducts(products, containerId) {
     });
 }
 
-// Renderizar categorias
+// Renderizar categorias (melhorado para usar sistema dinâmico)
 function renderCategories(containerId) {
     const container = document.getElementById(containerId);
-    if (!container || !siteData.categories) {
-        console.log('Container ou categorias não encontradas:', containerId, !!siteData.categories);
+    if (!container) {
+        console.log('Container não encontrado:', containerId);
         return;
     }
     
-    console.log('Renderizando categorias:', siteData.categories.length);
+    const allCategories = getAllCategories();
+    console.log('Renderizando categorias:', allCategories.length, '(principais + dinâmicas)');
     
-    container.innerHTML = siteData.categories.map(category => `
-        <a href="produtos.html?category=${category.id}" class="card category-card">
+    // Filtrar apenas categorias que têm produtos
+    const categoriesWithProducts = allCategories.filter(cat => cat.productCount > 0);
+    
+    if (categoriesWithProducts.length === 0) {
+        container.innerHTML = '<p class="text-muted">Nenhuma categoria disponível</p>';
+        return;
+    }
+    
+    container.innerHTML = categoriesWithProducts.map(category => `
+        <a href="produtos.html?category=${category.id}" class="card category-card ${category.type === 'dynamic' ? 'dynamic-category' : 'main-category'}">
             <div class="category-icon">
                 <i class="${category.icon}"></i>
             </div>
             <h3>${category.name}</h3>
             <p>${category.description}</p>
+            <div class="category-meta">
+                <span class="product-count">${category.productCount} produto${category.productCount !== 1 ? 's' : ''}</span>
+                ${category.type === 'dynamic' ? '<span class="dynamic-badge">Auto</span>' : ''}
+            </div>
         </a>
     `).join('');
 }
 
 // Inicializar event listeners
 function initializeEventListeners() {
-    // Busca
+    // Carregar preferência de itens por página
+    const savedItemsPerPage = localStorage.getItem('chefinho-items-per-page');
+    if (savedItemsPerPage) {
+        itemsPerPage = parseInt(savedItemsPerPage);
+        const itemsPerPageSelect = document.getElementById('itemsPerPage');
+        if (itemsPerPageSelect) {
+            itemsPerPageSelect.value = itemsPerPage;
+        }
+    }
+    
+    // Busca com debounce para melhor performance
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
+        let searchTimeout;
         searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
             const searchTerm = this.value;
-            const urlParams = new URLSearchParams(window.location.search);
-            const category = urlParams.get('category');
-            const filteredProducts = filterProducts(category, searchTerm);
-            renderProducts(filteredProducts, 'productsGrid');
+            
+            // Debounce de 300ms para evitar muitas requisições
+            searchTimeout = setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const category = urlParams.get('category') || '';
+                applyFilters(category, searchTerm, true);
+            }, 300);
         });
     }
     
@@ -585,8 +732,15 @@ function initializeEventListeners() {
         categoryFilter.addEventListener('change', function() {
             const category = this.value;
             const searchTerm = document.getElementById('searchInput')?.value || '';
-            const filteredProducts = filterProducts(category, searchTerm);
-            renderProducts(filteredProducts, 'productsGrid');
+            applyFilters(category, searchTerm, true);
+        });
+    }
+    
+    // Itens por página
+    const itemsPerPageSelect = document.getElementById('itemsPerPage');
+    if (itemsPerPageSelect) {
+        itemsPerPageSelect.addEventListener('change', function() {
+            changeItemsPerPage(this.value);
         });
     }
     
@@ -609,41 +763,30 @@ function initializeEventListeners() {
     });
 }
 
-// Alternar entre visualização grid e lista
+// Alternar entre visualização grid e lista (com paginação)
 function toggleView(viewType) {
-    console.log('toggleView chamado com tipo:', viewType);
+    console.log('🔄 toggleView chamado com tipo:', viewType);
     const container = document.getElementById('productsGrid');
     if (!container) {
-        console.error('Container productsGrid não encontrado');
+        console.error('❌ Container productsGrid não encontrado');
         return;
     }
-    
-    console.log('Container encontrado:', container);
     
     // Remover classes de visualização existentes
     container.classList.remove('products-grid', 'products-list');
     
     if (viewType === 'list') {
-        console.log('Mudando para modo lista');
+        console.log('📋 Mudando para modo lista com paginação');
         container.classList.add('products-list');
-        // Re-renderizar produtos no modo lista
-        const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category');
-        const searchTerm = document.getElementById('searchInput')?.value || '';
-        const filteredProducts = filterProducts(category, searchTerm);
-        console.log('Produtos filtrados para lista:', filteredProducts.length);
-        renderProductsList(filteredProducts, 'productsGrid');
     } else {
-        console.log('Mudando para modo grid');
+        console.log('🔲 Mudando para modo grid com paginação');
         container.classList.add('products-grid');
-        // Re-renderizar produtos no modo grid
-        const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category');
-        const searchTerm = document.getElementById('searchInput')?.value || '';
-        const filteredProducts = filterProducts(category, searchTerm);
-        console.log('Produtos filtrados para grid:', filteredProducts.length);
-        renderProducts(filteredProducts, 'productsGrid');
     }
+    
+    // Re-renderizar apenas a página atual
+    renderCurrentPage();
+    
+    console.log('✅ Visualização alterada para:', viewType);
 }
 
 // Renderizar produtos no modo lista
@@ -777,13 +920,11 @@ const PageHandlers = {
         }
     },
     
-    // Página de produtos
+    // Página de produtos (com sistema de paginação)
     produtos: function() {
-        console.log('Executando handler da página produtos');
+        console.log('🔄 Executando handler da página produtos com paginação');
         console.log('siteData disponível:', !!siteData);
-        console.log('Categorias disponíveis:', !!siteData.categories);
-        console.log('Produtos disponíveis:', !!siteData.products);
-        console.log('Número de produtos:', siteData.products?.length || 0);
+        console.log('Produtos disponíveis:', siteData?.products?.length || 0);
         
         // Aguardar os dados serem carregados
         if (!siteData.categories || !siteData.products) {
@@ -793,12 +934,13 @@ const PageHandlers = {
         }
         
         const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category');
+        const category = urlParams.get('category') || '';
         const searchTerm = urlParams.get('search') || '';
+        const page = parseInt(urlParams.get('page')) || 1;
         
-        console.log('Categoria:', category, 'Busca:', searchTerm);
+        console.log('📋 Parâmetros:', { category, searchTerm, page });
         
-        // Configurar filtros
+        // Configurar valores iniciais dos filtros
         if (category) {
             const categoryFilter = document.getElementById('categoryFilter');
             if (categoryFilter) {
@@ -820,22 +962,31 @@ const PageHandlers = {
             container.classList.add('products-grid');
         }
         
-        // Renderizar produtos filtrados
-        const filteredProducts = filterProducts(category, searchTerm);
-        console.log('Produtos filtrados:', filteredProducts.length);
-        console.log('Primeiros 3 produtos:', filteredProducts.slice(0, 3));
-        renderProducts(filteredProducts, 'productsGrid');
-        
-        // Preencher select de categorias
+        // Preencher select de categorias (usando sistema dinâmico)
         const categoryFilter = document.getElementById('categoryFilter');
-        if (categoryFilter && siteData.categories) {
+        if (categoryFilter) {
+            const allCategories = getAllCategories();
+            const categoriesWithProducts = allCategories.filter(cat => cat.productCount > 0);
+            
             categoryFilter.innerHTML = `
-                <option value="">Todas as categorias</option>
-                ${siteData.categories.map(cat => 
-                    `<option value="${cat.id}" ${cat.id === category ? 'selected' : ''}>${cat.name}</option>`
+                <option value="">Todas as categorias (${siteData.products?.length || 0} produtos)</option>
+                ${categoriesWithProducts.map(cat => 
+                    `<option value="${cat.id}" ${cat.id === category ? 'selected' : ''}>
+                        ${cat.name} (${cat.productCount})
+                        ${cat.type === 'dynamic' ? ' 🔄' : ''}
+                    </option>`
                 ).join('')}
             `;
         }
+        
+        // Configurar página inicial
+        currentPage = page;
+        
+        // Aplicar filtros e renderizar com paginação
+        applyFilters(category, searchTerm, false);
+        
+        console.log('✅ Sistema de paginação inicializado');
+        console.log(`📄 Página ${currentPage} | ${itemsPerPage} itens por página | ${totalItems} total`);
     },
     
     // Página de produto individual
@@ -1467,10 +1618,388 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Executar handler da página atual (removido - agora executado no DOMContentLoaded)
-// window.addEventListener('load', function() {
-//     const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-//     if (PageHandlers[page]) {
-//         PageHandlers[page]();
-//     }
-// });
+// === FUNÇÕES DE DEMONSTRAÇÃO - SISTEMA DE CATEGORIAS DINÂMICAS ===
+
+// Função demo para adicionar produto com nova categoria (apenas para demonstração)
+function addExampleProduct() {
+    if (!siteData || !siteData.products) return;
+    
+    const exampleProduct = {
+        "id": "demo-1",
+        "name": "GTA V - Conta com $500M + RP Boost",
+        "image_url": "https://via.placeholder.com/400x300/8B5CF6/ffffff?text=GTA+V+Demo",
+        "rl_price": 45.00,
+        "parcelado_price": 50.00,
+        "kks_price": 31.03,
+        "quantity": 1,
+        "purchased_value": 0,
+        "category": "gta v", // Nova categoria dinâmica!
+        "description": "Conta GTA V Online com dinheiro ilimitado, todos os veículos desbloqueados e RP boost para level up rápido.",
+        "created_at": "2025-11-08",
+        "is_active": true
+    };
+    
+    // Adicionar temporariamente para demonstração
+    siteData.products.push(exampleProduct);
+    
+    console.log('✅ Produto de exemplo adicionado com nova categoria "gta v"');
+    console.log('🔄 Sistema detectou automaticamente e criou categoria dinâmica');
+    console.log('📋 Categorias atualizadas:', getAllCategories());
+    
+    // Re-renderizar a página atual
+    const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
+    if (PageHandlers[page]) {
+        PageHandlers[page]();
+    }
+    
+    showNotification('Produto de exemplo GTA V adicionado! Categoria criada automaticamente.', 'success');
+}
+
+// Função para mostrar estatísticas do sistema de categorias
+function showCategoryStats() {
+    if (!siteData) return;
+    
+    const allCategories = getAllCategories();
+    const mainCategories = allCategories.filter(cat => cat.type === 'main');
+    const dynamicCategories = allCategories.filter(cat => cat.type === 'dynamic');
+    
+    const stats = {
+        total: allCategories.length,
+        principais: mainCategories.length,
+        dinamicas: dynamicCategories.length,
+        totalProdutos: siteData.products?.length || 0,
+        categoriasComProdutos: allCategories.filter(cat => cat.productCount > 0).length
+    };
+    
+    console.log('📊 Estatísticas do Sistema de Categorias:', stats);
+    console.log('🏷️ Categorias Principais:', mainCategories);
+    console.log('🔄 Categorias Dinâmicas:', dynamicCategories);
+    
+    return stats;
+}
+
+// === SISTEMA DE PAGINAÇÃO PROFISSIONAL ===
+
+// Aplicar filtros e atualizar produtos
+function applyFilters(category = '', searchTerm = '', resetPage = true) {
+    currentFilters.category = category;
+    currentFilters.search = searchTerm;
+    
+    if (resetPage) {
+        currentPage = 1;
+    }
+    
+    // Filtrar produtos
+    filteredProducts = filterProducts(category, searchTerm);
+    totalItems = filteredProducts.length;
+    
+    // Renderizar página atual
+    renderCurrentPage();
+    
+    // Atualizar paginação
+    renderPagination();
+    
+    // Atualizar info dos produtos
+    updateProductsInfo();
+}
+
+// Renderizar página atual
+function renderCurrentPage() {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const pageProducts = filteredProducts.slice(startIndex, endIndex);
+    
+    console.log(`📄 Página ${currentPage}: produtos ${startIndex + 1}-${Math.min(endIndex, totalItems)} de ${totalItems}`);
+    
+    // Verificar modo de visualização
+    const container = document.getElementById('productsGrid');
+    const isList = container?.classList.contains('products-list');
+    
+    if (isList) {
+        renderProductsList(pageProducts, 'productsGrid');
+    } else {
+        renderProducts(pageProducts, 'productsGrid');
+    }
+}
+
+// Renderizar controles de paginação
+function renderPagination() {
+    const container = document.getElementById('paginationContainer');
+    const pagination = document.getElementById('pagination');
+    
+    if (!container || !pagination) return;
+    
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    if (totalPages <= 1) {
+        container.style.display = 'none';
+        return;
+    }
+    
+    container.style.display = 'flex';
+    
+    let paginationHTML = '';
+    
+    // Botão Primeira Página
+    if (currentPage > 1) {
+        paginationHTML += `
+            <button class="pagination-btn first-last" onclick="goToPage(1)" title="Primeira página">
+                <i class="fas fa-angle-double-left"></i>
+            </button>
+        `;
+    }
+    
+    // Botão Anterior
+    paginationHTML += `
+        <button class="pagination-btn prev-next ${currentPage <= 1 ? 'disabled' : ''}" 
+                onclick="goToPage(${currentPage - 1})" title="Página anterior">
+            <i class="fas fa-angle-left"></i> Anterior
+        </button>
+    `;
+    
+    // Números das páginas
+    const pageNumbers = generatePageNumbers(currentPage, totalPages);
+    
+    pageNumbers.forEach(page => {
+        if (page === '...') {
+            paginationHTML += '<span class="pagination-ellipsis">...</span>';
+        } else {
+            const isActive = page === currentPage;
+            paginationHTML += `
+                <button class="pagination-btn ${isActive ? 'active' : ''}" 
+                        onclick="goToPage(${page})" title="Página ${page}">
+                    ${page}
+                </button>
+            `;
+        }
+    });
+    
+    // Botão Próximo
+    paginationHTML += `
+        <button class="pagination-btn prev-next ${currentPage >= totalPages ? 'disabled' : ''}" 
+                onclick="goToPage(${currentPage + 1})" title="Próxima página">
+            Próximo <i class="fas fa-angle-right"></i>
+        </button>
+    `;
+    
+    // Botão Última Página
+    if (currentPage < totalPages) {
+        paginationHTML += `
+            <button class="pagination-btn first-last" onclick="goToPage(${totalPages})" title="Última página">
+                <i class="fas fa-angle-double-right"></i>
+            </button>
+        `;
+    }
+    
+    pagination.innerHTML = paginationHTML;
+    
+    // Info da paginação
+    const paginationInfo = document.getElementById('paginationInfo');
+    if (paginationInfo) {
+        const startItem = (currentPage - 1) * itemsPerPage + 1;
+        const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+        
+        paginationInfo.innerHTML = `
+            <div>
+                Mostrando ${startItem}-${endItem} de ${totalItems} produtos (Página ${currentPage} de ${totalPages})
+            </div>
+            <div class="pagination-jump">
+                <span>Ir para página:</span>
+                <input type="number" id="pageJumpInput" min="1" max="${totalPages}" value="${currentPage}">
+                <button onclick="jumpToPage()">Ir</button>
+            </div>
+        `;
+    }
+}
+
+// Gerar números das páginas para exibição
+function generatePageNumbers(current, total) {
+    const pages = [];
+    const delta = 2; // Quantas páginas mostrar antes/depois da atual
+    
+    // Sempre mostrar primeira página
+    if (current > delta + 1) {
+        pages.push(1);
+        if (current > delta + 2) {
+            pages.push('...');
+        }
+    }
+    
+    // Páginas ao redor da atual
+    const start = Math.max(1, current - delta);
+    const end = Math.min(total, current + delta);
+    
+    for (let i = start; i <= end; i++) {
+        pages.push(i);
+    }
+    
+    // Sempre mostrar última página
+    if (current < total - delta) {
+        if (current < total - delta - 1) {
+            pages.push('...');
+        }
+        pages.push(total);
+    }
+    
+    return pages;
+}
+
+// Ir para página específica
+function goToPage(page) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    if (page < 1 || page > totalPages || page === currentPage) {
+        return;
+    }
+    
+    const previousPage = currentPage;
+    currentPage = page;
+    
+    // Scroll suave para o topo dos produtos
+    const productsSection = document.querySelector('.products-section');
+    if (productsSection) {
+        productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Mostrar loading
+    showPageLoading();
+    
+    // Log para debug
+    console.log(`📄 Navegando da página ${previousPage} para ${currentPage}`);
+    
+    // Simular pequeno delay para UX suave (menos delay para melhor performance)
+    setTimeout(() => {
+        renderCurrentPage();
+        renderPagination();
+        hidePageLoading();
+        updateURL();
+        
+        // Anunciar mudança para leitores de tela
+        const announcement = `Página ${currentPage} de ${totalPages} carregada`;
+        announceToScreenReader(announcement);
+    }, 200);
+}
+
+// Anunciar para leitores de tela (acessibilidade)
+function announceToScreenReader(message) {
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.style.cssText = `
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0,0,0,0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+    `;
+    announcement.textContent = message;
+    
+    document.body.appendChild(announcement);
+    
+    setTimeout(() => {
+        document.body.removeChild(announcement);
+    }, 1000);
+}
+
+// Saltar para página digitada
+function jumpToPage() {
+    const input = document.getElementById('pageJumpInput');
+    if (!input) return;
+    
+    const page = parseInt(input.value);
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    if (page >= 1 && page <= totalPages) {
+        goToPage(page);
+        updateURL();
+    } else {
+        input.value = currentPage;
+        showNotification(`Página deve estar entre 1 e ${totalPages}`, 'warning');
+    }
+}
+
+// Atualizar URL com parâmetros da paginação (opcional, para bookmarking)
+function updateURL() {
+    const url = new URL(window.location);
+    
+    // Atualizar parâmetros
+    if (currentFilters.category) {
+        url.searchParams.set('category', currentFilters.category);
+    } else {
+        url.searchParams.delete('category');
+    }
+    
+    if (currentFilters.search) {
+        url.searchParams.set('search', currentFilters.search);
+    } else {
+        url.searchParams.delete('search');
+    }
+    
+    if (currentPage > 1) {
+        url.searchParams.set('page', currentPage.toString());
+    } else {
+        url.searchParams.delete('page');
+    }
+    
+    // Atualizar URL sem recarregar a página
+    window.history.replaceState({}, '', url);
+}
+
+// Atualizar informações dos produtos
+function updateProductsInfo() {
+    const productsCount = document.getElementById('productsCount');
+    if (!productsCount) return;
+    
+    if (totalItems === 0) {
+        productsCount.textContent = 'Nenhum produto encontrado';
+    } else if (currentFilters.category || currentFilters.search) {
+        const categoryText = currentFilters.category ? getCategoryName(currentFilters.category) : '';
+        const searchText = currentFilters.search ? ` "${currentFilters.search}"` : '';
+        productsCount.textContent = `${totalItems} produto${totalItems !== 1 ? 's' : ''} encontrado${totalItems !== 1 ? 's' : ''} ${categoryText}${searchText}`;
+    } else {
+        productsCount.textContent = `${totalItems} produto${totalItems !== 1 ? 's' : ''} disponíve${totalItems !== 1 ? 'is' : 'l'}`;
+    }
+}
+
+// Mostrar loading na paginação
+function showPageLoading() {
+    const productsGrid = document.getElementById('productsGrid');
+    if (productsGrid) {
+        productsGrid.style.opacity = '0.5';
+        productsGrid.style.pointerEvents = 'none';
+    }
+}
+
+// Esconder loading na paginação
+function hidePageLoading() {
+    const productsGrid = document.getElementById('productsGrid');
+    if (productsGrid) {
+        productsGrid.style.opacity = '1';
+        productsGrid.style.pointerEvents = 'auto';
+    }
+}
+
+// Alterar quantidade de itens por página
+function changeItemsPerPage(newItemsPerPage) {
+    itemsPerPage = parseInt(newItemsPerPage);
+    currentPage = 1; // Resetar para primeira página
+    
+    renderCurrentPage();
+    renderPagination();
+    
+    // Salvar preferência no localStorage
+    localStorage.setItem('chefinho-items-per-page', itemsPerPage.toString());
+}
+
+// Tornar funções disponíveis globalmente
+window.goToPage = goToPage;
+window.jumpToPage = jumpToPage;
+window.changeItemsPerPage = changeItemsPerPage;
+window.addExampleProduct = addExampleProduct;
+window.showCategoryStats = showCategoryStats;
+window.getAllCategories = getAllCategories;

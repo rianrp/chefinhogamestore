@@ -46,6 +46,7 @@
                     Chefinho
                 </a>
                 
+                <!-- Desktop Navigation -->
                 <ul class="nav-links">
                     <li><a href="index.html">Início</a></li>
                     <li><a href="produtos.html" class="active">Produtos</a></li>
@@ -53,11 +54,86 @@
                     <li><a href="contato.html">Contato</a></li>
                 </ul>
                 
-                <a href="carrinho.html" class="cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </a>
+                <div class="nav-actions">
+                    <a href="carrinho.html" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
             </nav>
+            
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobileMenu">
+                <div class="mobile-menu-content">
+                    <div class="mobile-menu-header">
+                        <div class="mobile-logo">
+                            <i class="fas fa-gamepad"></i>
+                            <span>Chefinho</span>
+                        </div>
+                        <button class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="Fechar menu">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <nav class="mobile-nav">
+                        <a href="index.html" class="mobile-nav-item">
+                            <i class="fas fa-home"></i>
+                            <span>Início</span>
+                        </a>
+                        <a href="produtos.html" class="mobile-nav-item active">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Produtos</span>
+                        </a>
+                        <a href="rucoy.html" class="mobile-nav-item">
+                            <i class="fas fa-coins"></i>
+                            <span>Rucoy KKs</span>
+                        </a>
+                        <a href="contato.html" class="mobile-nav-item">
+                            <i class="fas fa-phone"></i>
+                            <span>Contato</span>
+                        </a>
+                        <a href="carrinho.html" class="mobile-nav-item cart-item">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Carrinho</span>
+                            <span class="mobile-cart-count">0</span>
+                        </a>
+                    </nav>
+                    
+                    <!-- Quick Actions -->
+                    <div class="mobile-quick-actions">
+                        <a href="#" onclick="generateWhatsAppMessage(); return false;" class="mobile-action-btn whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="rucoy.html" class="mobile-action-btn primary-btn">
+                            <i class="fas fa-coins"></i>
+                            <span>Rucoy KKs</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Contact Info -->
+                    <div class="mobile-contact-info">
+                        <div class="contact-item">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>+55 69 9345-0986</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Segunda à Sexta: 8h às 18h</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu Overlay -->
+            <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
         </div>
     </header>
 
@@ -109,9 +185,34 @@
     <!-- Products Section -->
     <section class="section products-section">
         <div class="container">
+            <!-- Products Info Bar -->
+            <div class="products-info" id="productsInfo">
+                <div class="products-count">
+                    <span id="productsCount">Carregando produtos...</span>
+                </div>
+                <div class="results-per-page">
+                    <label for="itemsPerPage">Mostrar:</label>
+                    <select id="itemsPerPage" class="items-per-page-select">
+                        <option value="12">12 por página</option>
+                        <option value="24">24 por página</option>
+                        <option value="48">48 por página</option>
+                    </select>
+                </div>
+            </div>
+            
             <div class="products-container">
                 <div class="products-grid" id="productsGrid">
                     <!-- Produtos carregados via JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-container" id="paginationContainer" style="display: none;">
+                <div class="pagination" id="pagination">
+                    <!-- Paginação carregada via JavaScript -->
+                </div>
+                <div class="pagination-info" id="paginationInfo">
+                    <!-- Info da página atual -->
                 </div>
             </div>
             
@@ -187,6 +288,66 @@
 
     <!-- JavaScript -->
     <script src="js/main.js"></script>
+    
+    <!-- Mobile Menu Script -->
+    <script>
+        // Mobile Menu Control
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (mobileMenu && mobileMenuOverlay && mobileMenuBtn) {
+                const isActive = mobileMenu.classList.contains('active');
+                
+                if (isActive) {
+                    mobileMenu.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                    mobileMenuBtn.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                } else {
+                    mobileMenu.classList.add('active');
+                    mobileMenuOverlay.classList.add('active');
+                    mobileMenuBtn.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const mobileMenu = document.getElementById('mobileMenu');
+                if (mobileMenu && mobileMenu.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
+        
+        document.querySelectorAll('.mobile-nav-item').forEach(link => {
+            link.addEventListener('click', function() {
+                setTimeout(toggleMobileMenu, 100);
+            });
+        });
+        
+        function updateMobileCartCount() {
+            const mobileCartCount = document.querySelector('.mobile-cart-count');
+            if (mobileCartCount && typeof cart !== 'undefined') {
+                const count = cart.reduce((total, item) => total + item.quantity, 0);
+                mobileCartCount.textContent = count;
+                mobileCartCount.style.display = count > 0 ? 'inline-block' : 'none';
+            }
+        }
+        
+        const originalUpdateCartCount = window.updateCartCount || function() {};
+        window.updateCartCount = function() {
+            originalUpdateCartCount();
+            updateMobileCartCount();
+        };
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMobileCartCount();
+        });
+    </script>
     
     <!-- Page Specific Styles -->
     <style>
@@ -454,6 +615,175 @@
             color: var(--text-muted);
         }
         
+        /* Products Info Bar */
+        .products-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .products-count {
+            font-weight: 500;
+            color: var(--text);
+        }
+        
+        .results-per-page {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        .items-per-page-select {
+            padding: 8px 12px;
+            background: var(--gray);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: var(--border-radius-sm);
+            color: var(--text);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .items-per-page-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+        }
+        
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin-top: 40px;
+            padding: 30px 0;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+        }
+        
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .pagination-btn {
+            padding: 10px 15px;
+            background: var(--gray);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: var(--border-radius-sm);
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+            min-width: 45px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pagination-btn:hover:not(.disabled) {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .pagination-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+        
+        .pagination-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        
+        .pagination-btn.prev-next {
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+        
+        .pagination-btn.first-last {
+            background: var(--yellow);
+            color: var(--dark);
+            border-color: var(--yellow);
+        }
+        
+        .pagination-btn.first-last:hover:not(.disabled) {
+            background: #F59E0B;
+            border-color: #F59E0B;
+            color: var(--dark);
+        }
+        
+        .pagination-ellipsis {
+            padding: 10px 5px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        
+        .pagination-info {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .pagination-jump input {
+            width: 60px;
+            padding: 8px 10px;
+            background: var(--gray);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: var(--border-radius-sm);
+            color: var(--text);
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .pagination-jump input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
+        }
+        
+        .pagination-jump button {
+            padding: 8px 15px;
+            background: var(--primary);
+            border: none;
+            border-radius: var(--border-radius-sm);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-jump button:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+        }
+        
         .flex-1 {
             flex: 1;
         }
@@ -488,6 +818,46 @@
             
             .product-actions-list {
                 justify-content: center;
+            }
+            
+            /* Paginação Responsiva */
+            .products-info {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .pagination {
+                gap: 5px;
+                padding: 0 10px;
+            }
+            
+            .pagination-btn {
+                padding: 8px 12px;
+                font-size: 0.85rem;
+                min-width: 40px;
+            }
+            
+            .pagination-btn.prev-next {
+                padding: 8px 15px;
+            }
+            
+            .pagination-ellipsis {
+                padding: 8px 3px;
+            }
+            
+            .pagination-info {
+                font-size: 0.8rem;
+                padding: 0 10px;
+            }
+            
+            .pagination-jump {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .pagination-jump input {
+                width: 80px;
             }
         }
         
@@ -571,6 +941,250 @@
             justify-content: center;
             padding: 10px 15px;
             font-size: 0.9rem;
+        }
+        
+        /* Mobile Menu Styles */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+            position: relative;
+        }
+        
+        .hamburger-line {
+            width: 25px;
+            height: 2px;
+            background: var(--text);
+            transition: all 0.3s ease;
+            margin: 3px 0;
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 320px;
+            height: 100vh;
+            background: var(--dark);
+            z-index: 1002;
+            transition: right 0.3s ease;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            background: var(--gradient-dark);
+        }
+        
+        .mobile-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .mobile-logo i {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+        
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-close:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+        }
+        
+        .mobile-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+        
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.05);
+        }
+        
+        .mobile-nav-item:hover,
+        .mobile-nav-item.active {
+            background: rgba(139, 92, 246, 0.1);
+            padding-left: 30px;
+        }
+        
+        .mobile-nav-item i {
+            width: 20px;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .mobile-nav-item span {
+            font-weight: 500;
+        }
+        
+        .mobile-cart-count {
+            background: var(--yellow);
+            color: var(--dark);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .mobile-quick-actions {
+            padding: 20px;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mobile-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: var(--border-radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-action-btn.whatsapp-btn {
+            background: #25D366;
+            color: white;
+        }
+        
+        .mobile-action-btn.whatsapp-btn:hover {
+            background: #1DA851;
+            color: white;
+        }
+        
+        .mobile-action-btn.primary-btn {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .mobile-action-btn.primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .mobile-contact-info {
+            padding: 20px;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            background: var(--gray);
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .contact-item i {
+            color: var(--primary);
+            width: 16px;
+        }
+        
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .cart-icon {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .mobile-menu {
+                width: 100%;
+            }
         }
     </style>
 

@@ -40,6 +40,7 @@
                     Chefinho
                 </a>
                 
+                <!-- Desktop Navigation -->
                 <ul class="nav-links">
                     <li><a href="index.html">Início</a></li>
                     <li><a href="produtos.html">Produtos</a></li>
@@ -47,11 +48,86 @@
                     <li><a href="contato.html">Contato</a></li>
                 </ul>
                 
-                <a href="carrinho.html" class="cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
-                    <span class="cart-count">0</span>
-                </a>
+                <div class="nav-actions">
+                    <a href="carrinho.html" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
             </nav>
+            
+            <!-- Mobile Menu -->
+            <div class="mobile-menu" id="mobileMenu">
+                <div class="mobile-menu-content">
+                    <div class="mobile-menu-header">
+                        <div class="mobile-logo">
+                            <i class="fas fa-gamepad"></i>
+                            <span>Chefinho</span>
+                        </div>
+                        <button class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="Fechar menu">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <nav class="mobile-nav">
+                        <a href="index.html" class="mobile-nav-item">
+                            <i class="fas fa-home"></i>
+                            <span>Início</span>
+                        </a>
+                        <a href="produtos.html" class="mobile-nav-item">
+                            <i class="fas fa-shopping-bag"></i>
+                            <span>Produtos</span>
+                        </a>
+                        <a href="rucoy.html" class="mobile-nav-item">
+                            <i class="fas fa-coins"></i>
+                            <span>Rucoy KKs</span>
+                        </a>
+                        <a href="contato.html" class="mobile-nav-item">
+                            <i class="fas fa-phone"></i>
+                            <span>Contato</span>
+                        </a>
+                        <a href="carrinho.html" class="mobile-nav-item cart-item">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Carrinho</span>
+                            <span class="mobile-cart-count">0</span>
+                        </a>
+                    </nav>
+                    
+                    <!-- Quick Actions -->
+                    <div class="mobile-quick-actions">
+                        <a href="#" onclick="generateWhatsAppMessage(); return false;" class="mobile-action-btn whatsapp-btn">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                        <a href="produtos.html" class="mobile-action-btn primary-btn">
+                            <i class="fas fa-fire"></i>
+                            <span>Ver Ofertas</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Contact Info -->
+                    <div class="mobile-contact-info">
+                        <div class="contact-item">
+                            <i class="fab fa-whatsapp"></i>
+                            <span>+55 69 9345-0986</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Segunda à Sexta: 8h às 18h</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Menu Overlay -->
+            <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
         </div>
     </header>
 
@@ -69,9 +145,9 @@
                         <i class="fas fa-shopping-bag"></i>
                         Ver Produtos
                     </a>
-                    <a href="#categorias" class="btn btn-outline btn-round">
-                        <i class="fas fa-list"></i>
-                        Categorias
+                    <a href="#marketplace" onclick="document.getElementById('sellerName').focus(); return false;" class="btn btn-outline btn-round">
+                        <i class="fas fa-handshake"></i>
+                        Vender minha conta
                     </a>
                 </div>
                 
@@ -124,6 +200,64 @@
                     <i class="fas fa-arrow-right"></i>
                     Ver Todos os Produtos
                 </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marketplace Section -->
+    <section id="marketplace" class="section" style="background: var(--gray); padding: 60px 0;">
+        <div class="container">
+            <div class="marketplace-container">
+                <div class="marketplace-info">
+                    <div class="marketplace-header">
+                        <div class="marketplace-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="marketplace-title">Marketplace Seguro de Contas</h3>
+                            <p class="marketplace-subtitle">Compramos e vendemos contas verificadas de todos os jogos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="marketplace-features">
+                        <div class="feature-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Processo 100% seguro</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-gamepad"></i>
+                            <span>Todos os tipos de jogos</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>Avaliação gratuita</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="marketplace-form-container">
+                    <div class="marketplace-form" id="marketplaceForm">
+                        <h4>Tenho uma conta para negociar</h4>
+                        <form id="accountForm">
+                            <div class="form-group">
+                                <input type="text" id="sellerName" placeholder="Seu nome" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="email" id="sellerEmail" placeholder="Seu e-mail" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="text" id="gameName" placeholder="Nome do jogo" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea id="sellReason" placeholder="Por que quer vender a conta? (opcional)" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fab fa-whatsapp"></i>
+                                Continuar no WhatsApp
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -209,6 +343,73 @@
 
     <!-- JavaScript -->
     <script src="js/main.js"></script>
+    
+    <script>
+        // Mobile Menu Control
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (mobileMenu && mobileMenuOverlay && mobileMenuBtn) {
+                const isActive = mobileMenu.classList.contains('active');
+                
+                if (isActive) {
+                    // Fechar menu
+                    mobileMenu.classList.remove('active');
+                    mobileMenuOverlay.classList.remove('active');
+                    mobileMenuBtn.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                } else {
+                    // Abrir menu
+                    mobileMenu.classList.add('active');
+                    mobileMenuOverlay.classList.add('active');
+                    mobileMenuBtn.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+        }
+        
+        // Fechar menu ao pressionar ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const mobileMenu = document.getElementById('mobileMenu');
+                if (mobileMenu && mobileMenu.classList.contains('active')) {
+                    toggleMobileMenu();
+                }
+            }
+        });
+        
+        // Fechar menu ao clicar em um link (exceto botões de ação)
+        document.querySelectorAll('.mobile-nav-item').forEach(link => {
+            link.addEventListener('click', function() {
+                // Pequeno delay para permitir a navegação
+                setTimeout(toggleMobileMenu, 100);
+            });
+        });
+        
+        // Atualizar contador do carrinho mobile
+        function updateMobileCartCount() {
+            const mobileCartCount = document.querySelector('.mobile-cart-count');
+            if (mobileCartCount) {
+                const count = cart.reduce((total, item) => total + item.quantity, 0);
+                mobileCartCount.textContent = count;
+                mobileCartCount.style.display = count > 0 ? 'inline-block' : 'none';
+            }
+        }
+        
+        // Interceptar a função updateCartCount original para incluir mobile
+        const originalUpdateCartCount = window.updateCartCount || function() {};
+        window.updateCartCount = function() {
+            originalUpdateCartCount();
+            updateMobileCartCount();
+        };
+        
+        // Atualizar contador mobile na inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            updateMobileCartCount();
+        });
+    </script>
     
     <!-- Notification Styles -->
     <style>
@@ -320,6 +521,408 @@
             margin-bottom: 15px;
             color: var(--primary);
         }
+        
+        /* Mobile Menu Styles */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+            position: relative;
+        }
+        
+        .hamburger-line {
+            width: 25px;
+            height: 2px;
+            background: var(--text);
+            transition: all 0.3s ease;
+            margin: 3px 0;
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+        
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 320px;
+            height: 100vh;
+            background: var(--dark);
+            z-index: 1002;
+            transition: right 0.3s ease;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .mobile-menu.active {
+            right: 0;
+        }
+        
+        .mobile-menu-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+            background: var(--gradient-dark);
+        }
+        
+        .mobile-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .mobile-logo i {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+        
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-close:hover {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+        }
+        
+        .mobile-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+        
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.05);
+            position: relative;
+        }
+        
+        .mobile-nav-item:hover {
+            background: rgba(139, 92, 246, 0.1);
+            padding-left: 30px;
+        }
+        
+        .mobile-nav-item i {
+            width: 20px;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .mobile-nav-item span {
+            font-weight: 500;
+        }
+        
+        .mobile-nav-item.cart-item {
+            position: relative;
+        }
+        
+        .mobile-cart-count {
+            background: var(--yellow);
+            color: var(--dark);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+        
+        .mobile-quick-actions {
+            padding: 20px;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+        
+        .mobile-action-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border-radius: var(--border-radius-sm);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-action-btn.whatsapp-btn {
+            background: #25D366;
+            color: white;
+        }
+        
+        .mobile-action-btn.whatsapp-btn:hover {
+            background: #1DA851;
+            color: white;
+        }
+        
+        .mobile-action-btn.primary-btn {
+            background: var(--gradient-primary);
+            color: white;
+        }
+        
+        .mobile-action-btn.primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .mobile-contact-info {
+            padding: 20px;
+            border-top: 1px solid rgba(139, 92, 246, 0.1);
+            background: var(--gray);
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .contact-item i {
+            color: var(--primary);
+            width: 16px;
+        }
+        
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .mobile-menu-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .cart-icon {
+                display: none; /* Esconder carrinho do header em mobile, vai aparecer no menu */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .mobile-menu {
+                width: 100%;
+                right: -100%;
+            }
+        }
+        
+        /* Hero Actions Styles */
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-actions {
+                gap: 15px;
+            }
+        }
+        
+        /* Marketplace Styles */
+        .marketplace-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .marketplace-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .marketplace-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .marketplace-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin: 0;
+        }
+        
+        .marketplace-subtitle {
+            color: var(--text-muted);
+            margin: 5px 0 0 0;
+            font-size: 0.95rem;
+        }
+        
+        .marketplace-features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text);
+        }
+        
+        .feature-item i {
+            color: var(--primary);
+            font-size: 1rem;
+            width: 16px;
+        }
+        
+        .marketplace-form-container {
+            background: var(--dark);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            border: 1px solid rgba(139, 92, 246, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .marketplace-form h4 {
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .marketplace-form .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .marketplace-form input,
+        .marketplace-form textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--gray);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: var(--border-radius-sm);
+            color: var(--text);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .marketplace-form input:focus,
+        .marketplace-form textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        
+        .marketplace-form textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .marketplace-form .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .marketplace-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+            
+            .marketplace-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .marketplace-features {
+                align-items: center;
+            }
+            
+            .marketplace-form-container {
+                padding: 20px;
+            }
+        }
     </style>
 
     <!-- Modal de Imagem -->
@@ -335,6 +938,64 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Marketplace Account Form Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const accountForm = document.getElementById('accountForm');
+            
+            if (accountForm) {
+                accountForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('sellerName').value.trim();
+                    const email = document.getElementById('sellerEmail').value.trim();
+                    const game = document.getElementById('gameName').value.trim();
+                    const reason = document.getElementById('sellReason').value.trim();
+                    
+                    // Validação básica
+                    if (!name || !email || !game) {
+                        alert('Por favor, preencha todos os campos obrigatórios.');
+                        return;
+                    }
+                    
+                    // Criar mensagem formatada para WhatsApp
+                    let message = `🎮 *MARKETPLACE DE CONTAS - CHEFINHO* 🎮\n\n`;
+                    message += `👤 *Nome:* ${name}\n`;
+                    message += `📧 *E-mail:* ${email}\n`;
+                    message += `🎯 *Jogo:* ${game}\n`;
+                    
+                    if (reason) {
+                        message += `💭 *Motivo:* ${reason}\n`;
+                    }
+                    
+                    message += `\n📱 *Ação:* Quero negociar minha conta\n`;
+                    message += `⏰ *Enviado em:* ${new Date().toLocaleString('pt-BR')}`;
+                    
+                    // Codificar mensagem para URL
+                    const encodedMessage = encodeURIComponent(message);
+                    const whatsappUrl = `https://api.whatsapp.com/send/?phone=556993450986&text=${encodedMessage}&type=phone_number&app_absent=0`;
+                    
+                    // Abrir WhatsApp
+                    window.open(whatsappUrl, '_blank');
+                    
+                    // Limpar formulário após envio
+                    accountForm.reset();
+                    
+                    // Feedback visual
+                    const submitBtn = accountForm.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-check"></i> Enviado!';
+                    submitBtn.style.background = 'var(--success)';
+                    
+                    setTimeout(() => {
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.style.background = '';
+                    }, 3000);
+                });
+            }
+        });
+    </script>
 
 </body>
 </html>
