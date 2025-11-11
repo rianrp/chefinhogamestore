@@ -110,20 +110,6 @@
       "is_active": true
     },
     {
-      "id": "3",
-      "name": "Rucoy Online - Conta Level 411 Knight pular up no jogo",
-      "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/6a577b72-84b3-4661-954d-2b1c64d5d389.jpg",
-      "rl_price": 220.00,
-      "parcelado_price": 0.00,
-      "kks_price": 151.72,
-      "quantity": 1,
-      "purchased_value": 0,
-      "category": "kina",
-      "description": "Conta do jogo Rucoy Online",
-      "created_at": "2025-11-05",
-      "is_active": true
-    },
-    {
       "id": "4",
       "name": "Rucoy Online - Conta Level 209 Knight ou Distance, ideal para iniciantes",
       "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/70d7970d-24a0-4f08-8716-e15f7c3c9d2e.jpg",
@@ -172,20 +158,6 @@
       "rl_price": 570.00,
       "parcelado_price": 0.00,
       "kks_price": 393.10,
-      "quantity": 1,
-      "purchased_value": 0,
-      "category": "kina",
-      "description": "Conta do jogo Rucoy Online",
-      "created_at": "2025-11-05",
-      "is_active": true
-    },
-    {
-      "id": "8",
-      "name": "Rucoy Online - Conta Level 380 Knight, para quem quer chegar no nivel 400",
-      "image_url": "https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/04c0e8ef-d162-4d92-a9ca-f46a2937413a.jpg",
-      "rl_price": 90.00,
-      "parcelado_price": 0.00,
-      "kks_price": 62.07,
       "quantity": 1,
       "purchased_value": 0,
       "category": "kina",
