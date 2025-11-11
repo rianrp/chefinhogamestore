@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anunciar Produto - Chefinho Gaming Store</title>
+    <meta name="description" content="Anuncie seu produto ou conta na Chefinho Gaming Store. Escolha o melhor plano para divulgar seus itens gamers.">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/favicons/site.webmanifest">
+    <link rel="shortcut icon" href="/favicons/favicon.ico">
+    <meta name="theme-color" content="#8B5CF6">
+    
+    <style>
+        /* Mobile Menu Styles */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+            position: relative;
+        }
+        
+        .hamburger-line {
+            width: 25px;
+            height: 2px;
+            background: var(--text);
+            transition: all 0.3s ease;
+            margin: 3px 0;
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .mobile-menu-btn.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: flex;
+            }
+            
+            .nav-links {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100vh;
+                background: var(--darker);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                transition: left 0.3s ease;
+                z-index: 1000;
+            }
+            
+            .nav-links.active {
+                left: 0;
+            }
+            
+            .nav-links li {
+                margin: 20px 0;
+            }
+            
+            .nav-links a {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Planos de Anúncio */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .plan-card {
+            background: var(--gray);
+            border-radius: var(--border-radius);
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .plan-card.featured {
+            border-color: var(--yellow);
+            box-shadow: 0 0 30px rgba(252, 211, 77, 0.3);
+        }
+
+        .plan-badge {
+            position: absolute;
+            top: -15px;
+            right: 20px;
+            background: var(--yellow);
+            color: var(--dark);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .plan-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 20px 0;
+        }
+
+        .plan-price span {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .plan-duration {
+            color: var(--yellow);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin: 30px 0;
+        }
+
+        .plan-features li {
+            padding: 10px 0;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .plan-features li i {
+            color: var(--success);
+            margin-right: 10px;
+            width: 20px;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+
+
+        /* Hero Actions com Gap */
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            margin: 30px 0;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero-actions {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="nav">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-gamepad"></i>
+                    Chefinho
+                </a>
+                
+                <!-- Desktop Navigation -->
+                <ul class="nav-links">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="produtos.html">Produtos</a></li>
+                    <li><a href="rucoy.html">Rucoy KKs</a></li>
+                    <li><a href="anunciar.html" class="active">Anunciar</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+                
+                <!-- Nav Actions -->
+                <div class="nav-actions">
+                    <!-- Carrinho -->
+                    <a href="carrinho.html" class="cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </a>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="tagline">Marketplace</div>
+                <h1>Anuncie seu Produto</h1>
+                <p class="description">
+                    Divulgue suas contas e itens gamers para milhares de jogadores. Escolha o plano ideal e alcance mais vendas!
+                </p>
+                <div class="hero-actions" style="justify-content: center;">
+                    <a href="#planos" onclick="document.querySelector('.plans-grid').scrollIntoView({behavior: 'smooth'}); return false;" class="btn btn-primary btn-round">
+                        <i class="fas fa-rocket"></i>
+                        Ver Planos
+                    </a>
+                    <a href="contato.html" class="btn btn-outline btn-round">
+                        <i class="fas fa-headset"></i>
+                        Falar com Suporte
+                    </a>
+                </div>
+                <div class="stats">
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Visualizações/mês</span>
+                    </div>
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Vendas realizadas</span>
+                    </div>
+                    <div class="stat-item fade-in-up">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Suporte</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Planos Section -->
+    <section class="section" id="planos">
+        <div class="container">
+            <h2 class="section-title">Escolha seu Plano</h2>
+            <p class="section-subtitle">Diferentes opções para diferentes necessidades 💎</p>
+            
+            <div class="plans-grid">
+                <!-- Plano Básico -->
+                <div class="plan-card" data-plan="basico">
+                    <h3 class="plan-name">Básico</h3>
+                    <div class="plan-price">R$ 5<span>/anúncio</span></div>
+                    <div class="plan-duration">2 dias de exposição</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Exposição no marketplace</li>
+                        <li><i class="fas fa-check"></i> Visibilidade no feed principal</li>
+                        <li><i class="fas fa-check"></i> Suporte via WhatsApp</li>
+                    </ul>
+                    <button class="btn btn-primary plan-btn" onclick="contratarPlano('Básico', 'R$ 5', '2 dias')">
+                        <i class="fab fa-whatsapp"></i>
+                        Contratar Básico
+                    </button>
+                </div>
+
+                <!-- Plano Pro -->
+                <div class="plan-card featured" data-plan="pro">
+                    <div class="plan-badge">Mais Popular</div>
+                    <h3 class="plan-name">Pro</h3>
+                    <div class="plan-price">R$ 10<span>/anúncio</span></div>
+                    <div class="plan-duration">5 dias de exposição</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Destaque visual especial</li>
+                        <li><i class="fas fa-check"></i> Posição superior no feed</li>
+                        <li><i class="fas fa-check"></i> Badge de "Destaque"</li>
+                        <li><i class="fas fa-check"></i> Suporte prioritário</li>
+                    </ul>
+                    <button class="btn btn-yellow plan-btn" onclick="contratarPlano('Pro', 'R$ 10', '5 dias')">
+                        <i class="fab fa-whatsapp"></i>
+                        Contratar Pro
+                    </button>
+                </div>
+
+                <!-- Plano Elite -->
+                <div class="plan-card" data-plan="elite">
+                    <h3 class="plan-name">Elite</h3>
+                    <div class="plan-price">R$ 15<span>/anúncio</span></div>
+                    <div class="plan-duration">30 dias de exposição</div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Produto fica FIXADO</li>
+                        <li><i class="fas fa-check"></i> Destaque visual máximo</li>
+                        <li><i class="fas fa-check"></i> Prioridade em reposts</li>
+                        <li><i class="fas fa-check"></i> Analytics do anúncio</li>
+                        <li><i class="fas fa-check"></i> Suporte VIP</li>
+                    </ul>
+                    <button class="btn btn-primary plan-btn" onclick="contratarPlano('Elite', 'R$ 15', '30 dias')">
+                        <i class="fab fa-whatsapp"></i>
+                        Contratar Elite
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>
+                        <i class="fas fa-gamepad"></i>
+                        Chefinho
+                    </h3>
+                    <p>Sua loja gamer de confiança. Personagens, contas e itens para seus jogos favoritos com os melhores preços do mercado.</p>
+                    <div class="social-links">
+                        <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" title="Twitch"><i class="fab fa-twitch"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Atendimento</h3>
+                    <p><i class="fab fa-whatsapp"></i> +55 69 9345-0986</p>
+                    <p><i class="fas fa-envelope"></i> contato@chefinho.com</p>
+                    <p><strong>Horários:</strong></p>
+                    <p>Segunda à Sexta: 8h às 18h</p>
+                    <p>Sábado: 8h às 14h</p>
+                    <p>Domingo: Fechado</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Links Rápidos</h3>
+                    <p><a href="index.html">Início</a></p>
+                    <p><a href="produtos.html">Produtos</a></p>
+                    <p><a href="produtos.html?category=freefire">Free Fire</a></p>
+                    <p><a href="produtos.html?category=mage">Rucoy Mage</a></p>
+                    <p><a href="produtos.html?category=kina">Rucoy Knight</a></p>
+                    <p><a href="produtos.html?category=pally">Rucoy Paladin</a></p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Como Funciona</h3>
+                    <p>1. Escolha seus itens</p>
+                    <p>2. Adicione ao carrinho</p>
+                    <p>3. Finalize no WhatsApp</p>
+                    <p>4. Receba seus dados</p>
+                    <br>
+                    <p><strong>Pagamento:</strong> PIX, Cartão, Boleto</p>
+                    <p><strong>Entrega:</strong> Imediata via WhatsApp</p>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Chefinho Gaming Store. Todos os direitos reservados.</p>
+                <p>Desenvolvido com 💜 para gamers brasileiros</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://api.whatsapp.com/send/?phone=556993450986&text=Olá! Gostaria de falar com o suporte.&type=phone_number&app_absent=0" class="whatsapp-float" title="Falar no WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script>
+        // Função para contratar plano direto no WhatsApp
+        function contratarPlano(plano, preco, duracao) {
+            const message = `🎮 *QUERO ANUNCIAR - CHEFINHO GAMING STORE*
+
+� *Plano:* ${plano}
+💰 *Valor:* ${preco}
+⏰ *Duração:* ${duracao}
+
+Olá! Quero contratar o plano ${plano} para anunciar meu produto na loja. 
+
+Aguardo retorno para enviar os detalhes do meu anúncio! 🚀`;
+
+            // Codificar mensagem para URL
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/556993450986?text=${encodedMessage}`;
+            
+            // Abrir WhatsApp
+            window.open(whatsappURL, '_blank');
+        }
+
+        // Mobile Menu
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            this.classList.toggle('active');
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

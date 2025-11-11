@@ -70,6 +70,15 @@ body {
   background-clip: text;
 }
 
+.section-subtitle {
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-top: -40px;
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+
 /* Botões */
 .btn {
   display: inline-flex;
@@ -589,6 +598,61 @@ body {
 .price-kks-secondary {
   color: var(--text-muted);
   font-size: 0.9rem;
+}
+
+/* Estilos para produtos fixos/em destaque */
+.featured-fixed {
+  position: relative;
+  border: 2px solid var(--yellow);
+  box-shadow: 0 0 20px rgba(252, 211, 77, 0.3);
+  background: linear-gradient(135deg, rgba(252, 211, 77, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+}
+
+.featured-fixed:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 15px 40px rgba(252, 211, 77, 0.4);
+}
+
+.fixed-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: linear-gradient(135deg, var(--yellow), #F59E0B);
+  color: var(--dark);
+  padding: 8px 12px;
+  border-radius: 0 var(--border-radius-sm) 0 var(--border-radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  box-shadow: 0 2px 10px rgba(252, 211, 77, 0.3);
+}
+
+.fixed-badge i {
+  margin-right: 4px;
+  animation: sparkle 2s infinite;
+}
+
+.fixed-description {
+  color: var(--yellow);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(252, 211, 77, 0.1);
+  border-radius: 8px;
+  border-left: 3px solid var(--yellow);
+}
+
+.fixed-description i {
+  margin-right: 6px;
+  color: var(--yellow);
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
 }
 
 /* Footer */

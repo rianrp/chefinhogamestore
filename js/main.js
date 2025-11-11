@@ -877,6 +877,89 @@ function renderProductsList(products, containerId) {
     console.log('HTML gerado e inserido no container');
 }
 
+// Renderizar produtos em destaque com indicadores especiais
+function renderFeaturedProducts(products, containerId) {
+    console.log('=== RENDER FEATURED PRODUCTS ===');
+    console.log('Produtos recebidos:', products?.length || 0);
+    console.log('Container ID:', containerId);
+    
+    const container = document.getElementById(containerId);
+    if (!container) {
+        console.error('Container não encontrado:', containerId);
+        return;
+    }
+    
+    console.log('Container encontrado:', container);
+    console.log('Renderizando produtos em destaque:', products?.length || 0, 'no container:', containerId);
+    
+    if (!products || products.length === 0) {
+        console.log('Nenhum produto para renderizar');
+        container.innerHTML = `
+            <div class="no-products">
+                <i class="fas fa-search" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
+                <p>Nenhum produto encontrado</p>
+            </div>
+        `;
+        return;
+    }
+
+    console.log('Primeiros 2 produtos a serem renderizados:', products.slice(0, 2));
+    
+    // Renderizar estrutura básica dos produtos primeiro
+    container.innerHTML = products.map(product => `
+        <div class="card product-card ${product.fixed ? 'featured-fixed' : ''}" data-product-id="${product.id}">
+            ${product.fixed ? '<div class="fixed-badge"><i class="fas fa-star"></i> DESTAQUE</div>' : ''}
+            <img alt="${product.name}" class="product-image" 
+                 title="Clique para ver em tela cheia"
+                 onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Erro+ao+Carregar'">
+            <div class="card-body">
+                <h3 class="product-name">${product.name}</h3>
+                <div class="product-prices">
+                    ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
+                    ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
+                    <span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>
+                </div>
+                ${product.description ? `<p class="product-description">${product.description.substring(0, 100)}...</p>` : ''}
+                ${product.fixed ? '<p class="fixed-description"><i class="fas fa-medal"></i> Produto que mais vale a pena comprar!</p>' : ''}
+            </div>
+            <div class="card-footer">
+                <div class="product-actions d-flex gap-2">
+                    <button class="btn btn-primary btn-round flex-1" onclick="addToCart('${product.id}')">
+                        <i class="fas fa-cart-plus"></i>
+                        Adicionar
+                    </button>
+                    <a href="produto/${createProductSlug(product.name)}" class="btn btn-outline btn-round">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    // Depois processar as imagens de forma assíncrona
+    products.forEach(product => {
+        const productCard = container.querySelector(`[data-product-id="${product.id}"]`);
+        if (productCard) {
+            const imgElement = productCard.querySelector('img');
+            
+            // Configurar imagem
+            setProductImage(imgElement, product);
+            
+            // Configurar clique no modal após obter a imagem final
+            getImageUrl(product, (finalImageUrl) => {
+                imgElement.onclick = () => {
+                    openImageModal(
+                        finalImageUrl, 
+                        product.name.replace(/'/g, "\\'"), 
+                        (product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' '), 
+                        product.video_url || ''
+                    );
+                };
+            });
+        }
+    });
+}
+
 // Funções para páginas específicas
 const PageHandlers = {
     // Página inicial
@@ -893,10 +976,14 @@ const PageHandlers = {
         console.log('Renderizando categorias...');
         renderCategories('categoriesGrid');
         
-        // Produtos em destaque (primeiros 8)
-        const featuredProducts = siteData.products?.slice(0, 8) || [];
-        console.log('Produtos em destaque:', featuredProducts.length);
-        renderProducts(featuredProducts, 'featuredProducts');
+        // Produtos em destaque - priorizar produtos com "fixed": true
+        const fixedProducts = siteData.products?.filter(product => product.fixed === true) || [];
+        const otherProducts = siteData.products?.filter(product => !product.fixed) || [];
+        
+        // Combinar produtos fixos primeiro + outros produtos até completar 8
+        const featuredProducts = [...fixedProducts, ...otherProducts].slice(0, 8);
+        console.log('Produtos em destaque:', featuredProducts.length, '- Produtos fixos:', fixedProducts.length);
+        renderFeaturedProducts(featuredProducts, 'featuredProducts');
         
         // Atualizar estatísticas
         if (siteData.stats) {
