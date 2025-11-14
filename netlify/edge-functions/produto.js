@@ -24,9 +24,12 @@ export default async (request, context) => {
       .replace(/-+/g, '-')       // Remove hífens duplos
       .trim();
     
-    // Carregar dados dos produtos
-    const dataResponse = await fetch(`${url.origin}/data.json`);
-    const siteData = await dataResponse.json();
+    // Carregar dados dos produtos da API
+    const dataResponse = await fetch("https://api-json-chefinho.onrender.com/products");
+    const products = await dataResponse.json();
+    
+    // Simular estrutura do siteData
+    const siteData = { products };
     
     // Encontrar o produto por ID ou slug
     let product;

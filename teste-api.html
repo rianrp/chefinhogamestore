@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste da API - Chefinho</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #0F0F23;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .product {
+            background: #1a1a2e;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #8B5CF6;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        .error {
+            color: #ff6b6b;
+            text-align: center;
+            padding: 20px;
+        }
+        .success {
+            color: #51cf66;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste da Nova API - Chefinho</h1>
+        
+        <div id="status" class="loading">
+            <p>🔄 Carregando produtos da API...</p>
+        </div>
+        
+        <div id="products"></div>
+    </div>
+
+    <script>
+        async function getProdutos() {
+            const resp = await fetch("https://api-json-chefinho.onrender.com/products");
+            const data = await resp.json();
+            return data;
+        }
+
+        async function testarAPI() {
+            const statusDiv = document.getElementById('status');
+            const productsDiv = document.getElementById('products');
+            
+            try {
+                console.log('🚀 Testando conexão com a API...');
+                const apiData = await getProdutos();
+                
+                console.log('✅ Dados recebidos da API:', apiData);
+                console.log('📊 Tipo de dados:', typeof apiData);
+                console.log('📊 É array?', Array.isArray(apiData));
+                
+                // Verificar estrutura dos dados
+                let products = [];
+                let estrutura = '';
+                
+                if (Array.isArray(apiData)) {
+                    products = apiData;
+                    estrutura = 'Array direto de produtos';
+                } else if (apiData && Array.isArray(apiData.products)) {
+                    products = apiData.products;
+                    estrutura = 'Objeto com produtos dentro';
+                } else {
+                    estrutura = 'Estrutura não reconhecida';
+                }
+                
+                console.log('📦 Produtos extraídos:', products?.length || 0);
+                
+                statusDiv.innerHTML = `
+                    <div class="success">
+                        <p>✅ API funcionando perfeitamente!</p>
+                        <p>📊 <strong>Estrutura:</strong> ${estrutura}</p>
+                        <p>📦 <strong>Total de produtos:</strong> ${products?.length || 0}</p>
+                    </div>
+                `;
+                
+                if (products && products.length > 0) {
+                    productsDiv.innerHTML = `
+                        <h2>🎮 Primeiros 5 produtos da API:</h2>
+                        ${products.slice(0, 5).map(produto => `
+                            <div class="product">
+                                <h3>${produto.name || 'Nome não disponível'}</h3>
+                                <p><strong>ID:</strong> ${produto.id}</p>
+                                <p><strong>Preço:</strong> R$ ${produto.rl_price || produto.price || 'N/A'}</p>
+                                <p><strong>Categoria:</strong> ${produto.category || 'N/A'}</p>
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    productsDiv.innerHTML = '<p>Nenhum produto encontrado na API.</p>';
+                }
+                
+            } catch (error) {
+                console.error('❌ Erro ao testar API:', error);
+                statusDiv.innerHTML = `
+                    <div class="error">
+                        <p>❌ Erro ao conectar com a API!</p>
+                        <p><strong>Erro:</strong> ${error.message}</p>
+                        <p>Verifique se a API está online: <a href="https://api-json-chefinho.onrender.com/products" target="_blank">https://api-json-chefinho.onrender.com/products</a></p>
+                    </div>
+                `;
+            }
+        }
+
+        // Executar teste quando a página carregar
+        document.addEventListener('DOMContentLoaded', testarAPI);
+    </script>
+</body>
+</html>

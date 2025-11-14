@@ -1,5 +1,20 @@
 // Chefinho Gaming Store - JavaScript Principal
 
+// API Functions
+async function getProdutos() {
+    const resp = await fetch("https://api-json-chefinho.onrender.com/products");
+    const data = await resp.json();
+    return data;
+}
+
+async function salvarProdutos(lista) {
+    await fetch("https://api-json-chefinho.onrender.com/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(lista),
+    });
+}
+
 // Dados globais
 // Constantes de emojis usando códigos Unicode
 const emojis = {
@@ -12,6 +27,64 @@ const emojis = {
     dollar: "\uD83D\uDCB5",      // 💵
     lightning: "\u26A1",         // ⚡
     fire: "\uD83D\uDD25"         // 🔥
+};
+
+// Dados de configuração do site (não vem da API)
+const siteConfig = {
+    site: {
+        name: "Chefinho",
+        tagline: "Gaming Store",
+        description: "Sua loja gamer de confiança - Personagens, contas e itens para seus jogos favoritos com os melhores preços",
+        whatsapp: "556993450986"
+    },
+    theme: {
+        colors: {
+            primary: "#8B5CF6",
+            secondary: "#A855F7",
+            yellow: "#FCD34D",
+            dark: "#0F0F23",
+            darker: "#0A0A1A"
+        },
+        mode: "dark"
+    },
+    categories: [
+        {
+            id: "freefire",
+            name: "Free Fire",
+            description: "Skins, Personagens, Diamantes",
+            icon: "fas fa-fire"
+        },
+        {
+            id: "mage",
+            name: "Rucoy Mage",
+            description: "Personagens Mage, Items",
+            icon: "fas fa-magic"
+        },
+        {
+            id: "kina",
+            name: "Rucoy Knight",
+            description: "Personagens Knight, Items",
+            icon: "fas fa-shield-alt"
+        },
+        {
+            id: "pally",
+            name: "Rucoy Paladin",
+            description: "Personagens Paladin, Items",
+            icon: "fas fa-crosshairs"
+        },
+        {
+            id: "supercell",
+            name: "Supercell Games",
+            description: "Clash of Clans, Clash Royale",
+            icon: "fas fa-crown"
+        },
+        {
+            id: "itens",
+            name: "Itens Gerais",
+            description: "Diversos itens para jogos",
+            icon: "fas fa-gem"
+        }
+    ]
 };
 
 // Variáveis globais
@@ -66,19 +139,38 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Carregar dados do site
 async function loadSiteData() {
     try {
-        console.log('Tentando carregar data.json...');
-        const response = await fetch('/data.json');
-        console.log('Resposta recebida:', response.status);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        console.log('Carregando dados da API...');
+        
+        // Carregar dados da API
+        const apiData = await getProdutos();
+        console.log('Dados recebidos da API:', apiData);
+        
+        // Verificar se a API retorna a estrutura completa ou só produtos
+        let products = [];
+        if (Array.isArray(apiData)) {
+            // API retorna diretamente o array de produtos
+            products = apiData;
+        } else if (apiData && Array.isArray(apiData.products)) {
+            // API retorna objeto com produtos dentro
+            products = apiData.products;
+        } else {
+            console.warn('Estrutura de dados da API não reconhecida:', apiData);
         }
-        siteData = await response.json();
+        
+        console.log('Produtos extraídos:', products?.length || 0);
+        
+        // Combinar configuração local com produtos da API
+        siteData = {
+            ...siteConfig,
+            products: products || []
+        };
+        
         console.log('Dados carregados com sucesso:', siteData);
         console.log('Número de produtos:', siteData.products?.length || 0);
     } catch (error) {
-        console.error('Erro ao carregar dados:', error);
+        console.error('Erro ao carregar dados da API:', error);
         // Mostrar erro para o usuário
-        showNotification('Erro ao carregar produtos. Recarregue a página.', 'warning');
+        showNotification('Erro ao carregar produtos da API. Recarregue a página.', 'warning');
     }
 }
 
@@ -88,7 +180,7 @@ function addToCart(productId, productData = null) {
     let product = productData;
     
     // Caso contrário, buscar nos dados do site
-    if (!product && siteData && siteData.products) {
+    if (!product && siteData && siteData.products && Array.isArray(siteData.products)) {
         product = siteData.products.find(p => p.id === productId);
     }
     
@@ -345,7 +437,7 @@ function shareProduct(product, platform = 'whatsapp') {
 function getAllCategories() {
     const allCategories = new Map();
     
-    // Primeiro, adicionar as categorias principais definidas no data.json
+    // Primeiro, adicionar as categorias principais definidas na configuração
     if (siteData.categories) {
         siteData.categories.forEach(cat => {
             allCategories.set(cat.id, {
@@ -360,7 +452,7 @@ function getAllCategories() {
     }
     
     // Depois, adicionar categorias dinâmicas baseadas nos produtos
-    if (siteData.products) {
+    if (siteData.products && Array.isArray(siteData.products)) {
         siteData.products.forEach(product => {
             if (product.category && product.is_active) {
                 if (allCategories.has(product.category)) {
@@ -453,7 +545,7 @@ function getCategoryName(categoryId) {
 
 // Filtrar produtos
 function filterProducts(category = '', searchTerm = '') {
-    if (!siteData.products) return [];
+    if (!siteData.products || !Array.isArray(siteData.products)) return [];
     
     return siteData.products.filter(product => {
         const matchesCategory = !category || product.category === category;
@@ -967,7 +1059,7 @@ const PageHandlers = {
         console.log('Executando handler da página index');
         
         // Aguardar os dados serem carregados
-        if (!siteData.categories || !siteData.products) {
+        if (!siteData.categories || !siteData.products || !Array.isArray(siteData.products)) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.index(), 100);
             return;
@@ -1014,7 +1106,7 @@ const PageHandlers = {
         console.log('Produtos disponíveis:', siteData?.products?.length || 0);
         
         // Aguardar os dados serem carregados
-        if (!siteData.categories || !siteData.products) {
+        if (!siteData.categories || !siteData.products || !Array.isArray(siteData.products)) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.produtos(), 200);
             return;
@@ -1081,7 +1173,7 @@ const PageHandlers = {
         console.log('Executando handler da página produto');
         
         // Aguardar os dados serem carregados
-        if (!siteData.products) {
+        if (!siteData.products || !Array.isArray(siteData.products)) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.produto(), 100);
             return;
@@ -1709,7 +1801,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Função demo para adicionar produto com nova categoria (apenas para demonstração)
 function addExampleProduct() {
-    if (!siteData || !siteData.products) return;
+    if (!siteData || !siteData.products || !Array.isArray(siteData.products)) return;
     
     const exampleProduct = {
         "id": "demo-1",
