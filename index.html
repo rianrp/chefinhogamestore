@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chefinho - Gaming Store | A Maior Loja Gamer do Brasil</title>
-    <meta name="description" content="Encontre os melhores equipamentos gaming com preços exclusivos na Chefinho Gaming Store. Periféricos, Hardware, Setup e muito mais!">
-    
+    <meta name="description"
+        content="Encontre os melhores equipamentos gaming com preços exclusivos na Chefinho Gaming Store. Periféricos, Hardware, Setup e muito mais!">
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://chefinhogamestore.netlify.app/">
     <meta property="og:title" content="Chefinho Gaming Store - A Maior Loja e-commerce de produtos digitais do Brasil">
-    <meta property="og:description" content="Encontre os melhores equipamentos /contas com preços exclusivos. Rucoy Online, Free Fire, Clash Royale e muito mais!">
+    <meta property="og:description"
+        content="Encontre os melhores equipamentos /contas com preços exclusivos. Rucoy Online, Free Fire, Clash Royale e muito mais!">
     <meta property="og:image" content="https://chefinhogamestore.netlify.app/img/chefinho.png">
     <meta property="og:site_name" content="Chefinho Gaming Store">
     <meta property="og:locale" content="pt_BR">
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://chefinhogamestore.netlify.app/">
-    <meta property="twitter:title" content="Chefinho Gaming Store - A Maior Loja e-commerce de produtos digitais do Brasil">
-    <meta property="twitter:description" content="Encontre os melhores equipamentos /contas com preços exclusivos. Rucoy Online, Free Fire, Clash Royale e muito mais!">
+    <meta property="twitter:title"
+        content="Chefinho Gaming Store - A Maior Loja e-commerce de produtos digitais do Brasil">
+    <meta property="twitter:description"
+        content="Encontre os melhores equipamentos /contas com preços exclusivos. Rucoy Online, Free Fire, Clash Royale e muito mais!">
     <meta property="twitter:image" content="https://chefinhogamestore.netlify.app/img/og-image.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
@@ -30,7 +37,20 @@
     <link rel="shortcut icon" href="/favicons/favicon.ico">
     <meta name="theme-color" content="#8B5CF6">
 </head>
+
 <body>
+    <script>
+        if (window.netlifyIdentity) {
+            window.netlifyIdentity.on("init", user => {
+                if (!user) {
+                    window.netlifyIdentity.on("login", () => {
+                        document.location.href = "/admin/";
+                    });
+                }
+            });
+        }
+    </script>
+
     <!-- Header -->
     <header class="header">
         <div class="container">
@@ -39,7 +59,7 @@
                     <i class="fas fa-gamepad"></i>
                     Chefinho
                 </a>
-                
+
                 <!-- Desktop Navigation -->
                 <ul class="nav-links">
                     <li><a href="index.html">Início</a></li>
@@ -48,13 +68,13 @@
                     <li><a href="anunciar.html">Anunciar</a></li>
                     <li><a href="contato.html">Contato</a></li>
                 </ul>
-                
+
                 <div class="nav-actions">
                     <a href="carrinho.html" class="cart-icon">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">0</span>
                     </a>
-                    
+
                     <!-- Mobile Menu Button -->
                     <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
                         <span class="hamburger-line"></span>
@@ -63,7 +83,7 @@
                     </button>
                 </div>
             </nav>
-            
+
             <!-- Mobile Menu -->
             <div class="mobile-menu" id="mobileMenu">
                 <div class="mobile-menu-content">
@@ -76,7 +96,7 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    
+
                     <nav class="mobile-nav">
                         <a href="index.html" class="mobile-nav-item">
                             <i class="fas fa-home"></i>
@@ -100,10 +120,11 @@
                             <span class="mobile-cart-count">0</span>
                         </a>
                     </nav>
-                    
+
                     <!-- Quick Actions -->
                     <div class="mobile-quick-actions">
-                        <a href="#" onclick="generateWhatsAppMessage(); return false;" class="mobile-action-btn whatsapp-btn">
+                        <a href="#" onclick="generateWhatsAppMessage(); return false;"
+                            class="mobile-action-btn whatsapp-btn">
                             <i class="fab fa-whatsapp"></i>
                             <span>WhatsApp</span>
                         </a>
@@ -112,7 +133,7 @@
                             <span>Ver Ofertas</span>
                         </a>
                     </div>
-                    
+
                     <!-- Contact Info -->
                     <div class="mobile-contact-info">
                         <div class="contact-item">
@@ -138,19 +159,21 @@
                 <div class="tagline">Gaming Store</div>
                 <h1>Chefinho</h1>
                 <p class="description">
-                    Sua loja gamer de confiança - Personagens, contas e itens para seus jogos favoritos com os melhores preços
+                    Sua loja gamer de confiança - Personagens, contas e itens para seus jogos favoritos com os melhores
+                    preços
                 </p>
                 <div class="hero-actions">
                     <a href="produtos.html" class="btn btn-primary btn-round">
                         <i class="fas fa-shopping-bag"></i>
                         Ver Produtos
                     </a>
-                    <a href="#marketplace" onclick="document.getElementById('sellerName').focus(); return false;" class="btn btn-outline btn-round">
+                    <a href="#marketplace" onclick="document.getElementById('sellerName').focus(); return false;"
+                        class="btn btn-outline btn-round">
                         <i class="fas fa-handshake"></i>
                         Vender minha conta
                     </a>
                 </div>
-                
+
                 <!-- Stats -->
                 <div class="stats">
                     <div class="stat-item fade-in-up">
@@ -216,10 +239,11 @@
                         </div>
                         <div>
                             <h3 class="marketplace-title">Marketplace Seguro de Contas</h3>
-                            <p class="marketplace-subtitle">Compramos e vendemos contas verificadas de todos os jogos</p>
+                            <p class="marketplace-subtitle">Compramos e vendemos contas verificadas de todos os jogos
+                            </p>
                         </div>
                     </div>
-                    
+
                     <div class="marketplace-features">
                         <div class="feature-item">
                             <i class="fas fa-check-circle"></i>
@@ -235,7 +259,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="marketplace-form-container">
                     <div class="marketplace-form" id="marketplaceForm">
                         <h4>Tenho uma conta para negociar</h4>
@@ -250,7 +274,8 @@
                                 <input type="text" id="gameName" placeholder="Nome do jogo" required>
                             </div>
                             <div class="form-group">
-                                <textarea id="sellReason" placeholder="Por que quer vender a conta? (opcional)" rows="3"></textarea>
+                                <textarea id="sellReason" placeholder="Por que quer vender a conta? (opcional)"
+                                    rows="3"></textarea>
                             </div>
                             <button type="submit" class="btn btn-primary">
                                 <i class="fab fa-whatsapp"></i>
@@ -269,8 +294,9 @@
             <h2 style="color: white; font-size: 2.5rem; margin-bottom: 20px;">
                 Pronto para Dominar os Games?
             </h2>
-            <p style="color: rgba(255,255,255,0.9); font-size: 1.2rem; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                Encontre os melhores personagens, contas e itens para seus jogos favoritos. 
+            <p
+                style="color: rgba(255,255,255,0.9); font-size: 1.2rem; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                Encontre os melhores personagens, contas e itens para seus jogos favoritos.
                 Compra rápida e segura direto no WhatsApp!
             </p>
             <a href="produtos.html" class="btn btn-yellow btn-round" style="font-size: 1.1rem; padding: 15px 40px;">
@@ -281,7 +307,8 @@
     </section>
 
     <!-- Seção Anunciar -->
-    <section class="section" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 80px 0;">
+    <section class="section"
+        style="background: linear-gradient(135deg, var(--primary), var(--secondary)); padding: 80px 0;">
         <div class="container">
             <div style="text-align: center; color: white;">
                 <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 20px;">
@@ -290,34 +317,39 @@
                 <p style="font-size: 1.3rem; margin-bottom: 40px; opacity: 0.9;">
                     Anuncie seus produtos/contas na maior loja gamer do Brasil! 🚀
                 </p>
-                
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin: 50px 0;">
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin: 50px 0;">
                     <div style="text-align: center;">
-                        <div style="background: rgba(255,255,255,0.1); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                        <div
+                            style="background: rgba(255,255,255,0.1); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-eye" style="font-size: 2rem;"></i>
                         </div>
                         <h4 style="margin-bottom: 10px;">10K+ Visualizações</h4>
                         <p style="opacity: 0.8;">Milhares de gamers veem nosso site</p>
                     </div>
-                    
+
                     <div style="text-align: center;">
-                        <div style="background: rgba(255,255,255,0.1); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                        <div
+                            style="background: rgba(255,255,255,0.1); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-rocket" style="font-size: 2rem;"></i>
                         </div>
                         <h4 style="margin-bottom: 10px;">Venda Rápida</h4>
                         <p style="opacity: 0.8;">Destaque e venda em poucos dias</p>
                     </div>
-                    
+
                     <div style="text-align: center;">
-                        <div style="background: rgba(255,255,255,0.1); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                        <div
+                            style="background: rgba(255,255,255,0.1); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
                             <i class="fas fa-crown" style="font-size: 2rem;"></i>
                         </div>
                         <h4 style="margin-bottom: 10px;">Planos Acessíveis</h4>
                         <p style="opacity: 0.8;">A partir de apenas R$ 5</p>
                     </div>
                 </div>
-                
-                <a href="anunciar.html" class="btn" style="background: white; color: var(--primary); padding: 20px 40px; font-size: 1.2rem; font-weight: 700; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease;">
+
+                <a href="anunciar.html" class="btn"
+                    style="background: white; color: var(--primary); padding: 20px 40px; font-size: 1.2rem; font-weight: 700; border-radius: 50px; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; transition: all 0.3s ease;">
                     <i class="fas fa-plus-circle"></i>
                     Anunciar Agora
                 </a>
@@ -334,7 +366,8 @@
                         <i class="fas fa-gamepad"></i>
                         Chefinho
                     </h3>
-                    <p>Sua loja gamer de confiança. Personagens, contas e itens para seus jogos favoritos com os melhores preços do mercado.</p>
+                    <p>Sua loja gamer de confiança. Personagens, contas e itens para seus jogos favoritos com os
+                        melhores preços do mercado.</p>
                     <div class="social-links">
                         <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
@@ -342,7 +375,7 @@
                         <a href="#" title="Twitch"><i class="fab fa-twitch"></i></a>
                     </div>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Atendimento</h3>
                     <p><i class="fab fa-whatsapp"></i> +55 69 9345-0986</p>
@@ -352,7 +385,7 @@
                     <p>Sábado: 8h às 14h</p>
                     <p>Domingo: Fechado</p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Links Rápidos</h3>
                     <p><a href="index.html">Início</a></p>
@@ -362,7 +395,7 @@
                     <p><a href="produtos.html?category=kina">Rucoy Knight</a></p>
                     <p><a href="produtos.html?category=pally">Rucoy Paladin</a></p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Como Funciona</h3>
                     <p>1. Escolha seus itens</p>
@@ -374,7 +407,7 @@
                     <p><strong>Entrega:</strong> Imediata via WhatsApp</p>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2025 Chefinho Gaming Store. Todos os direitos reservados.</p>
                 <p>Desenvolvido com 💜 para gamers brasileiros</p>
@@ -389,17 +422,17 @@
 
     <!-- JavaScript -->
     <script src="js/main.js"></script>
-    
+
     <script>
         // Mobile Menu Control
         function toggleMobileMenu() {
             const mobileMenu = document.getElementById('mobileMenu');
             const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
             const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-            
+
             if (mobileMenu && mobileMenuOverlay && mobileMenuBtn) {
                 const isActive = mobileMenu.classList.contains('active');
-                
+
                 if (isActive) {
                     // Fechar menu
                     mobileMenu.classList.remove('active');
@@ -415,9 +448,9 @@
                 }
             }
         }
-        
+
         // Fechar menu ao pressionar ESC
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 const mobileMenu = document.getElementById('mobileMenu');
                 if (mobileMenu && mobileMenu.classList.contains('active')) {
@@ -425,15 +458,15 @@
                 }
             }
         });
-        
+
         // Fechar menu ao clicar em um link (exceto botões de ação)
         document.querySelectorAll('.mobile-nav-item').forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function () {
                 // Pequeno delay para permitir a navegação
                 setTimeout(toggleMobileMenu, 100);
             });
         });
-        
+
         // Atualizar contador do carrinho mobile
         function updateMobileCartCount() {
             const mobileCartCount = document.querySelector('.mobile-cart-count');
@@ -443,20 +476,20 @@
                 mobileCartCount.style.display = count > 0 ? 'inline-block' : 'none';
             }
         }
-        
+
         // Interceptar a função updateCartCount original para incluir mobile
-        const originalUpdateCartCount = window.updateCartCount || function() {};
-        window.updateCartCount = function() {
+        const originalUpdateCartCount = window.updateCartCount || function () { };
+        window.updateCartCount = function () {
             originalUpdateCartCount();
             updateMobileCartCount();
         };
-        
+
         // Atualizar contador mobile na inicialização
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             updateMobileCartCount();
         });
     </script>
-    
+
     <!-- Notification Styles -->
     <style>
         .notification {
@@ -471,26 +504,26 @@
             animation: slideInRight 0.3s ease;
             max-width: 300px;
         }
-        
+
         .notification-success {
             background: var(--success);
         }
-        
+
         .notification-info {
             background: var(--primary);
         }
-        
+
         .notification-warning {
             background: var(--warning);
         }
-        
+
         .notification-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 10px;
         }
-        
+
         .notification-content button {
             background: none;
             border: none;
@@ -504,7 +537,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .whatsapp-float {
             position: fixed;
             bottom: 20px;
@@ -523,58 +556,59 @@
             transition: transform 0.3s ease;
             z-index: 999;
         }
-        
+
         .whatsapp-float:hover {
             transform: scale(1.1);
             color: white;
         }
-        
+
         @keyframes slideInRight {
             from {
                 transform: translateX(100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
             }
         }
-        
+
         .no-products {
             grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
             color: var(--text-muted);
         }
-        
+
         .flex-1 {
             flex: 1;
         }
-        
+
         .w-100 {
             width: 100%;
         }
-        
+
         .loading-message {
             grid-column: 1 / -1;
             text-align: center;
             padding: 40px 20px;
             color: var(--text-muted);
         }
-        
+
         .loading-message i {
             font-size: 2rem;
             margin-bottom: 15px;
             color: var(--primary);
         }
-        
+
         /* Mobile Menu Styles */
         .nav-actions {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .mobile-menu-btn {
             display: none;
             flex-direction: column;
@@ -588,7 +622,7 @@
             z-index: 1001;
             position: relative;
         }
-        
+
         .hamburger-line {
             width: 25px;
             height: 2px;
@@ -596,19 +630,19 @@
             transition: all 0.3s ease;
             margin: 3px 0;
         }
-        
+
         .mobile-menu-btn.active .hamburger-line:nth-child(1) {
             transform: rotate(45deg) translate(6px, 6px);
         }
-        
+
         .mobile-menu-btn.active .hamburger-line:nth-child(2) {
             opacity: 0;
         }
-        
+
         .mobile-menu-btn.active .hamburger-line:nth-child(3) {
             transform: rotate(-45deg) translate(6px, -6px);
         }
-        
+
         .mobile-menu {
             position: fixed;
             top: 0;
@@ -620,18 +654,18 @@
             transition: right 0.3s ease;
             box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
         }
-        
+
         .mobile-menu.active {
             right: 0;
         }
-        
+
         .mobile-menu-content {
             height: 100%;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
         }
-        
+
         .mobile-menu-header {
             display: flex;
             justify-content: space-between;
@@ -640,7 +674,7 @@
             border-bottom: 1px solid rgba(139, 92, 246, 0.1);
             background: var(--gradient-dark);
         }
-        
+
         .mobile-logo {
             display: flex;
             align-items: center;
@@ -649,12 +683,12 @@
             font-size: 1.2rem;
             font-weight: 700;
         }
-        
+
         .mobile-logo i {
             color: var(--primary);
             font-size: 1.4rem;
         }
-        
+
         .mobile-menu-close {
             background: none;
             border: none;
@@ -665,17 +699,17 @@
             border-radius: 50%;
             transition: all 0.3s ease;
         }
-        
+
         .mobile-menu-close:hover {
             background: rgba(139, 92, 246, 0.1);
             color: var(--primary);
         }
-        
+
         .mobile-nav {
             flex: 1;
             padding: 20px 0;
         }
-        
+
         .mobile-nav-item {
             display: flex;
             align-items: center;
@@ -687,26 +721,26 @@
             border-bottom: 1px solid rgba(139, 92, 246, 0.05);
             position: relative;
         }
-        
+
         .mobile-nav-item:hover {
             background: rgba(139, 92, 246, 0.1);
             padding-left: 30px;
         }
-        
+
         .mobile-nav-item i {
             width: 20px;
             color: var(--primary);
             font-size: 1.1rem;
         }
-        
+
         .mobile-nav-item span {
             font-weight: 500;
         }
-        
+
         .mobile-nav-item.cart-item {
             position: relative;
         }
-        
+
         .mobile-cart-count {
             background: var(--yellow);
             color: var(--dark);
@@ -716,14 +750,14 @@
             font-weight: 600;
             margin-left: auto;
         }
-        
+
         .mobile-quick-actions {
             padding: 20px;
             border-top: 1px solid rgba(139, 92, 246, 0.1);
             display: flex;
             gap: 10px;
         }
-        
+
         .mobile-action-btn {
             flex: 1;
             display: flex;
@@ -737,33 +771,33 @@
             font-size: 0.9rem;
             transition: all 0.3s ease;
         }
-        
+
         .mobile-action-btn.whatsapp-btn {
             background: #25D366;
             color: white;
         }
-        
+
         .mobile-action-btn.whatsapp-btn:hover {
             background: #1DA851;
             color: white;
         }
-        
+
         .mobile-action-btn.primary-btn {
             background: var(--gradient-primary);
             color: white;
         }
-        
+
         .mobile-action-btn.primary-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
         }
-        
+
         .mobile-contact-info {
             padding: 20px;
             border-top: 1px solid rgba(139, 92, 246, 0.1);
             background: var(--gray);
         }
-        
+
         .contact-item {
             display: flex;
             align-items: center;
@@ -772,12 +806,12 @@
             color: var(--text-muted);
             font-size: 0.9rem;
         }
-        
+
         .contact-item i {
             color: var(--primary);
             width: 16px;
         }
-        
+
         .mobile-menu-overlay {
             position: fixed;
             top: 0;
@@ -790,34 +824,35 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .mobile-menu-overlay.active {
             opacity: 1;
             visibility: visible;
         }
-        
+
         /* Responsividade */
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
             }
-            
+
             .mobile-menu-btn {
                 display: flex;
             }
-            
+
             .cart-icon {
-                display: none; /* Esconder carrinho do header em mobile, vai aparecer no menu */
+                display: none;
+                /* Esconder carrinho do header em mobile, vai aparecer no menu */
             }
         }
-        
+
         @media (max-width: 480px) {
             .mobile-menu {
                 width: 100%;
                 right: -100%;
             }
         }
-        
+
         /* Hero Actions Styles */
         .hero-actions {
             display: flex;
@@ -826,13 +861,13 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        
+
         @media (max-width: 768px) {
             .hero-actions {
                 gap: 15px;
             }
         }
-        
+
         /* Marketplace Styles */
         .marketplace-container {
             display: grid;
@@ -842,14 +877,14 @@
             max-width: 1000px;
             margin: 0 auto;
         }
-        
+
         .marketplace-header {
             display: flex;
             align-items: center;
             gap: 15px;
             margin-bottom: 25px;
         }
-        
+
         .marketplace-icon {
             width: 50px;
             height: 50px;
@@ -861,39 +896,39 @@
             color: white;
             font-size: 1.5rem;
         }
-        
+
         .marketplace-title {
             font-size: 1.5rem;
             font-weight: 700;
             color: var(--text);
             margin: 0;
         }
-        
+
         .marketplace-subtitle {
             color: var(--text-muted);
             margin: 5px 0 0 0;
             font-size: 0.95rem;
         }
-        
+
         .marketplace-features {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
-        
+
         .feature-item {
             display: flex;
             align-items: center;
             gap: 10px;
             color: var(--text);
         }
-        
+
         .feature-item i {
             color: var(--primary);
             font-size: 1rem;
             width: 16px;
         }
-        
+
         .marketplace-form-container {
             background: var(--dark);
             border-radius: var(--border-radius);
@@ -901,7 +936,7 @@
             border: 1px solid rgba(139, 92, 246, 0.1);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-        
+
         .marketplace-form h4 {
             color: var(--text);
             font-size: 1.2rem;
@@ -909,11 +944,11 @@
             margin-bottom: 20px;
             text-align: center;
         }
-        
+
         .marketplace-form .form-group {
             margin-bottom: 15px;
         }
-        
+
         .marketplace-form input,
         .marketplace-form textarea {
             width: 100%;
@@ -926,20 +961,20 @@
             transition: all 0.3s ease;
             box-sizing: border-box;
         }
-        
+
         .marketplace-form input:focus,
         .marketplace-form textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
-        
+
         .marketplace-form textarea {
             resize: vertical;
             min-height: 80px;
             font-family: inherit;
         }
-        
+
         .marketplace-form .btn {
             width: 100%;
             padding: 15px;
@@ -947,24 +982,24 @@
             font-weight: 600;
             margin-top: 10px;
         }
-        
+
         @media (max-width: 768px) {
             .marketplace-container {
                 grid-template-columns: 1fr;
                 gap: 30px;
                 text-align: center;
             }
-            
+
             .marketplace-header {
                 flex-direction: column;
                 text-align: center;
                 gap: 10px;
             }
-            
+
             .marketplace-features {
                 align-items: center;
             }
-            
+
             .marketplace-form-container {
                 padding: 20px;
             }
@@ -987,53 +1022,53 @@
 
     <script>
         // Marketplace Account Form Handler
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const accountForm = document.getElementById('accountForm');
-            
+
             if (accountForm) {
-                accountForm.addEventListener('submit', function(e) {
+                accountForm.addEventListener('submit', function (e) {
                     e.preventDefault();
-                    
+
                     const name = document.getElementById('sellerName').value.trim();
                     const email = document.getElementById('sellerEmail').value.trim();
                     const game = document.getElementById('gameName').value.trim();
                     const reason = document.getElementById('sellReason').value.trim();
-                    
+
                     // Validação básica
                     if (!name || !email || !game) {
                         alert('Por favor, preencha todos os campos obrigatórios.');
                         return;
                     }
-                    
+
                     // Criar mensagem formatada para WhatsApp
                     let message = `🎮 *MARKETPLACE DE CONTAS - CHEFINHO* 🎮\n\n`;
                     message += `👤 *Nome:* ${name}\n`;
                     message += `📧 *E-mail:* ${email}\n`;
                     message += `🎯 *Jogo:* ${game}\n`;
-                    
+
                     if (reason) {
                         message += `💭 *Motivo:* ${reason}\n`;
                     }
-                    
+
                     message += `\n📱 *Ação:* Quero negociar minha conta\n`;
                     message += `⏰ *Enviado em:* ${new Date().toLocaleString('pt-BR')}`;
-                    
+
                     // Codificar mensagem para URL
                     const encodedMessage = encodeURIComponent(message);
                     const whatsappUrl = `https://api.whatsapp.com/send/?phone=556993450986&text=${encodedMessage}&type=phone_number&app_absent=0`;
-                    
+
                     // Abrir WhatsApp
                     window.open(whatsappUrl, '_blank');
-                    
+
                     // Limpar formulário após envio
                     accountForm.reset();
-                    
+
                     // Feedback visual
                     const submitBtn = accountForm.querySelector('button[type="submit"]');
                     const originalText = submitBtn.innerHTML;
                     submitBtn.innerHTML = '<i class="fas fa-check"></i> Enviado!';
                     submitBtn.style.background = 'var(--success)';
-                    
+
                     setTimeout(() => {
                         submitBtn.innerHTML = originalText;
                         submitBtn.style.background = '';
@@ -1044,4 +1079,5 @@
     </script>
 
 </body>
+
 </html>
