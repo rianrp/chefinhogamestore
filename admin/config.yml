@@ -1,6 +1,9 @@
 backend:
-  name: git-gateway
-  branch: main
+  name: github
+  repo: rianrp/chefinhogamestore
+  branch: main 
+  auth_type: implicit
+
 
 media_folder: "img/uploads"
 public_folder: "/img/uploads"
