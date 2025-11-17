@@ -71,32 +71,29 @@ exports.handler = async (event, context) => {
 
     let responseData = defaultData;
 
-    // Tentar obter dados do KV Store se estiver em produção no Netlify
+    // Tentar obter dados do KV Store (ambiente Netlify)
     try {
-      if (process.env.NETLIFY) {
-        console.log("🔍 Tentando carregar do KV Store...");
-        const { get } = await import("@netlify/kv");
-        const kvData = await get("products");
+      console.log("🔍 Verificando KV Store...");
+      
+      // Importar KV Store
+      const kv = await import("@netlify/kv");
+      const kvData = await kv.get("products");
+      
+      if (kvData) {
+        console.log("✅ Dados encontrados no KV Store!");
+        console.log("Tipo:", typeof kvData);
+        console.log("Produtos:", kvData.products?.length || 0);
         
-        if (kvData) {
-          console.log("✅ Dados encontrados no KV Store:", typeof kvData, kvData.products?.length || 0, "produtos");
-          
-          // Se os dados têm a estrutura correta, usar eles
-          if (kvData.products && Array.isArray(kvData.products)) {
-            responseData = kvData;
-            console.log(`📦 Retornando ${kvData.products.length} produtos do KV Store`);
-          } else {
-            console.log("⚠️ Dados do KV Store não têm estrutura esperada, usando padrão");
-          }
-        } else {
-          console.log("📭 Nenhum dado encontrado no KV Store, usando dados padrão");
-        }
+        // Usar dados do KV Store
+        responseData = kvData;
+        console.log(`📦 Usando ${kvData.products?.length || 0} produtos do KV Store`);
       } else {
-        console.log("🏠 Ambiente local detectado, usando dados padrão");
+        console.log("📭 KV Store vazio - usando dados padrão");
       }
+      
     } catch (kvError) {
-      console.error("❌ Erro ao acessar KV Store:", kvError.message);
-      console.log("🔄 Usando dados padrão como fallback");
+      console.error("❌ Erro KV Store:", kvError.message);
+      console.log("🔄 Fallback para dados padrão");
     }
     
     // Adicionar informações de debug na resposta
