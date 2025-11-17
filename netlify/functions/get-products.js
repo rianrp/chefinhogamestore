@@ -74,23 +74,48 @@ exports.handler = async (event, context) => {
     // Tentar obter dados do KV Store se estiver em produção no Netlify
     try {
       if (process.env.NETLIFY) {
+        console.log("🔍 Tentando carregar do KV Store...");
         const { get } = await import("@netlify/kv");
         const kvData = await get("products");
-        if (kvData && kvData.products) {
-          responseData = kvData;
-          console.log(`Dados carregados do KV Store: ${kvData.products.length} produtos`);
+        
+        if (kvData) {
+          console.log("✅ Dados encontrados no KV Store:", typeof kvData, kvData.products?.length || 0, "produtos");
+          
+          // Se os dados têm a estrutura correta, usar eles
+          if (kvData.products && Array.isArray(kvData.products)) {
+            responseData = kvData;
+            console.log(`📦 Retornando ${kvData.products.length} produtos do KV Store`);
+          } else {
+            console.log("⚠️ Dados do KV Store não têm estrutura esperada, usando padrão");
+          }
+        } else {
+          console.log("📭 Nenhum dado encontrado no KV Store, usando dados padrão");
         }
       } else {
-        console.log("Ambiente local detectado, usando dados padrão");
+        console.log("🏠 Ambiente local detectado, usando dados padrão");
       }
     } catch (kvError) {
-      console.log("KV Store não disponível, usando dados padrão:", kvError.message);
+      console.error("❌ Erro ao acessar KV Store:", kvError.message);
+      console.log("🔄 Usando dados padrão como fallback");
     }
+    
+    // Adicionar informações de debug na resposta
+    const debugInfo = {
+      source: responseData === defaultData ? "default" : "kv-store",
+      productCount: responseData.products?.length || 0,
+      timestamp: new Date().toISOString(),
+      environment: process.env.NETLIFY ? "netlify" : "local"
+    };
+    
+    console.log("📊 Enviando resposta:", debugInfo);
     
     return {
       statusCode: 200,
       headers: corsHeaders,
-      body: JSON.stringify(responseData)
+      body: JSON.stringify({
+        ...responseData,
+        _debug: debugInfo
+      })
     };
     
   } catch (error) {

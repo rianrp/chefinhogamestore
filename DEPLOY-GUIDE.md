@@ -64,7 +64,7 @@ curl -X POST https://[seu-site].netlify.app/api/update-products \
 2. Clique em "Testar API"
 3. Se funcionou, clique em "Migrar Dados"
 4. Confirme que os dados foram salvos
-
+ Che@F10
 ### Passo 5: Usar o Painel Admin
 
 1. Acesse: `https://[seu-site].netlify.app/admin/`
