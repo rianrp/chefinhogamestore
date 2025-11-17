@@ -1,20 +1,5 @@
 // Chefinho Gaming Store - JavaScript Principal
 
-// API Functions
-async function getProdutos() {
-    const resp = await fetch("https://api-json-chefinho.onrender.com/products");
-    const data = await resp.json();
-    return data;
-}
-
-async function salvarProdutos(lista) {
-    await fetch("https://api-json-chefinho.onrender.com/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(lista),
-    });
-}
-
 // Dados globais
 // Constantes de emojis usando códigos Unicode
 const emojis = {
@@ -27,64 +12,6 @@ const emojis = {
     dollar: "\uD83D\uDCB5",      // 💵
     lightning: "\u26A1",         // ⚡
     fire: "\uD83D\uDD25"         // 🔥
-};
-
-// Dados de configuração do site (não vem da API)
-const siteConfig = {
-    site: {
-        name: "Chefinho",
-        tagline: "Gaming Store",
-        description: "Sua loja gamer de confiança - Personagens, contas e itens para seus jogos favoritos com os melhores preços",
-        whatsapp: "556993450986"
-    },
-    theme: {
-        colors: {
-            primary: "#8B5CF6",
-            secondary: "#A855F7",
-            yellow: "#FCD34D",
-            dark: "#0F0F23",
-            darker: "#0A0A1A"
-        },
-        mode: "dark"
-    },
-    categories: [
-        {
-            id: "freefire",
-            name: "Free Fire",
-            description: "Skins, Personagens, Diamantes",
-            icon: "fas fa-fire"
-        },
-        {
-            id: "mage",
-            name: "Rucoy Mage",
-            description: "Personagens Mage, Items",
-            icon: "fas fa-magic"
-        },
-        {
-            id: "kina",
-            name: "Rucoy Knight",
-            description: "Personagens Knight, Items",
-            icon: "fas fa-shield-alt"
-        },
-        {
-            id: "pally",
-            name: "Rucoy Paladin",
-            description: "Personagens Paladin, Items",
-            icon: "fas fa-crosshairs"
-        },
-        {
-            id: "supercell",
-            name: "Supercell Games",
-            description: "Clash of Clans, Clash Royale",
-            icon: "fas fa-crown"
-        },
-        {
-            id: "itens",
-            name: "Itens Gerais",
-            description: "Diversos itens para jogos",
-            icon: "fas fa-gem"
-        }
-    ]
 };
 
 // Variáveis globais
@@ -139,38 +66,19 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Carregar dados do site
 async function loadSiteData() {
     try {
-        console.log('Carregando dados da API...');
-        
-        // Carregar dados da API
-        const apiData = await getProdutos();
-        console.log('Dados recebidos da API:', apiData);
-        
-        // Verificar se a API retorna a estrutura completa ou só produtos
-        let products = [];
-        if (Array.isArray(apiData)) {
-            // API retorna diretamente o array de produtos
-            products = apiData;
-        } else if (apiData && Array.isArray(apiData.products)) {
-            // API retorna objeto com produtos dentro
-            products = apiData.products;
-        } else {
-            console.warn('Estrutura de dados da API não reconhecida:', apiData);
+        console.log('Tentando carregar data.json...');
+        const response = await fetch('/data.json');
+        console.log('Resposta recebida:', response.status);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
-        console.log('Produtos extraídos:', products?.length || 0);
-        
-        // Combinar configuração local com produtos da API
-        siteData = {
-            ...siteConfig,
-            products: products || []
-        };
-        
+        siteData = await response.json();
         console.log('Dados carregados com sucesso:', siteData);
         console.log('Número de produtos:', siteData.products?.length || 0);
     } catch (error) {
-        console.error('Erro ao carregar dados da API:', error);
+        console.error('Erro ao carregar dados:', error);
         // Mostrar erro para o usuário
-        showNotification('Erro ao carregar produtos da API. Recarregue a página.', 'warning');
+        showNotification('Erro ao carregar produtos. Recarregue a página.', 'warning');
     }
 }
 
@@ -180,7 +88,7 @@ function addToCart(productId, productData = null) {
     let product = productData;
     
     // Caso contrário, buscar nos dados do site
-    if (!product && siteData && siteData.products && Array.isArray(siteData.products)) {
+    if (!product && siteData && siteData.products) {
         product = siteData.products.find(p => p.id === productId);
     }
     
@@ -437,7 +345,7 @@ function shareProduct(product, platform = 'whatsapp') {
 function getAllCategories() {
     const allCategories = new Map();
     
-    // Primeiro, adicionar as categorias principais definidas na configuração
+    // Primeiro, adicionar as categorias principais definidas no data.json
     if (siteData.categories) {
         siteData.categories.forEach(cat => {
             allCategories.set(cat.id, {
@@ -452,7 +360,7 @@ function getAllCategories() {
     }
     
     // Depois, adicionar categorias dinâmicas baseadas nos produtos
-    if (siteData.products && Array.isArray(siteData.products)) {
+    if (siteData.products) {
         siteData.products.forEach(product => {
             if (product.category && product.is_active) {
                 if (allCategories.has(product.category)) {
@@ -545,7 +453,7 @@ function getCategoryName(categoryId) {
 
 // Filtrar produtos
 function filterProducts(category = '', searchTerm = '') {
-    if (!siteData.products || !Array.isArray(siteData.products)) return [];
+    if (!siteData.products) return [];
     
     return siteData.products.filter(product => {
         const matchesCategory = !category || product.category === category;
@@ -969,89 +877,6 @@ function renderProductsList(products, containerId) {
     console.log('HTML gerado e inserido no container');
 }
 
-// Renderizar produtos em destaque com indicadores especiais
-function renderFeaturedProducts(products, containerId) {
-    console.log('=== RENDER FEATURED PRODUCTS ===');
-    console.log('Produtos recebidos:', products?.length || 0);
-    console.log('Container ID:', containerId);
-    
-    const container = document.getElementById(containerId);
-    if (!container) {
-        console.error('Container não encontrado:', containerId);
-        return;
-    }
-    
-    console.log('Container encontrado:', container);
-    console.log('Renderizando produtos em destaque:', products?.length || 0, 'no container:', containerId);
-    
-    if (!products || products.length === 0) {
-        console.log('Nenhum produto para renderizar');
-        container.innerHTML = `
-            <div class="no-products">
-                <i class="fas fa-search" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 20px;"></i>
-                <p>Nenhum produto encontrado</p>
-            </div>
-        `;
-        return;
-    }
-
-    console.log('Primeiros 2 produtos a serem renderizados:', products.slice(0, 2));
-    
-    // Renderizar estrutura básica dos produtos primeiro
-    container.innerHTML = products.map(product => `
-        <div class="card product-card ${product.fixed ? 'featured-fixed' : ''}" data-product-id="${product.id}">
-            ${product.fixed ? '<div class="fixed-badge"><i class="fas fa-star"></i> DESTAQUE</div>' : ''}
-            <img alt="${product.name}" class="product-image" 
-                 title="Clique para ver em tela cheia"
-                 onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Erro+ao+Carregar'">
-            <div class="card-body">
-                <h3 class="product-name">${product.name}</h3>
-                <div class="product-prices">
-                    ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
-                    ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                    <span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>
-                </div>
-                ${product.description ? `<p class="product-description">${product.description.substring(0, 100)}...</p>` : ''}
-                ${product.fixed ? '<p class="fixed-description"><i class="fas fa-medal"></i> Produto que mais vale a pena comprar!</p>' : ''}
-            </div>
-            <div class="card-footer">
-                <div class="product-actions d-flex gap-2">
-                    <button class="btn btn-primary btn-round flex-1" onclick="addToCart('${product.id}')">
-                        <i class="fas fa-cart-plus"></i>
-                        Adicionar
-                    </button>
-                    <a href="produto/${createProductSlug(product.name)}" class="btn btn-outline btn-round">
-                        <i class="fas fa-eye"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    `).join('');
-    
-    // Depois processar as imagens de forma assíncrona
-    products.forEach(product => {
-        const productCard = container.querySelector(`[data-product-id="${product.id}"]`);
-        if (productCard) {
-            const imgElement = productCard.querySelector('img');
-            
-            // Configurar imagem
-            setProductImage(imgElement, product);
-            
-            // Configurar clique no modal após obter a imagem final
-            getImageUrl(product, (finalImageUrl) => {
-                imgElement.onclick = () => {
-                    openImageModal(
-                        finalImageUrl, 
-                        product.name.replace(/'/g, "\\'"), 
-                        (product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' '), 
-                        product.video_url || ''
-                    );
-                };
-            });
-        }
-    });
-}
-
 // Funções para páginas específicas
 const PageHandlers = {
     // Página inicial
@@ -1059,7 +884,7 @@ const PageHandlers = {
         console.log('Executando handler da página index');
         
         // Aguardar os dados serem carregados
-        if (!siteData.categories || !siteData.products || !Array.isArray(siteData.products)) {
+        if (!siteData.categories || !siteData.products) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.index(), 100);
             return;
@@ -1068,14 +893,10 @@ const PageHandlers = {
         console.log('Renderizando categorias...');
         renderCategories('categoriesGrid');
         
-        // Produtos em destaque - priorizar produtos com "fixed": true
-        const fixedProducts = siteData.products?.filter(product => product.fixed === true) || [];
-        const otherProducts = siteData.products?.filter(product => !product.fixed) || [];
-        
-        // Combinar produtos fixos primeiro + outros produtos até completar 8
-        const featuredProducts = [...fixedProducts, ...otherProducts].slice(0, 8);
-        console.log('Produtos em destaque:', featuredProducts.length, '- Produtos fixos:', fixedProducts.length);
-        renderFeaturedProducts(featuredProducts, 'featuredProducts');
+        // Produtos em destaque (primeiros 8)
+        const featuredProducts = siteData.products?.slice(0, 8) || [];
+        console.log('Produtos em destaque:', featuredProducts.length);
+        renderProducts(featuredProducts, 'featuredProducts');
         
         // Atualizar estatísticas
         if (siteData.stats) {
@@ -1106,7 +927,7 @@ const PageHandlers = {
         console.log('Produtos disponíveis:', siteData?.products?.length || 0);
         
         // Aguardar os dados serem carregados
-        if (!siteData.categories || !siteData.products || !Array.isArray(siteData.products)) {
+        if (!siteData.categories || !siteData.products) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.produtos(), 200);
             return;
@@ -1173,7 +994,7 @@ const PageHandlers = {
         console.log('Executando handler da página produto');
         
         // Aguardar os dados serem carregados
-        if (!siteData.products || !Array.isArray(siteData.products)) {
+        if (!siteData.products) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.produto(), 100);
             return;
@@ -1801,7 +1622,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Função demo para adicionar produto com nova categoria (apenas para demonstração)
 function addExampleProduct() {
-    if (!siteData || !siteData.products || !Array.isArray(siteData.products)) return;
+    if (!siteData || !siteData.products) return;
     
     const exampleProduct = {
         "id": "demo-1",

@@ -1,0 +1,99 @@
+backend:
+  name: git-gateway
+  branch: main 
+
+media_folder: "img/uploads"
+public_folder: "/img/uploads"
+
+collections:
+  - name: "config"
+    label: "Configuração do Site"
+    files:
+      - label: "Dados do Site"
+        name: "site_data"
+        file: "data.json"
+        format: "json"
+        fields:
+          - label: "Informações do Site"
+            name: "site"
+            widget: "object"
+            fields:
+              - { label: "Nome", name: "name", widget: "string" }
+              - { label: "Slogan", name: "tagline", widget: "string" }
+              - { label: "Descrição", name: "description", widget: "text" }
+              - { label: "WhatsApp", name: "whatsapp", widget: "string" }
+
+          - label: "Tema"
+            name: "theme"
+            widget: "object"
+            fields:
+              - label: "Cores"
+                name: "colors"
+                widget: "object"
+                fields:
+                  - { label: "Cor Primária", name: "primary", widget: "string" }
+                  - { label: "Cor Secundária", name: "secondary", widget: "string" }
+                  - { label: "Amarelo", name: "yellow", widget: "string" }
+                  - { label: "Escuro", name: "dark", widget: "string" }
+                  - { label: "Mais Escuro", name: "darker", widget: "string" }
+              - { label: "Modo", name: "mode", widget: "string", default: "dark" }
+
+          - label: "Categorias"
+            name: "categories"
+            widget: "list"
+            fields:
+              - { label: "ID", name: "id", widget: "string" }
+              - { label: "Nome", name: "name", widget: "string" }
+              - { label: "Descrição", name: "description", widget: "string" }
+              - { label: "Ícone", name: "icon", widget: "string" }
+
+          - label: "Estatísticas"
+            name: "stats"
+            widget: "object"
+            fields:
+              - { label: "Produtos", name: "products", widget: "string" }
+              - { label: "Usuários", name: "users", widget: "string" }
+              - { label: "Suporte", name: "support", widget: "string" }
+
+          - label: "Contato"
+            name: "contact"
+            widget: "object"
+            fields:
+              - { label: "WhatsApp", name: "whatsapp", widget: "string" }
+              - { label: "Email", name: "email", widget: "string" }
+              - label: "Horários"
+                name: "hours"
+                widget: "object"
+                fields:
+                  - { label: "Dias de Semana", name: "weekdays", widget: "string" }
+                  - { label: "Sábado", name: "saturday", widget: "string" }
+                  - { label: "Domingo", name: "sunday", widget: "string" }
+
+          - label: "Redes Sociais"
+            name: "social"
+            widget: "object"
+            fields:
+              - { label: "Instagram", name: "instagram", widget: "string" }
+              - { label: "Twitter", name: "twitter", widget: "string" }
+              - { label: "YouTube", name: "youtube", widget: "string" }
+              - { label: "Twitch", name: "twitch", widget: "string" }
+
+          - label: "Produtos"
+            name: "products"
+            widget: "list"
+            summary: "{{fields.name}} - R$ {{fields.rl_price}}"
+            fields:
+              - { label: "ID", name: "id", widget: "string" }
+              - { label: "Nome do Produto", name: "name", widget: "string" }
+              - { label: "URL da Imagem", name: "image_url", widget: "string", required: false }
+              - { label: "URL do Vídeo", name: "video_url", widget: "string", required: false }
+              - { label: "Preço RL", name: "rl_price", widget: "number", value_type: "float" }
+              - { label: "Preço Parcelado", name: "parcelado_price", widget: "number", value_type: "float", default: 0 }
+              - { label: "Preço KKS", name: "kks_price", widget: "number", value_type: "float" }
+              - { label: "Quantidade", name: "quantity", widget: "number", value_type: "int", default: 1 }
+              - { label: "Valor de Compra", name: "purchased_value", widget: "number", value_type: "int", default: 0 }
+              - { label: "Categoria", name: "category", widget: "string" }
+              - { label: "Descrição", name: "description", widget: "text" }
+              - { label: "Data de Criação", name: "created_at", widget: "date", format: "YYYY-MM-DD" }
+              - { label: "Fixado", name: "fixed", widget: "boolean", required: false }
+              - { label: "Ativo", name: "is_active", widget: "boolean", default: true }
