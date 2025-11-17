@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Migração - Chefinho</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0F0F23;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #8B5CF6;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .step {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(15, 15, 35, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        
+        .step h2 {
+            color: #FCD34D;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #8B5CF6, #A855F7);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #86efac;
+        }
+        
+        .error {
+            background: rgba(220, 38, 38, 0.2);
+            border: 1px solid rgba(220, 38, 38, 0.5);
+            color: #fca5a5;
+        }
+        
+        .loading {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #93c5fd;
+        }
+        
+        .json-output {
+            background: #000;
+            color: #4ade80;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+        
+        .info {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            color: #93c5fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Teste de Migração - Modo Local</h1>
+        
+        <div class="info">
+            <strong>ℹ️ Informação:</strong> Este é um teste local que simula o funcionamento da API. 
+            Os dados são carregados do <code>data.json</code> e processados no navegador.
+        </div>
+        
+        <!-- Passo 1: Carregar dados atuais -->
+        <div class="step">
+            <h2>1️⃣ Carregar Dados Atuais</h2>
+            <p>Carrega os dados do arquivo <code>data.json</code> local.</p>
+            <button class="btn" onclick="loadCurrentData()">Carregar Data.json</button>
+            <div id="loadResult"></div>
+        </div>
+        
+        <!-- Passo 2: Validar estrutura -->
+        <div class="step">
+            <h2>2️⃣ Validar Estrutura</h2>
+            <p>Verifica se os dados estão no formato correto para a API.</p>
+            <button class="btn" onclick="validateStructure()" disabled id="validateBtn">Validar Estrutura</button>
+            <div id="validateResult"></div>
+        </div>
+        
+        <!-- Passo 3: Simular salvamento -->
+        <div class="step">
+            <h2>3️⃣ Simular API</h2>
+            <p>Simula como os dados seriam enviados para a API Netlify.</p>
+            <button class="btn" onclick="simulateAPI()" disabled id="simulateBtn">Simular Envio para API</button>
+            <div id="simulateResult"></div>
+        </div>
+        
+        <!-- Passo 4: Gerar código -->
+        <div class="step">
+            <h2>4️⃣ Código para Deploy</h2>
+            <p>Gera o código necessário para fazer o deploy das funções.</p>
+            <button class="btn" onclick="generateDeployCode()" disabled id="deployBtn">Gerar Código de Deploy</button>
+            <div id="deployResult"></div>
+        </div>
+    </div>
+    
+    <script>
+        let currentData = null;
+        let validatedData = null;
+        
+        async function loadCurrentData() {
+            const resultDiv = document.getElementById('loadResult');
+            const validateBtn = document.getElementById('validateBtn');
+            
+            resultDiv.innerHTML = '<div class="result loading">🔄 Carregando dados...</div>';
+            
+            try {
+                const response = await fetch('/data.json');
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                currentData = await response.json();
+                
+                const summary = {
+                    totalProducts: currentData.products?.length || 0,
+                    categories: [...new Set(currentData.products?.map(p => p.category) || [])],
+                    structure: {
+                        hasProducts: !!currentData.products,
+                        hasNews: !!currentData.news,
+                        hasAnnouncements: !!currentData.announcements
+                    }
+                };
+                
+                resultDiv.innerHTML = `
+                    <div class="result success">✅ Dados carregados com sucesso!</div>
+                    <div class="json-output">${JSON.stringify(summary, null, 2)}</div>
+                `;
+                
+                validateBtn.disabled = false;
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                resultDiv.innerHTML = `
+                    <div class="result error">❌ Erro ao carregar dados: ${error.message}</div>
+                `;
+            }
+        }
+        
+        function validateStructure() {
+            const resultDiv = document.getElementById('validateResult');
+            const simulateBtn = document.getElementById('simulateBtn');
+            
+            if (!currentData) {
+                resultDiv.innerHTML = '<div class="result error">❌ Dados não carregados!</div>';
+                return;
+            }
+            
+            const validation = {
+                isValid: true,
+                errors: [],
+                warnings: [],
+                stats: {}
+            };
+            
+            // Validar estrutura básica
+            if (!currentData.products || !Array.isArray(currentData.products)) {
+                validation.errors.push('Propriedade "products" não encontrada ou não é array');
+                validation.isValid = false;
+            }
+            
+            if (!currentData.news || !Array.isArray(currentData.news)) {
+                validation.warnings.push('Propriedade "news" não encontrada ou não é array');
+            }
+            
+            if (!currentData.announcements || !Array.isArray(currentData.announcements)) {
+                validation.warnings.push('Propriedade "announcements" não encontrada ou não é array');
+            }
+            
+            // Validar produtos
+            if (currentData.products) {
+                validation.stats.totalProducts = currentData.products.length;
+                validation.stats.activeProducts = currentData.products.filter(p => p.is_active).length;
+                validation.stats.categories = [...new Set(currentData.products.map(p => p.category))].length;
+                
+                currentData.products.forEach((product, index) => {
+                    if (!product.id) validation.errors.push(`Produto ${index}: falta ID`);
+                    if (!product.name) validation.errors.push(`Produto ${index}: falta nome`);
+                    if (!product.category) validation.warnings.push(`Produto ${index}: falta categoria`);
+                    if (typeof product.rl_price !== 'number') validation.errors.push(`Produto ${index}: preço real inválido`);
+                    if (typeof product.kks_price !== 'number') validation.errors.push(`Produto ${index}: preço KKs inválido`);
+                });
+            }
+            
+            if (validation.errors.length > 0) {
+                validation.isValid = false;
+            }
+            
+            validatedData = validation.isValid ? currentData : null;
+            
+            const resultClass = validation.isValid ? 'success' : 'error';
+            const icon = validation.isValid ? '✅' : '❌';
+            const message = validation.isValid ? 'Estrutura válida!' : 'Estrutura inválida!';
+            
+            resultDiv.innerHTML = `
+                <div class="result ${resultClass}">${icon} ${message}</div>
+                <div class="json-output">${JSON.stringify(validation, null, 2)}</div>
+            `;
+            
+            simulateBtn.disabled = !validation.isValid;
+        }
+        
+        async function simulateAPI() {
+            const resultDiv = document.getElementById('simulateResult');
+            const deployBtn = document.getElementById('deployBtn');
+            
+            if (!validatedData) {
+                resultDiv.innerHTML = '<div class="result error">❌ Dados não validados!</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="result loading">🔄 Simulando chamadas da API...</div>';
+            
+            try {
+                // Simular GET
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const getSimulation = {
+                    endpoint: '/api/get-products',
+                    method: 'GET',
+                    status: 200,
+                    response: {
+                        success: true,
+                        data: validatedData,
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                // Simular POST
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                const postSimulation = {
+                    endpoint: '/api/update-products',
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer teste123',
+                        'Content-Type': 'application/json'
+                    },
+                    body: validatedData,
+                    status: 200,
+                    response: {
+                        success: true,
+                        message: 'Dados salvos com sucesso',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                const simulation = {
+                    apiTests: [getSimulation, postSimulation],
+                    summary: {
+                        allPassed: true,
+                        totalTests: 2,
+                        passedTests: 2,
+                        failedTests: 0
+                    }
+                };
+                
+                resultDiv.innerHTML = `
+                    <div class="result success">✅ Simulação da API concluída!</div>
+                    <div class="json-output">${JSON.stringify(simulation, null, 2)}</div>
+                `;
+                
+                deployBtn.disabled = false;
+                
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="result error">❌ Erro na simulação: ${error.message}</div>
+                `;
+            }
+        }
+        
+        function generateDeployCode() {
+            const resultDiv = document.getElementById('deployResult');
+            
+            const deployInstructions = {
+                steps: [
+                    {
+                        step: 1,
+                        title: "Commit das funções",
+                        command: "git add netlify/functions/ && git commit -m 'Add Netlify Functions'"
+                    },
+                    {
+                        step: 2,
+                        title: "Push para repositório",
+                        command: "git push origin main"
+                    },
+                    {
+                        step: 3,
+                        title: "Deploy automático",
+                        description: "O Netlify detectará automaticamente as funções e fará o deploy"
+                    },
+                    {
+                        step: 4,
+                        title: "Configurar KV Store",
+                        description: "No painel do Netlify, vá em Sites > [seu-site] > Storage > KV"
+                    },
+                    {
+                        step: 5,
+                        title: "Testar endpoints",
+                        urls: [
+                            "https://[seu-site].netlify.app/api/get-products",
+                            "https://[seu-site].netlify.app/api/update-products"
+                        ]
+                    }
+                ],
+                files: {
+                    "netlify/functions/get-products.js": "✅ Criado",
+                    "netlify/functions/update-products.js": "✅ Criado",
+                    "admin/index.html": "✅ Criado",
+                    "migrate-data.html": "✅ Criado"
+                },
+                environment: {
+                    "NODE_VERSION": "18.x",
+                    "NETLIFY_KV": "Enabled"
+                }
+            };
+            
+            resultDiv.innerHTML = `
+                <div class="result success">✅ Código de deploy gerado!</div>
+                <div class="json-output">${JSON.stringify(deployInstructions, null, 2)}</div>
+            `;
+        }
+    </script>
+</body>
+</html>

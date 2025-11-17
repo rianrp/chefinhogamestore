@@ -1,13 +1,24 @@
 // Netlify Function para obter produtos do KV Store
-export default async (request, context) => {
+exports.handler = async (event, context) => {
+  // Headers CORS
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Content-Type": "application/json"
+  };
+
+  // Responder OPTIONS requests para CORS
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: ""
+    };
+  }
+
   try {
-    // Importar o KV Store do Netlify
-    const { get } = await import("@netlify/kv");
-    
-    // Ler dados dos produtos do KV Store
-    const data = await get("products");
-    
-    // Se não existir dados, retornar estrutura padrão
+    // Estrutura padrão de dados
     const defaultData = {
       site: {
         name: "Chefinho",
@@ -57,32 +68,42 @@ export default async (request, context) => {
       },
       products: []
     };
-    
-    // Retornar dados ou padrão se vazio
-    const responseData = data || defaultData;
-    
-    return new Response(JSON.stringify(responseData), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
+
+    let responseData = defaultData;
+
+    // Tentar obter dados do KV Store se estiver em produção no Netlify
+    try {
+      if (process.env.NETLIFY) {
+        const { get } = await import("@netlify/kv");
+        const kvData = await get("products");
+        if (kvData && kvData.products) {
+          responseData = kvData;
+          console.log(`Dados carregados do KV Store: ${kvData.products.length} produtos`);
+        }
+      } else {
+        console.log("Ambiente local detectado, usando dados padrão");
       }
-    });
+    } catch (kvError) {
+      console.log("KV Store não disponível, usando dados padrão:", kvError.message);
+    }
+    
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: JSON.stringify(responseData)
+    };
     
   } catch (error) {
     console.error("Erro ao obter produtos:", error);
     
-    return new Response(JSON.stringify({ 
-      error: "Erro interno do servidor",
-      products: [] 
-    }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*"
-      }
-    });
+    return {
+      statusCode: 500,
+      headers: corsHeaders,
+      body: JSON.stringify({ 
+        error: "Erro interno do servidor",
+        message: error.message,
+        products: [] 
+      })
+    };
   }
 };

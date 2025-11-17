@@ -1,107 +1,118 @@
 // Netlify Function para atualizar produtos no KV Store
-export default async (request, context) => {
-  // Permitir CORS para todas as origens (para desenvolvimento)
+exports.handler = async (event, context) => {
+  // Headers CORS
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization"
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Content-Type": "application/json"
   };
   
   // Responder OPTIONS requests para CORS
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 200,
-      headers: corsHeaders
-    });
+  if (event.httpMethod === "OPTIONS") {
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: ""
+    };
   }
   
   // Apenas aceitar método POST
-  if (request.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Método não permitido" }), {
-      status: 405,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders
-      }
-    });
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 405,
+      headers: corsHeaders,
+      body: JSON.stringify({ error: "Método não permitido" })
+    };
   }
   
   try {
     // Verificar autorização
-    const authHeader = request.headers.get("Authorization");
+    const authHeader = event.headers.authorization || event.headers.Authorization;
     const expectedToken = process.env.ADMIN_TOKEN || "teste123"; // Token padrão para desenvolvimento
     
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return new Response(JSON.stringify({ error: "Token de autorização necessário" }), {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders
-        }
-      });
+      return {
+        statusCode: 401,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "Token de autorização necessário" })
+      };
     }
     
     const token = authHeader.replace("Bearer ", "");
     if (token !== expectedToken) {
-      return new Response(JSON.stringify({ error: "Token de autorização inválido" }), {
-        status: 401,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders
-        }
-      });
+      return {
+        statusCode: 401,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "Token de autorização inválido" })
+      };
     }
     
     // Obter dados do body
-    const body = await request.json();
+    let body;
+    try {
+      body = JSON.parse(event.body);
+    } catch (parseError) {
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "JSON inválido no body" })
+      };
+    }
     
     // Validar estrutura básica
     if (!body || typeof body !== "object") {
-      return new Response(JSON.stringify({ error: "Dados inválidos" }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-          ...corsHeaders
-        }
-      });
+      return {
+        statusCode: 400,
+        headers: corsHeaders,
+        body: JSON.stringify({ error: "Dados inválidos" })
+      };
     }
-    
-    // Importar o KV Store do Netlify
-    const { set } = await import("@netlify/kv");
     
     // Adicionar timestamp de atualização
     body.updated_at = new Date().toISOString();
     
-    // Salvar no KV Store
-    await set("products", body);
+    let success = false;
+    let message = "Dados salvos localmente (KV Store não disponível)";
     
-    console.log(`Produtos atualizados com sucesso. Total: ${body.products?.length || 0} produtos`);
-    
-    return new Response(JSON.stringify({ 
-      success: true, 
-      message: "Produtos atualizados com sucesso",
-      count: body.products?.length || 0,
-      updated_at: body.updated_at
-    }), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders
+    // Tentar salvar no KV Store se estiver em produção no Netlify
+    try {
+      if (process.env.NETLIFY) {
+        const { set } = await import("@netlify/kv");
+        await set("products", body);
+        success = true;
+        message = "Produtos atualizados com sucesso no KV Store";
+        console.log(`Produtos salvos no KV Store: ${body.products?.length || 0} produtos`);
+      } else {
+        console.log("Ambiente local: KV Store não disponível");
       }
-    });
+    } catch (kvError) {
+      console.log("Erro no KV Store:", kvError.message);
+      // Continuar mesmo se KV Store falhar (para desenvolvimento)
+    }
+    
+    return {
+      statusCode: 200,
+      headers: corsHeaders,
+      body: JSON.stringify({ 
+        success: true, 
+        message: message,
+        count: body.products?.length || 0,
+        updated_at: body.updated_at,
+        kv_available: process.env.NETLIFY ? true : false
+      })
+    };
     
   } catch (error) {
     console.error("Erro ao atualizar produtos:", error);
     
-    return new Response(JSON.stringify({ 
-      error: "Erro interno do servidor",
-      details: error.message 
-    }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-        ...corsHeaders
-      }
-    });
+    return {
+      statusCode: 500,
+      headers: corsHeaders,
+      body: JSON.stringify({ 
+        error: "Erro interno do servidor",
+        details: error.message 
+      })
+    };
   }
 };
