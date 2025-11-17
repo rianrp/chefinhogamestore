@@ -63,18 +63,48 @@ document.addEventListener('DOMContentLoaded', async function() {
     }, 100);
 });
 
+// Funções de API
+async function getProdutos() {
+    const response = await fetch('/.netlify/functions/get-products');
+    const data = await response.json();
+    return data;
+}
+
+async function salvarProdutos(lista) {
+    const response = await fetch('/.netlify/functions/update-products', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer teste123' // Token padrão
+        },
+        body: JSON.stringify(lista),
+    });
+    return response.json();
+}
+
 // Carregar dados do site
 async function loadSiteData() {
     try {
-        console.log('Tentando carregar data.json...');
-        const response = await fetch('/data.json');
-        console.log('Resposta recebida:', response.status);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        console.log('Carregando dados da API...');
+        
+        // Tentar carregar da API primeiro
+        try {
+            siteData = await getProdutos();
+            console.log('Dados carregados da API:', siteData);
+        } catch (apiError) {
+            console.warn('Erro na API, tentando fallback para data.json:', apiError);
+            
+            // Fallback para data.json local
+            const response = await fetch('/data.json');
+            if (!response.ok) {
+                throw new Error(`Erro no fallback: ${response.status}`);
+            }
+            siteData = await response.json();
+            console.log('Dados carregados do fallback data.json:', siteData);
         }
-        siteData = await response.json();
-        console.log('Dados carregados com sucesso:', siteData);
+        
         console.log('Número de produtos:', siteData.products?.length || 0);
+        
     } catch (error) {
         console.error('Erro ao carregar dados:', error);
         // Mostrar erro para o usuário
