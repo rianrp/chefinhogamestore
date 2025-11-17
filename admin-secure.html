@@ -399,7 +399,7 @@
                     <h2><i class="fas fa-plus"></i> Adicionar Produto</h2>
                     <form id="productForm">
                         <div class="form-group">
-                            <label for="name"><i class="fas fa-tag"></i> Nome do Produto *</label>
+                            <label for="name"><i class="fas fa-tag"></i> Nome do Produto *</label>2
                             <input type="text" id="name" name="name" required
                                 placeholder="Ex: Rucoy Online - Conta Level 500">
                         </div>
@@ -675,11 +675,9 @@
 
                 const formData = new FormData(event.target);
 
-                const imageFile = document.getElementById("image_file").files[0];
-                const videoFile = document.getElementById("video_file").files[0];
+                const imageFile = document.getElementById("image_file").files[0]; 
 
                 let imageUrl = "";
-                let videoUrl = "";
 
                 // sobe imagem se tiver
                 if (imageFile) {
@@ -699,26 +697,6 @@
                         throw new Error(imgResult.error || "Falha ao enviar imagem");
                     }
                     imageUrl = imgResult.url;
-                }
-
-                // sobe vídeo se tiver
-                if (videoFile) {
-                    const fd = new FormData();
-                    fd.append("file", videoFile);
-                    fd.append("kind", "video");
-
-                    const resVid = await fetch(`/.netlify/functions/upload-media`, {
-                        method: "POST",
-                        headers: {
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                        body: fd,
-                    });
-                    const vidResult = await resVid.json();
-                    if (!resVid.ok || !vidResult.success) {
-                        throw new Error(vidResult.error || "Falha ao enviar vídeo");
-                    }
-                    videoUrl = vidResult.url;
                 }
 
 
