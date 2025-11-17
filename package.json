@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/rianrp/chefinhogamestore/issues"
   },
-  "homepage": "https://github.com/rianrp/chefinhogamestore#readme"
+  "homepage": "https://github.com/rianrp/chefinhogamestore#readme",
+  "dependencies": {
+    "@netlify/blobs": "^10.4.0"
+  }
 }
