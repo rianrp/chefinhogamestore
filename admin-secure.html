@@ -429,11 +429,13 @@
                         </div>
                         <div class="form-group">
                             <label for="image_url"><i class="fas fa-image"></i> URL da Imagem</label>
-                            <input type="url" id="image_url" name="image_url" placeholder="https://exemplo.com/imagem.jpg">
+                            <input type="url" id="image_url" name="image_url"
+                                placeholder="https://exemplo.com/imagem.jpg">
                         </div>
                         <div class="form-group">
                             <label for="video_url"><i class="fas fa-video"></i> URL do Vídeo</label>
-                            <input type="url" id="video_url" name="video_url" placeholder="https://youtube.com/watch?v=...">
+                            <input type="url" id="video_url" name="video_url"
+                                placeholder="https://youtube.com/watch?v=...">
                         </div>
                         <div class="form-group">
                             <label for="description"><i class="fas fa-align-left"></i> Descrição</label>
@@ -670,6 +672,54 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
 
                 const formData = new FormData(event.target);
+
+                const imageFile = document.getElementById("image_file").files[0];
+                const videoFile = document.getElementById("video_file").files[0];
+
+                let imageUrl = "";
+                let videoUrl = "";
+
+                // sobe imagem se tiver
+                if (imageFile) {
+                    const fd = new FormData();
+                    fd.append("file", imageFile);
+                    fd.append("kind", "image");
+
+                    const resImg = await fetch(`/.netlify/functions/upload-media`, {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                        },
+                        body: fd,
+                    });
+                    const imgResult = await resImg.json();
+                    if (!resImg.ok || !imgResult.success) {
+                        throw new Error(imgResult.error || "Falha ao enviar imagem");
+                    }
+                    imageUrl = imgResult.url;
+                }
+
+                // sobe vídeo se tiver
+                if (videoFile) {
+                    const fd = new FormData();
+                    fd.append("file", videoFile);
+                    fd.append("kind", "video");
+
+                    const resVid = await fetch(`/.netlify/functions/upload-media`, {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                        },
+                        body: fd,
+                    });
+                    const vidResult = await resVid.json();
+                    if (!resVid.ok || !vidResult.success) {
+                        throw new Error(vidResult.error || "Falha ao enviar vídeo");
+                    }
+                    videoUrl = vidResult.url;
+                }
+
+
                 const newProduct = {
                     id: Date.now().toString(),
                     name: formData.get('name'),
