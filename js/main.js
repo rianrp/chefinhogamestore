@@ -63,22 +63,75 @@ document.addEventListener('DOMContentLoaded', async function() {
     }, 100);
 });
 
+// Funções de API
+async function getProdutos() {
+    // Detectar se estamos em ambiente local ou produção
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+    
+    if (isLocal) {
+        console.log('🏠 Ambiente local detectado - usando data.json');
+        const response = await fetch('/data.json');
+        if (!response.ok) {
+            throw new Error(`Erro ao carregar data.json: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('📂 Dados carregados do data.json:', data.products?.length, 'produtos');
+        return data;
+    } else {
+        console.log('🌐 Ambiente produção detectado - usando API');
+        const response = await fetch('/.netlify/functions/get-products');
+        if (!response.ok) {
+            throw new Error(`Erro na API: ${response.status}`);
+        }
+        const data = await response.json();
+        console.log('🔗 Dados carregados da API:', data.products?.length, 'produtos');
+        return data;
+    }
+}
+
+async function salvarProdutos(lista) {
+    const response = await fetch('/.netlify/functions/update-products', {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer teste123' // Token padrão
+        },
+        body: JSON.stringify(lista),
+    });
+    return response.json();
+}
+
 // Carregar dados do site
 async function loadSiteData() {
     try {
-        console.log('Tentando carregar data.json...');
-        const response = await fetch('/data.json');
-        console.log('Resposta recebida:', response.status);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        console.log('🔄 Iniciando carregamento de dados...');
+        
+        siteData = await getProdutos();
+        
+        if (siteData && siteData.products) {
+            console.log('✅ Dados carregados com sucesso!');
+            console.log('📊 Total de produtos:', siteData.products.length);
+            console.log('🏷️ Categorias encontradas:', [...new Set(siteData.products.map(p => p.category))].filter(Boolean));
+            
+            // Mostrar produtos mais recentes no console
+            const recentProducts = siteData.products
+                .filter(p => p.created_at)
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                .slice(0, 3);
+            
+            if (recentProducts.length > 0) {
+                console.log('🆕 Produtos mais recentes:');
+                recentProducts.forEach(p => {
+                    console.log(`  - ${p.name} (${p.category}) - ${new Date(p.created_at).toLocaleString()}`);
+                });
+            }
+        } else {
+            console.warn('⚠️ Dados carregados mas sem produtos');
         }
-        siteData = await response.json();
-        console.log('Dados carregados com sucesso:', siteData);
-        console.log('Número de produtos:', siteData.products?.length || 0);
+        
     } catch (error) {
-        console.error('Erro ao carregar dados:', error);
-        // Mostrar erro para o usuário
-        showNotification('Erro ao carregar produtos. Recarregue a página.', 'warning');
+        console.error('❌ Erro ao carregar dados:', error);
+        showNotification('Erro ao carregar produtos. Verifique a conexão e recarregue a página.', 'error');
     }
 }
 

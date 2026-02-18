@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Chefinho Gaming Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0F0F23 0%, #1a1a2e 100%);
+            color: #fff;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Login Styles */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(26, 26, 46, 0.9);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-card h1 {
+            color: #8B5CF6;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .login-card p {
+            color: #a0a0a0;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #FCD34D;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8B5CF6;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #8B5CF6, #A855F7);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: rgba(107, 114, 128, 0.8);
+        }
+
+        .btn.danger {
+            background: linear-gradient(135deg, #DC2626, #EF4444);
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 2px solid #8B5CF6;
+        }
+
+        .header h1 {
+            color: #8B5CF6;
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 10px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            color: #ffc107;
+        }
+
+        .alert.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            color: #86efac;
+        }
+
+        .alert.error {
+            background: rgba(220, 38, 38, 0.2);
+            border: 1px solid rgba(220, 38, 38, 0.5);
+            color: #fca5a5;
+        }
+
+        .card {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .card h2 {
+            color: #FCD34D;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #FCD34D;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 15, 35, 0.8);
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8B5CF6;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+        }
+
+        .product-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            background: rgba(15, 15, 35, 0.5);
+        }
+
+        .product-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 6px;
+            border-left: 4px solid #8B5CF6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-info {
+            flex: 1;
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 3px;
+        }
+
+        .product-meta {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #FCD34D;
+            display: block;
+        }
+
+        .stat-label {
+            color: #a0a0a0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .product-actions {
+                align-self: flex-end;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Tela de Login -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-card">
+            <h1><i class="fas fa-shield-alt"></i> Admin</h1>
+            <p>Acesso restrito ao painel administrativo</p>
+
+            <div id="loginAlert"></div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i> Usuário</label>
+                    <input type="text" id="username" name="username" value="admin" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Senha</label>
+                    <input type="password" id="password" name="password" required placeholder="Digite a senha">
+                </div>
+                <button type="submit" class="btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Entrar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Painel Admin -->
+    <div id="adminPanel" class="admin-panel">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-cogs"></i> Painel Administrativo</h1>
+                <p>Gerenciar produtos da Chefinho Gaming Store</p>
+            </div>
+
+            <div class="user-info">
+                <div>
+                    <i class="fas fa-user-circle"></i>
+                    Logado como: <strong>admin</strong>
+                </div>
+                <button class="btn secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalProducts">0</span>
+                    <span class="stat-label">Total Produtos</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="activeProducts">0</span>
+                    <span class="stat-label">Produtos Ativos</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalCategories">0</span>
+                    <span class="stat-label">Categorias</span>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h2><i class="fas fa-plus"></i> Adicionar Produto</h2>
+                    <form id="productForm">
+                        <div class="form-group">
+                            <label for="name"><i class="fas fa-tag"></i> Nome do Produto *</label>2
+                            <input type="text" id="name" name="name" required
+                                placeholder="Ex: Rucoy Online - Conta Level 500">
+                        </div>
+                        <div class="form-group">
+                            <label for="category"><i class="fas fa-folder"></i> Categoria *</label>
+                            <select id="category" name="category" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="freefire">Free Fire</option>
+                                <option value="mage">Rucoy Mage</option>
+                                <option value="kina">Rucoy Knight</option>
+                                <option value="pally">Rucoy Paladin</option>
+                                <option value="supercell">Supercell Games</option>
+                                <option value="itens">Itens Gerais</option>
+                                <option value="geral">Geral</option>
+                                <option value="roblox">Roblox</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rl_price"><i class="fas fa-dollar-sign"></i> Preço Real (R$) *</label>
+                            <input type="number" id="rl_price" name="rl_price" min="0" step="0.01" required
+                                placeholder="150.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="kks_price"><i class="fas fa-coins"></i> Preço KKs *</label>
+                            <input type="number" id="kks_price" name="kks_price" min="0" step="0.01" required
+                                placeholder="100.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="image_file">
+                                <i class="fas fa-image"></i>
+                                Imagem (arquivo)
+                            </label>
+                            <input type="file" id="image_file" name="image_file" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label for="video_url"><i class="fas fa-video"></i> URL do Vídeo</label>
+                            <input type="url" id="video_url" name="video_url"
+                                placeholder="https://youtube.com/watch?v=...">
+                        </div>
+                        <div class="form-group">
+                            <label for="description"><i class="fas fa-align-left"></i> Descrição</label>
+                            <textarea id="description" name="description" rows="3"
+                                placeholder="Descrição opcional do produto..."></textarea>
+                        </div>
+                        <button type="submit" class="btn" id="submitBtn">
+                            <i class="fas fa-save"></i> Adicionar Produto
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>
+                        <i class="fas fa-list"></i> Produtos Cadastrados
+                        <span id="productCount"
+                            style="background: rgba(139, 92, 246, 0.3); padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; margin-left: 10px;">0</span>
+                    </h2>
+                    <div class="form-group">
+                        <button class="btn secondary" onclick="loadProducts()">
+                            <i class="fas fa-sync"></i> Recarregar Lista
+                        </button>
+                    </div>
+                    <div id="productsList" class="product-list">
+                        <div style="text-align: center; color: #a0a0a0; padding: 20px;">
+                            <i class="fas fa-spinner fa-spin"></i> Carregando produtos...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentData = null;
+        let authToken = null;
+
+        // Verificar se já está logado
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+        });
+
+        // Verificar autenticação
+        async function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            if (token) {
+                try {
+                    const response = await fetch('/.netlify/functions/auth-validate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: token })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.valid) {
+                        authToken = token;
+                        showAdminPanel();
+                        return;
+                    }
+                } catch (error) {
+                    console.log('Erro na validação:', error);
+                }
+
+                // Token inválido, remover
+                localStorage.removeItem('admin_token');
+            }
+
+            showLoginScreen();
+        }
+
+        // Mostrar tela de login
+        function showLoginScreen() {
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('adminPanel').style.display = 'none';
+
+            // Listener do formulário de login
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+        }
+
+        // Mostrar painel admin
+        function showAdminPanel() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+
+            // Inicializar painel
+            loadProducts();
+            document.getElementById('productForm').addEventListener('submit', handleAddProduct);
+        }
+
+        // Lidar com login
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const loginBtn = document.getElementById('loginBtn');
+            const alertDiv = document.getElementById('loginAlert');
+
+            try {
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+
+                const formData = new FormData(event.target);
+                const credentials = {
+                    username: formData.get('username'),
+                    password: formData.get('password')
+                };
+
+                const response = await fetch('/.netlify/functions/auth-login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(credentials)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    authToken = result.token;
+                    localStorage.setItem('admin_token', result.token);
+                    showAdminPanel();
+                } else {
+                    alertDiv.innerHTML = `<div class="alert error">${result.error}</div>`;
+                    setTimeout(() => alertDiv.innerHTML = '', 3000);
+                }
+
+            } catch (error) {
+                console.error('Erro no login:', error);
+                alertDiv.innerHTML = '<div class="alert error">Erro de conexão. Tente novamente.</div>';
+                setTimeout(() => alertDiv.innerHTML = '', 3000);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('admin_token');
+            authToken = null;
+            showLoginScreen();
+        }
+
+        // Carregar produtos
+        async function loadProducts() {
+            if (!authToken) return;
+
+            try {
+                showAlert('Carregando produtos...', 'info');
+
+                const response = await fetch('/.netlify/functions/get-products');
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+
+                currentData = await response.json();
+                console.log('Dados carregados:', currentData);
+
+                renderProductsList();
+                updateStats();
+                showAlert('Produtos carregados com sucesso!', 'success');
+                setTimeout(() => clearAlert(), 3000);
+
+            } catch (error) {
+                console.error('Erro ao carregar produtos:', error);
+                showAlert('Erro ao carregar produtos: ' + error.message, 'error');
+            }
+        }
+
+        // Renderizar lista de produtos
+        function renderProductsList() {
+            const container = document.getElementById('productsList');
+            if (!currentData || !currentData.products || currentData.products.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #a0a0a0; padding: 20px;"><i class="fas fa-inbox"></i><br>Nenhum produto cadastrado ainda</div>';
+                return;
+            }
+
+            const products = currentData.products.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0)).slice(0, 20);
+            container.innerHTML = products.map(product => `
+                <div class="product-item">
+                    <div class="product-info">
+                        <div class="product-name">${product.name || 'Sem nome'}</div>
+                        <div class="product-meta">
+                            ${product.category || 'Sem categoria'} • R$ ${product.rl_price || '0'} • ${product.kks_price || '0'} KKs
+                            ${product.created_at ? ' • ' + new Date(product.created_at).toLocaleDateString() : ''}
+                        </div>
+                    </div>
+                    <div class="product-actions">
+                        <button class="btn danger" onclick="removeProduct('${product.id}')" title="Remover produto">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            if (currentData.products.length > 20) {
+                container.innerHTML += `<div style="text-align: center; color: #a0a0a0; margin-top: 10px; font-size: 0.9rem;">... e mais ${currentData.products.length - 20} produtos</div>`;
+            }
+        }
+
+        // Atualizar estatísticas
+        function updateStats() {
+            if (!currentData || !currentData.products) {
+                document.getElementById('totalProducts').textContent = '0';
+                document.getElementById('activeProducts').textContent = '0';
+                document.getElementById('totalCategories').textContent = '0';
+                return;
+            }
+
+            const products = currentData.products;
+            const activeProducts = products.filter(p => p.is_active);
+            const categories = new Set(products.map(p => p.category).filter(Boolean));
+
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('activeProducts').textContent = activeProducts.length;
+            document.getElementById('totalCategories').textContent = categories.size;
+            document.getElementById('productCount').textContent = products.length;
+        }
+
+        // Adicionar produto
+        async function handleAddProduct(event) {
+            event.preventDefault();
+
+            if (!authToken) {
+                showAlert('Sessão expirada. Faça login novamente.', 'error');
+                logout();
+                return;
+            }
+
+            if (!currentData) {
+                showAlert('Carregue os produtos primeiro!', 'error');
+                return;
+            }
+
+            try {
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
+
+                const formData = new FormData(event.target);
+
+                const imageFile = document.getElementById("image_file").files[0]; 
+
+                let imageUrl = "";
+
+                // sobe imagem se tiver
+                if (imageFile) {
+                    const fd = new FormData();
+                    fd.append("file", imageFile);
+                    fd.append("kind", "image");
+
+                    const resImg = await fetch(`/.netlify/functions/upload-media`, {
+                        method: "POST",
+                        headers: {
+                            Authorization: `Bearer ${authToken}`,
+                        },
+                        body: fd,
+                    });
+                    const imgResult = await resImg.json();
+                    if (!resImg.ok || !imgResult.success) {
+                        throw new Error(imgResult.error || "Falha ao enviar imagem");
+                    }
+                    imageUrl = imgResult.url;
+                }
+
+
+                const newProduct = {
+                    id: Date.now().toString(),
+                    name: formData.get('name'),
+                    category: formData.get('category'),
+                    image_url: formData.get('image_url') || '',
+                    video_url: formData.get('video_url') || '',
+                    description: formData.get('description') || `Produto adicionado via painel em ${new Date().toLocaleString()}`,
+                    rl_price: Number(formData.get('rl_price')),
+                    kks_price: Number(formData.get('kks_price')),
+                    quantity: 1,
+                    is_active: true,
+                    created_at: new Date().toISOString(),
+                    parcelado_price: 0,
+                    purchased_value: 0
+                };
+
+                // Adicionar produto aos dados
+                const updatedData = {
+                    ...currentData,
+                    products: [...currentData.products, newProduct]
+                };
+
+                // Remover debug info antes de enviar
+                delete updatedData._debug;
+
+                // Enviar para API
+                const response = await fetch('/.netlify/functions/update-products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    currentData = updatedData;
+                    renderProductsList();
+                    updateStats();
+                    event.target.reset();
+                    showAlert('Produto adicionado com sucesso!', 'success');
+                } else {
+                    throw new Error(result.error || 'Erro ao salvar produto');
+                }
+
+            } catch (error) {
+                console.error('Erro ao adicionar produto:', error);
+                showAlert('Erro ao adicionar produto: ' + error.message, 'error');
+            } finally {
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save"></i> Adicionar Produto';
+            }
+        }
+
+        // Remover produto
+        async function removeProduct(productId) {
+            if (!authToken) {
+                showAlert('Sessão expirada. Faça login novamente.', 'error');
+                logout();
+                return;
+            }
+
+            if (!confirm('Tem certeza que deseja remover este produto?')) return;
+
+            try {
+                if (!currentData || !currentData.products) throw new Error('Dados não carregados');
+
+                const productIndex = currentData.products.findIndex(p => p.id === productId);
+                if (productIndex === -1) throw new Error('Produto não encontrado');
+
+                const removedProduct = currentData.products[productIndex];
+                const updatedData = {
+                    ...currentData,
+                    products: currentData.products.filter(p => p.id !== productId)
+                };
+
+                delete updatedData._debug;
+
+                const response = await fetch('/.netlify/functions/update-products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    currentData = updatedData;
+                    renderProductsList();
+                    updateStats();
+                    showAlert(`Produto "${removedProduct.name}" removido com sucesso!`, 'success');
+                } else {
+                    throw new Error(result.error || 'Erro ao remover produto');
+                }
+
+            } catch (error) {
+                console.error('Erro ao remover produto:', error);
+                showAlert('Erro ao remover produto: ' + error.message, 'error');
+            }
+        }
+
+        // Mostrar alerta
+        function showAlert(message, type = 'info') {
+            const container = document.getElementById('alertContainer');
+            const className = type === 'success' ? 'alert success' : type === 'error' ? 'alert error' : 'alert';
+            container.innerHTML = `<div class="${className}">${message}</div>`;
+        }
+
+        // Limpar alerta
+        function clearAlert() {
+            document.getElementById('alertContainer').innerHTML = '';
+        }
+    </script>
+</body>
+
+</html>
