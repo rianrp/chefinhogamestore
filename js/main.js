@@ -46,59 +46,23 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Executar handler da página atual após carregar os dados
         let page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
         
-        // Se a URL é /produto/algo, considerar como página 'produto'
-        if (window.location.pathname.startsWith('/produto/')) {
-            page = 'produto';
-        }
-        
-        console.log('Página atual:', page);
-        console.log('Pathname completo:', window.location.pathname);
-        
         if (PageHandlers[page]) {
-            console.log('Executando handler para página:', page);
             PageHandlers[page]();
-        } else {
-            console.log('Handler não encontrado para página:', page);
         }
     }, 100);
 });
 
-// Funções de API
+// Funções de API - Sempre usa Supabase
 async function getProdutos() {
-    // Detectar se estamos em ambiente local ou produção
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+    console.log('🔄 Carregando dados do Supabase...');
     
-    if (isLocal) {
-        console.log('🏠 Ambiente local detectado - usando data.json');
-        const response = await fetch('/data.json');
-        if (!response.ok) {
-            throw new Error(`Erro ao carregar data.json: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log('📂 Dados carregados do data.json:', data.products?.length, 'produtos');
-        return data;
-    } else {
-        console.log('🌐 Ambiente produção detectado - usando API');
-        const response = await fetch('/.netlify/functions/get-products');
-        if (!response.ok) {
-            throw new Error(`Erro na API: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log('🔗 Dados carregados da API:', data.products?.length, 'produtos');
-        return data;
+    if (typeof supabase === 'undefined' || !supabase.getSiteData) {
+        throw new Error('Cliente Supabase não disponível');
     }
-}
-
-async function salvarProdutos(lista) {
-    const response = await fetch('/.netlify/functions/update-products', {
-        method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer teste123' // Token padrão
-        },
-        body: JSON.stringify(lista),
-    });
-    return response.json();
+    
+    const data = await supabase.getSiteData();
+    console.log('✅ Supabase:', data.products?.length || 0, 'produtos');
+    return data;
 }
 
 // Carregar dados do site
@@ -330,31 +294,9 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
-// Criar slug amigável para URLs
-function createProductSlug(productName) {
-    const slug = productName.toLowerCase()
-        .replace(/[^\w\s-]/g, '') // Remove caracteres especiais
-        .replace(/\s+/g, '-')      // Substitui espaços por hífens
-        .replace(/-+/g, '-')       // Remove hífens duplos
-        .trim();
-    console.log(`🏭 createProductSlug: "${productName}" → "${slug}"`);
-    return slug;
-}
-
-// Gerar URL de compartilhamento do produto
-function generateShareableProductUrl(product) {
-    if (!product) return '';
-    
-    const baseUrl = window.location.origin;
-    const slug = createProductSlug(product.name);
-    const productUrl = `${baseUrl}/produto/${slug}`;
-    
-    return productUrl;
-}
-
 // Compartilhar produto específico
 function shareProduct(product, platform = 'whatsapp') {
-    const productUrl = generateShareableProductUrl(product);
+    const productUrl = `${window.location.origin}/produto.html?id=${product.id}`;
     const shareText = `Olha esse produto incrível: ${product.name} por R$ ${product.rl_price.toFixed(2)}! 🎮`;
     
     let shareUrl = '';
@@ -582,37 +524,34 @@ function generateVideoThumbnail(videoUrl, callback, timeOffset = 5) {
     video.src = videoUrl;
 }
 
-// Função auxiliar para obter URL da imagem do produto
+// Função auxiliar para obter URL da imagem do produto (com otimização ImageKit)
 function getImageUrl(product, callback = null) {
-    console.log('🖼️ getImageUrl chamado para:', product.name);
-    console.log('   - image_url:', product.image_url);
-    console.log('   - video_url:', product.video_url);
+    const defaultImage = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
+    
+    // Função para otimizar URL com ImageKit se disponível
+    const optimizeUrl = (url) => {
+        if (typeof imageKit !== 'undefined' && imageKit.getProductCard) {
+            return imageKit.getProductCard(url);
+        }
+        return url;
+    };
     
     // Se tem image_url válida, usar ela
     if (product.image_url && product.image_url.trim() !== '') {
-        console.log('   ✅ Usando image_url:', product.image_url);
-        if (callback) callback(product.image_url);
-        return product.image_url;
+        const optimized = optimizeUrl(product.image_url);
+        if (callback) callback(optimized);
+        return optimized;
     }
     
     // Se não tem imagem mas tem vídeo, gerar thumbnail
     if (product.video_url && callback) {
-        console.log('   📹 Gerando thumbnail do vídeo...');
         generateVideoThumbnail(product.video_url, (thumbnailUrl) => {
-            if (thumbnailUrl) {
-                callback(thumbnailUrl);
-            } else {
-                // Fallback se não conseguir gerar thumbnail
-                const fallback = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
-                callback(fallback);
-            }
+            callback(thumbnailUrl || defaultImage);
         });
         return null; // Indica que será assíncrono
     }
     
     // Fallback padrão
-    const defaultImage = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
-    console.log('   🔄 Usando imagem padrão:', defaultImage);
     if (callback) callback(defaultImage);
     return defaultImage;
 }
@@ -684,7 +623,7 @@ function renderProducts(products, containerId) {
                         <i class="fas fa-cart-plus"></i>
                         Adicionar
                     </button>
-                    <a href="produto/${createProductSlug(product.name)}" class="btn btn-outline btn-round">
+                    <a href="produto.html?id=${product.id}" class="btn btn-outline btn-round">
                         <i class="fas fa-eye"></i>
                     </a>
                 </div>
@@ -895,7 +834,7 @@ function renderProductsList(products, containerId) {
                         <i class="fas fa-cart-plus"></i>
                         Adicionar
                     </button>
-                    <a href="produto/${createProductSlug(product.name)}" class="btn btn-outline btn-round">
+                    <a href="produto.html?id=${product.id}" class="btn btn-outline btn-round">
                         <i class="fas fa-eye"></i>
                         Ver
                     </a>
@@ -1044,54 +983,47 @@ const PageHandlers = {
     
     // Página de produto individual
     produto: function() {
-        console.log('Executando handler da página produto');
-        
         // Aguardar os dados serem carregados
-        if (!siteData.products) {
-            console.log('Dados ainda não carregados, aguardando...');
+        if (!siteData || !siteData.products) {
             setTimeout(() => this.produto(), 100);
             return;
         }
         
         const urlParams = new URLSearchParams(window.location.search);
-        let productId = urlParams.get('id');
-        let productSlug = urlParams.get('img') || urlParams.get('slug');
+        const productId = urlParams.get('id');
         
-        // Tentar extrair slug da URL se não há parâmetros
-        if (!productId && !productSlug) {
-            const pathMatch = window.location.pathname.match(/\/produto\/(.+)/);
-            if (pathMatch) {
-                productSlug = pathMatch[1];
+        if (!productId) {
+            const container = document.getElementById('productDetails');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #FCD34D; margin-bottom: 20px;"></i>
+                        <h2>Produto não especificado</h2>
+                        <p style="color: #a0a0a0; margin: 20px 0;">Use: <code>produto.html?id=NUMERO</code></p>
+                        <a href="/produtos.html" class="btn btn-primary btn-round">Ver Todos os Produtos</a>
+                    </div>
+                `;
             }
-        }
-        
-        console.log('ID do produto:', productId);
-        console.log('Slug do produto:', productSlug);
-        
-        if (!productId && !productSlug) {
-            console.log('Produto não encontrado na URL');
-            window.location.href = '/produtos.html';
             return;
         }
         
-        // Buscar produto por ID ou slug
-        let product;
-        if (productId) {
-            product = siteData.products?.find(p => p.id === productId || p.id === parseInt(productId));
-        } else if (productSlug) {
-            product = siteData.products?.find(p => {
-                const slug = createProductSlug(p.name);
-                return slug === productSlug;
-            });
-        }
+        // Buscar produto por ID
+        const product = siteData.products?.find(p => p.id === productId || p.id === parseInt(productId));
         
         if (!product) {
-            console.log('Produto não encontrado:', productId || productSlug);
-            window.location.href = 'produtos.html';
+            const container = document.getElementById('productDetails');
+            if (container) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 60px 20px;">
+                        <i class="fas fa-times-circle" style="font-size: 3rem; color: #ef4444; margin-bottom: 20px;"></i>
+                        <h2>Produto não encontrado</h2>
+                        <p style="color: #a0a0a0; margin: 20px 0;">O produto ID "${productId}" não existe.</p>
+                        <a href="/produtos.html" class="btn btn-primary btn-round">Ver Todos os Produtos</a>
+                    </div>
+                `;
+            }
             return;
         }
-        
-        console.log('Produto encontrado:', product.name);
         
         // Meta tags são atualizadas automaticamente pela Edge Function no servidor
         // Não é necessário JavaScript para isso

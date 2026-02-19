@@ -26,7 +26,6 @@
     <meta property="twitter:image" content="https://chefinhogamestore.netlify.app/img/og-image.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 
 
     <!-- Favicons -->
@@ -39,18 +38,6 @@
 </head>
 
 <body>
-    <script>
-        if (window.netlifyIdentity) {
-            window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                    window.netlifyIdentity.on("login", () => {
-                        document.location.href = "/admin/";
-                    });
-                }
-            });
-        }
-    </script>
-
     <!-- Header -->
     <header class="header">
         <div class="container">
@@ -421,6 +408,7 @@
     </a>
 
     <!-- JavaScript -->
+    <script src="js/supabase-client.js"></script>
     <script src="js/main.js"></script>
 
     <script>

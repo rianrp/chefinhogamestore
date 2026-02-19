@@ -1,23 +1,21 @@
 {
-  "name": "chefinho",
-  "version": "1.0.0",
-  "description": "Uma loja online moderna para produtos gaming, desenvolvida com foco na experiência do usuário e integração direta com WhatsApp para vendas.",
-  "main": "index.js",
+  "name": "chefinho-gamestore",
+  "version": "2.0.0",
+  "description": "Loja online de produtos gaming com integração Supabase e WhatsApp",
+  "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx http-server . -p 3000 -o",
+    "start": "npx http-server . -p 3000"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/rianrp/chefinhogamestore.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["gaming", "store", "supabase", "ecommerce"],
+  "author": "Chefinho",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/rianrp/chefinhogamestore/issues"
   },
-  "homepage": "https://github.com/rianrp/chefinhogamestore#readme",
-  "dependencies": {
-    "@netlify/blobs": "^10.4.0"
-  }
+  "homepage": "https://github.com/rianrp/chefinhogamestore#readme"
 }
