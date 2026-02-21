@@ -1014,7 +1014,7 @@ const PageHandlers = {
                         <span class="stat-label">Produtos</span>
                     </div>
                     <div class="stat-item fade-in-up">
-                        <span class="stat-number">100+</span>
+                        <span class="stat-number">1k+</span>
                         <span class="stat-label">Clientes</span>
                     </div>
                     <div class="stat-item fade-in-up">
