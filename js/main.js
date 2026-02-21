@@ -446,6 +446,66 @@ function getCategoryName(categoryId) {
     return formatCategoryName(categoryId);
 }
 
+// Verificar se um anúncio está ativo (não expirado)
+function isAnuncioAtivo(product) {
+    if (!product.is_anuncio) return false;
+    if (!product.anuncio_fim) return false;
+    return new Date(product.anuncio_fim) > new Date();
+}
+
+// Obter informações de renderização do anúncio
+function getAnuncioInfo(product) {
+    const ativo = isAnuncioAtivo(product);
+    if (!ativo) {
+        return { badge: '', cssClass: '', borderStyle: '', anuncianteTag: '' };
+    }
+
+    const plano = product.anuncio_plano || 'basico';
+    const configs = {
+        basico: {
+            label: 'Anúncio',
+            color: '#8B5CF6',
+            textColor: '#fff',
+            icon: 'fas fa-bullhorn',
+            glow: 'none',
+            border: '1px solid rgba(139, 92, 246, 0.4)'
+        },
+        pro: {
+            label: 'Destaque',
+            color: '#FCD34D',
+            textColor: '#1a1a2e',
+            icon: 'fas fa-star',
+            glow: '0 0 20px rgba(252, 211, 77, 0.2)',
+            border: '2px solid rgba(252, 211, 77, 0.5)'
+        },
+        elite: {
+            label: 'Fixado',
+            color: '#F97316',
+            textColor: '#fff',
+            icon: 'fas fa-crown',
+            glow: '0 0 25px rgba(249, 115, 22, 0.25)',
+            border: '2px solid rgba(249, 115, 22, 0.6)'
+        }
+    };
+
+    const cfg = configs[plano] || configs.basico;
+    
+    const badge = `<div class="anuncio-badge anuncio-${plano}" style="position:absolute;top:10px;left:10px;z-index:5;background:${cfg.color};color:${cfg.textColor};padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:5px;text-transform:uppercase;"><i class="${cfg.icon}"></i>${cfg.label}</div>`;
+    
+    const borderStyle = `style="position:relative;border:${cfg.border};box-shadow:${cfg.glow};"`;
+    
+    const anuncianteTag = product.anunciante_nome 
+        ? `<span class="anunciante-tag" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:${cfg.color};margin-top:5px;"><i class="fas fa-user-tag"></i>por ${product.anunciante_nome}</span>` 
+        : '';
+
+    return {
+        badge,
+        cssClass: `anuncio-card anuncio-${plano}`,
+        borderStyle,
+        anuncianteTag
+    };
+}
+
 // Filtrar produtos
 function filterProducts(category = '', searchTerm = '') {
     if (!siteData.products) return [];
@@ -603,19 +663,23 @@ function renderProducts(products, containerId) {
     console.log('Primeiros 2 produtos a serem renderizados:', products.slice(0, 2));
     
     // Renderizar estrutura básica dos produtos primeiro
-    container.innerHTML = products.map(product => `
-        <div class="card product-card" data-product-id="${product.id}">
+    container.innerHTML = products.map(product => {
+        const anuncioInfo = getAnuncioInfo(product);
+        return `
+        <div class="card product-card ${anuncioInfo.cssClass}" data-product-id="${product.id}" ${anuncioInfo.borderStyle}>
+            ${anuncioInfo.badge}
             <img alt="${product.name}" class="product-image" 
                  title="Clique para ver em tela cheia"
                  onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Erro+ao+Carregar'">
             <div class="card-body">
                 <h3 class="product-name">${product.name}</h3>
                 <div class="product-prices">
-                    ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
+                    ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : `<span class="price price-main">${product.kks_price.toFixed(2)}Kks</span>`}
                     ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                    <span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>
+                    ${product.rl_price <= 0 ? `<span class="price price-kks-secondary">Apenas em KKs</span>` : `<span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>`}
                 </div>
                 ${product.description ? `<p class="product-description">${product.description.substring(0, 100)}...</p>` : ''}
+                ${anuncioInfo.anuncianteTag}
             </div>
             <div class="card-footer">
                 <div class="product-actions d-flex gap-2">
@@ -629,7 +693,7 @@ function renderProducts(products, containerId) {
                 </div>
             </div>
         </div>
-    `).join('');
+    `}).join('');
     
     // Depois processar as imagens de forma assíncrona
     products.forEach(product => {
@@ -810,38 +874,88 @@ function renderProductsList(products, containerId) {
     console.log('Gerando HTML para produtos em lista...');
     
     // Renderizar estrutura básica primeiro
-    container.innerHTML = products.map(product => `
-        <div class="card product-card-list" data-product-id="${product.id}">
-            <div class="product-list-content">
-                <img alt="${product.name}" class="product-image-list" 
-                     title="Clique para ver em tela cheia"
-                     onerror="this.src='https://via.placeholder.com/120x120/8B5CF6/ffffff?text=Erro+ao+Carregar'">
-                <div class="product-info-list">
-                    <h3 class="product-name">${product.name}</h3>
-                    ${product.description ? `<p class="product-description-list">${product.description.substring(0, 150)}...</p>` : ''}
-                    <div class="product-meta-list">
-                        <span class="product-category">${getCategoryName(product.category)}</span>
-                        <span class="product-availability">Disponível: ${product.quantity}</span>
+    container.innerHTML = products
+    .map((product) => {
+        const anuncioInfo = getAnuncioInfo(product);
+
+        return `
+            <div class="card product-card-list ${anuncioInfo.cssClass}"
+                 data-product-id="${product.id}"
+                 ${anuncioInfo.borderStyle || ''}>
+                 
+                ${anuncioInfo.badge || ''}
+
+                <div class="product-list-content">
+                    <img 
+                        src="${product.image || ''}"
+                        alt="${product.name}"
+                        class="product-image-list"
+                        title="Clique para ver em tela cheia"
+                        onerror="this.src='https://via.placeholder.com/120x120/8B5CF6/ffffff?text=Erro+ao+Carregar'">
+
+                    <div class="product-info-list">
+                        <h3 class="product-name">${product.name}</h3>
+
+                        ${
+                            product.description
+                                ? `<p class="product-description-list">
+                                    ${product.description.substring(0, 150)}...
+                                   </p>`
+                                : ''
+                        }
+
+                        <div class="product-meta-list">
+                            <span class="product-category">
+                                ${getCategoryName(product.category)}
+                            </span>
+                            <span class="product-availability">
+                                Disponível: ${product.quantity}
+                            </span>
+                            ${anuncioInfo.anuncianteTag || ''}
+                        </div>
+                    </div>
+
+                    <div class="product-prices-list">
+                        ${
+                            product.rl_price > 0
+                                ? `<span class="price price-main">
+                                    R$ ${product.rl_price.toFixed(2)}
+                                   </span>`
+                                : ''
+                        }
+
+                        ${
+                            product.parcelado_price > 0
+                                ? `<span class="price price-parcelado">
+                                    Parcelado: R$ ${product.parcelado_price.toFixed(2)}
+                                   </span>`
+                                : ''
+                        }
+
+                        <span class="price price-kks-secondary">
+                            ${product.kks_price.toFixed(0)} KKs
+                        </span>
+                    </div>
+
+                    <div class="product-actions-list">
+                        <button 
+                            class="btn btn-primary btn-round"
+                            onclick="addToCart('${product.id}')">
+                            <i class="fas fa-cart-plus"></i>
+                            Adicionar
+                        </button>
+
+                        <a href="produto.html?id=${product.id}"
+                           class="btn btn-outline btn-round">
+                            <i class="fas fa-eye"></i>
+                            Ver
+                        </a>
                     </div>
                 </div>
-                <div class="product-prices-list">
-                    ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
-                    ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                    <span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>
-                </div>
-                <div class="product-actions-list">
-                    <button class="btn btn-primary btn-round" onclick="addToCart('${product.id}')">
-                        <i class="fas fa-cart-plus"></i>
-                        Adicionar
-                    </button>
-                    <a href="produto.html?id=${product.id}" class="btn btn-outline btn-round">
-                        <i class="fas fa-eye"></i>
-                        Ver
-                    </a>
-                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    })
+    .join('');
     
     // Depois processar as imagens de forma assíncrona
     products.forEach(product => {
@@ -896,11 +1010,11 @@ const PageHandlers = {
             if (statsContainer) {
                 statsContainer.innerHTML = `
                     <div class="stat-item fade-in-up">
-                        <span class="stat-number">${siteData.stats.products}</span>
+                        <span class="stat-number">50+</span>
                         <span class="stat-label">Produtos</span>
                     </div>
                     <div class="stat-item fade-in-up">
-                        <span class="stat-number">${siteData.stats.users}</span>
+                        <span class="stat-number">100+</span>
                         <span class="stat-label">Clientes</span>
                     </div>
                     <div class="stat-item fade-in-up">
@@ -1067,6 +1181,10 @@ const PageHandlers = {
                         `}
                     </div>
                     <div class="product-info">
+                        ${(() => {
+                            const anuncioInfo = getAnuncioInfo(product);
+                            return anuncioInfo.badge ? `<div style="margin-bottom: 12px;">${anuncioInfo.badge.replace('position:absolute;top:10px;left:10px;z-index:5;', 'position:relative;display:inline-flex;')}</div>` : '';
+                        })()}
                         <h1 class="product-title">${product.name}</h1>
                         <div class="product-prices mb-4">
                             ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
@@ -1077,6 +1195,7 @@ const PageHandlers = {
                         <div class="product-meta mb-4">
                             <p><strong>Categoria:</strong> ${getCategoryName(product.category)}</p>
                             <p><strong>Disponível:</strong> ${product.quantity} unidade(s)</p>
+                            ${isAnuncioAtivo(product) && product.anunciante_nome ? `<p style="color: ${product.anuncio_plano === 'elite' ? '#F97316' : product.anuncio_plano === 'pro' ? '#FCD34D' : '#8B5CF6'};"><strong><i class="fas fa-user-tag"></i> Anunciante:</strong> ${product.anunciante_nome}</p>` : ''}
                         </div>
                         <div class="product-actions">
                             <button class="btn btn-primary btn-round" onclick="addToCart('${product.id}')">

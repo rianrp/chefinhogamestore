@@ -1531,3 +1531,94 @@ body {
         margin: 0 10px;
     }
 }
+
+/* =====================================================
+   ANÚNCIOS - Estilos de destaque para produtos anunciados
+   ===================================================== */
+
+/* Card de anúncio - base */
+.anuncio-card {
+    position: relative;
+    overflow: visible;
+}
+
+.anuncio-card .product-image {
+    position: relative;
+}
+
+/* Badge do anúncio (posicionado via inline style no JS) */
+.anuncio-badge {
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    animation: anuncioBadgePulse 3s ease-in-out infinite;
+}
+
+/* Plano Básico */
+.anuncio-card.anuncio-basico {
+    border: 1px solid rgba(139, 92, 246, 0.4) !important;
+}
+
+/* Plano Pro - Destaque dourado */
+.anuncio-card.anuncio-pro {
+    border: 2px solid rgba(252, 211, 77, 0.5) !important;
+    box-shadow: 0 0 20px rgba(252, 211, 77, 0.15) !important;
+}
+
+.anuncio-card.anuncio-pro:hover {
+    box-shadow: 0 0 30px rgba(252, 211, 77, 0.25) !important;
+}
+
+/* Plano Elite - Destaque laranja premium */
+.anuncio-card.anuncio-elite {
+    border: 2px solid rgba(249, 115, 22, 0.6) !important;
+    box-shadow: 0 0 25px rgba(249, 115, 22, 0.2) !important;
+}
+
+.anuncio-card.anuncio-elite:hover {
+    box-shadow: 0 0 35px rgba(249, 115, 22, 0.3) !important;
+    transform: translateY(-8px) !important;
+}
+
+/* Animação sutil no badge */
+@keyframes anuncioBadgePulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+}
+
+/* Tag do anunciante */
+.anunciante-tag {
+    font-style: italic;
+}
+
+/* Anúncio no modo lista */
+.product-card-list.anuncio-card {
+    position: relative;
+}
+
+.product-card-list .anuncio-badge {
+    position: absolute !important;
+    top: 10px !important;
+    left: 10px !important;
+}
+
+/* Fixado indicator para Elite */
+.anuncio-card.anuncio-elite::after {
+    content: '📌';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.2rem;
+    z-index: 5;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .anuncio-badge {
+        font-size: 0.65rem !important;
+        padding: 3px 8px !important;
+    }
+    
+    .anunciante-tag {
+        font-size: 0.75rem !important;
+    }
+}

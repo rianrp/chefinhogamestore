@@ -70,6 +70,10 @@
                     <div class="stat-label">Categorias</div>
                     <div class="stat-value" id="totalCategories">0</div>
                 </div>
+                <div class="stat-box" style="border-left: 3px solid #FCD34D;">
+                    <div class="stat-label">Anúncios Ativos</div>
+                    <div class="stat-value" id="totalAnuncios">0</div>
+                </div>
             </div>
             
             <!-- Botão Adicionar -->
@@ -139,8 +143,8 @@
                             </div>
                             
                             <div class="form-field">
-                                <label>Preço (R$)</label>
-                                <input type="number" id="productPrice" min="0" step="0.01" required placeholder="150.00">
+                                <label>Preço (R$) (Opcional)</label>
+                                <input type="number" id="productPrice" min="0" step="0.01" placeholder="150.00">
                             </div>
                         </div>
                         
@@ -170,6 +174,52 @@
                         <div class="form-field">
                             <label>Descrição (Opcional)</label>
                             <textarea id="productDescription" placeholder="Informações adicionais do produto..."></textarea>
+                        </div>
+
+                        <!-- Seção Anúncio -->
+                        <div class="anuncio-section" style="border: 1px solid rgba(252, 211, 77, 0.3); border-radius: 12px; padding: 20px; margin-top: 10px; background: rgba(252, 211, 77, 0.05);">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                                <i class="fas fa-bullhorn" style="color: #FCD34D; font-size: 1.2rem;"></i>
+                                <label style="font-weight: 700; color: #FCD34D; margin: 0;">Anúncio de Terceiro</label>
+                            </div>
+                            
+                            <div class="form-field" style="margin-bottom: 12px;">
+                                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                    <input type="checkbox" id="isAnuncio" style="width: 18px; height: 18px; cursor: pointer;">
+                                    <span>Este produto é um anúncio de anunciante</span>
+                                </label>
+                            </div>
+
+                            <div id="anuncioFields" style="display: none;">
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label>Plano do Anúncio</label>
+                                        <select id="anuncioPlano">
+                                            <option value="basico">Básico - 2 dias (R$ 5)</option>
+                                            <option value="pro" selected>Pro - 5 dias (R$ 10)</option>
+                                            <option value="elite">Elite - 30 dias (R$ 15)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field">
+                                        <label>Duração</label>
+                                        <div id="anuncioDuracao" style="padding: 10px; background: rgba(139, 92, 246, 0.1); border-radius: 8px; color: #A78BFA; font-weight: 600; text-align: center;">5 dias</div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-field">
+                                        <label>Nome do Anunciante</label>
+                                        <input type="text" id="anuncianteNome" placeholder="Nome do cliente anunciante">
+                                    </div>
+                                    <div class="form-field">
+                                        <label>WhatsApp do Anunciante</label>
+                                        <input type="text" id="anuncianteWhatsapp" placeholder="5569912345678">
+                                    </div>
+                                </div>
+                                <div class="form-field">
+                                    <label>Expiração</label>
+                                    <div id="anuncioExpiracao" style="padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; color: #10B981; font-size: 0.9rem;"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -236,6 +286,8 @@
             document.getElementById('productId').value = '';
             document.getElementById('productImage').value = '';
             document.getElementById('imagePreview').src = '';
+            document.getElementById('isAnuncio').checked = false;
+            document.getElementById('anuncioFields').style.display = 'none';
         }
         
         // Editar produto
@@ -255,6 +307,18 @@
             // Mostrar preview se tiver imagem
             if (product.image_url) {
                 document.getElementById('imagePreview').src = product.image_url;
+            }
+
+            // Preencher campos de anúncio
+            const isAnuncioCheck = document.getElementById('isAnuncio');
+            isAnuncioCheck.checked = product.is_anuncio || false;
+            document.getElementById('anuncioFields').style.display = product.is_anuncio ? 'block' : 'none';
+            if (product.is_anuncio) {
+                document.getElementById('anuncioPlano').value = product.anuncio_plano || 'pro';
+                document.getElementById('anuncianteNome').value = product.anunciante_nome || '';
+                document.getElementById('anuncianteWhatsapp').value = product.anunciante_whatsapp || '';
+                updateAnuncioDuracao();
+                updateAnuncioExpiracao(product.anuncio_inicio, product.anuncio_fim);
             }
             
             // Atualizar título do modal
@@ -466,14 +530,23 @@
                 return;
             }
             
-            container.innerHTML = products.map(p => `
-                <div class="product-item">
+            container.innerHTML = products.map(p => {
+                const isAnuncioAtivo = p.is_anuncio && p.anuncio_fim && new Date(p.anuncio_fim) > new Date();
+                const planoColors = { basico: '#8B5CF6', pro: '#FCD34D', elite: '#F97316' };
+                const planoColor = planoColors[p.anuncio_plano] || '#8B5CF6';
+                const tempoRestante = isAnuncioAtivo ? getTempoRestante(p.anuncio_fim) : '';
+                
+                return `
+                <div class="product-item" style="${isAnuncioAtivo ? `border-left: 3px solid ${planoColor};` : ''}">
                     ${p.image_url ? 
                         `<img src="${p.image_url}" class="product-thumb" alt="${p.name}">` : 
                         `<div class="product-thumb-placeholder"><i class="fas fa-image"></i></div>`
                     }
                     <div class="product-info">
-                        <div class="product-name">${p.name || 'Sem nome'}</div>
+                        <div class="product-name">
+                            ${p.name || 'Sem nome'}
+                            ${isAnuncioAtivo ? `<span style="background: ${planoColor}; color: ${p.anuncio_plano === 'pro' ? '#1a1a2e' : '#fff'}; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 700; margin-left: 8px; text-transform: uppercase;">📢 ${p.anuncio_plano}</span>` : ''}
+                        </div>
                         <div class="product-meta">
                             <span class="product-price">R$ ${(p.rl_price || 0).toFixed(2)}</span>
                             <span><i class="fas fa-folder"></i> ${getCategoryName(p.category)}</span>
@@ -481,6 +554,9 @@
                             <span style="color: ${p.is_active ? '#10B981' : '#EF4444'}">
                                 <i class="fas fa-circle" style="font-size: 0.5rem;"></i> ${p.is_active ? 'Ativo' : 'Inativo'}
                             </span>
+                            ${isAnuncioAtivo ? `<span style="color: #FCD34D;"><i class="fas fa-clock"></i> ${tempoRestante}</span>` : ''}
+                            ${p.is_anuncio && !isAnuncioAtivo && p.anuncio_fim ? `<span style="color: #EF4444;"><i class="fas fa-times-circle"></i> Anúncio expirado</span>` : ''}
+                            ${p.anunciante_nome ? `<span style="color: #A78BFA;"><i class="fas fa-user"></i> ${p.anunciante_nome}</span>` : ''}
                         </div>
                     </div>
                     <div class="product-actions">
@@ -492,7 +568,7 @@
                         </button>
                     </div>
                 </div>
-            `).join('');
+            `}).join('');
         }
         
         function getCategoryName(catId) {
@@ -503,11 +579,13 @@
         function updateStats() {
             const active = products.filter(p => p.is_active).length;
             const cats = new Set(products.map(p => p.category).filter(Boolean));
+            const anunciosAtivos = products.filter(p => p.is_anuncio && p.anuncio_fim && new Date(p.anuncio_fim) > new Date()).length;
             
             document.getElementById('totalProducts').textContent = products.length;
             document.getElementById('activeProducts').textContent = active;
             document.getElementById('totalCategories').textContent = cats.size;
             document.getElementById('productCount').textContent = products.length;
+            document.getElementById('totalAnuncios').textContent = anunciosAtivos;
         }
         
         async function handleAddProduct(e) {
@@ -522,6 +600,32 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...';
                 
+                const isAnuncio = document.getElementById('isAnuncio').checked;
+                const anuncioPlano = document.getElementById('anuncioPlano').value;
+                
+                // Calcular datas do anúncio
+                const planoDias = { basico: 2, pro: 5, elite: 30 };
+                let anuncioInicio = null;
+                let anuncioFim = null;
+                
+                if (isAnuncio) {
+                    // Se está editando e já tinha anúncio ativo, manter o início original
+                    const existingProduct = products.find(p => p.id === productId);
+                    if (isEditing && existingProduct && existingProduct.is_anuncio && existingProduct.anuncio_inicio) {
+                        anuncioInicio = existingProduct.anuncio_inicio;
+                        // Recalcular fim apenas se mudou o plano
+                        if (existingProduct.anuncio_plano !== anuncioPlano) {
+                            const inicio = new Date(anuncioInicio);
+                            anuncioFim = new Date(inicio.getTime() + planoDias[anuncioPlano] * 24 * 60 * 60 * 1000).toISOString();
+                        } else {
+                            anuncioFim = existingProduct.anuncio_fim;
+                        }
+                    } else {
+                        anuncioInicio = new Date().toISOString();
+                        anuncioFim = new Date(Date.now() + planoDias[anuncioPlano] * 24 * 60 * 60 * 1000).toISOString();
+                    }
+                }
+
                 const productData = {
                     name: document.getElementById('productName').value,
                     category: document.getElementById('productCategory').value,
@@ -530,7 +634,13 @@
                     image_url: document.getElementById('productImage').value || '',
                     description: document.getElementById('productDescription').value || '',
                     quantity: 1,
-                    is_active: true
+                    is_active: true,
+                    is_anuncio: isAnuncio,
+                    anuncio_plano: isAnuncio ? anuncioPlano : null,
+                    anuncio_inicio: anuncioInicio,
+                    anuncio_fim: anuncioFim,
+                    anunciante_nome: isAnuncio ? (document.getElementById('anuncianteNome').value || null) : null,
+                    anunciante_whatsapp: isAnuncio ? (document.getElementById('anuncianteWhatsapp').value || null) : null
                 };
                 
                 if (isEditing) {
@@ -607,6 +717,70 @@
         
         function clearAlert() {
             document.getElementById('alertContainer').innerHTML = '';
+        }
+
+        // =====================================================
+        // Anúncio - Funções auxiliares
+        // =====================================================
+
+        // Toggle campos de anúncio
+        document.addEventListener('DOMContentLoaded', () => {
+            const isAnuncioCheck = document.getElementById('isAnuncio');
+            if (isAnuncioCheck) {
+                isAnuncioCheck.addEventListener('change', function() {
+                    document.getElementById('anuncioFields').style.display = this.checked ? 'block' : 'none';
+                    if (this.checked) updateAnuncioDuracao();
+                });
+            }
+
+            const anuncioPlano = document.getElementById('anuncioPlano');
+            if (anuncioPlano) {
+                anuncioPlano.addEventListener('change', updateAnuncioDuracao);
+            }
+        });
+
+        function updateAnuncioDuracao() {
+            const plano = document.getElementById('anuncioPlano').value;
+            const duracaoMap = { basico: '2 dias', pro: '5 dias', elite: '30 dias' };
+            const duracaoEl = document.getElementById('anuncioDuracao');
+            if (duracaoEl) {
+                duracaoEl.textContent = duracaoMap[plano] || '5 dias';
+            }
+            // Atualizar previsão de expiração para novo anúncio
+            const planoDias = { basico: 2, pro: 5, elite: 30 };
+            const fim = new Date(Date.now() + planoDias[plano] * 24 * 60 * 60 * 1000);
+            const expEl = document.getElementById('anuncioExpiracao');
+            if (expEl) {
+                expEl.innerHTML = `<i class="fas fa-calendar-check"></i> Expira em: <strong>${fim.toLocaleDateString('pt-BR')} às ${fim.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}</strong>`;
+            }
+        }
+
+        function updateAnuncioExpiracao(inicio, fim) {
+            const expEl = document.getElementById('anuncioExpiracao');
+            if (!expEl) return;
+            if (fim) {
+                const fimDate = new Date(fim);
+                const agora = new Date();
+                const expirado = fimDate < agora;
+                if (expirado) {
+                    expEl.innerHTML = `<i class="fas fa-times-circle" style="color: #EF4444;"></i> <span style="color: #EF4444;">Expirado em ${fimDate.toLocaleDateString('pt-BR')} às ${fimDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}</span>`;
+                } else {
+                    const restante = getTempoRestante(fim);
+                    expEl.innerHTML = `<i class="fas fa-clock"></i> Expira em: <strong>${fimDate.toLocaleDateString('pt-BR')} às ${fimDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute: '2-digit'})}</strong> (${restante})`;
+                }
+            }
+        }
+
+        function getTempoRestante(fimStr) {
+            const fim = new Date(fimStr);
+            const agora = new Date();
+            const diff = fim - agora;
+            if (diff <= 0) return 'Expirado';
+            const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            if (dias > 0) return `${dias}d ${horas}h restantes`;
+            const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            return `${horas}h ${minutos}m restantes`;
         }
     </script>
 </body>
