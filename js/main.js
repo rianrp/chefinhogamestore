@@ -1698,16 +1698,24 @@ function showMedia(mediaId) {
         selectedMedia.classList.add('active');
     }
     
-    // Ativar o botão correspondente
-    const isVideo = mediaId.includes('video');
-    const btnIndex = isVideo ? 1 : 0;
+    // Ativar o botão correspondente baseado no tipo de mídia
     const buttons = document.querySelectorAll('.media-tab-btn');
-    if (buttons[btnIndex]) {
-        buttons[btnIndex].classList.add('active');
+    let activeButtonIndex = 0;
+    
+    if (mediaId.includes('youtube-')) {
+        activeButtonIndex = 1; // YouTube é o segundo botão
+    } else if (mediaId.includes('video-')) {
+        // Se tem YouTube, vídeo é o terceiro botão, senão é o segundo
+        const hasYoutubeBtn = document.querySelector('.media-tab-btn .fab.fa-youtube');
+        activeButtonIndex = hasYoutubeBtn ? 2 : 1;
     }
     
-    // Pausar vídeo se trocar para imagem
-    if (!isVideo) {
+    if (buttons[activeButtonIndex]) {
+        buttons[activeButtonIndex].classList.add('active');
+    }
+    
+    // Pausar vídeo se trocar para outra mídia
+    if (!mediaId.includes('video-')) {
         document.querySelectorAll('.product-detail-video').forEach(video => {
             video.pause();
         });

@@ -45,7 +45,7 @@
     <link rel="shortcut icon" href="/favicons/favicon.ico">
     <meta name="theme-color" content="#8B5CF6">
 </head>
-<body>
+<body class="product-page">
     <!-- Header -->
     <header class="header">
         <div class="container">
@@ -93,6 +93,45 @@
             <h2 class="section-title">Produtos Relacionados</h2>
             <div class="products-grid" id="relatedProducts">
                 <!-- Produtos relacionados carregados via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Features Section -->
+    <section class="product-features">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4 class="feature-title">Entrega Imediata</h4>
+                    <p class="feature-description">Receba seus dados na hora via WhatsApp</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4 class="feature-title">Contas Originais</h4>
+                    <p class="feature-description">Todos os itens são legítimos e seguros</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <h4 class="feature-title">Suporte 24/7</h4>
+                    <p class="feature-description">Atendimento completo via WhatsApp</p>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h4 class="feature-title">Pagamento Seguro</h4>
+                    <p class="feature-description">PIX, Cartão, Boleto - Parcelamento disponível</p>
+                </div>
             </div>
         </div>
     </section>
@@ -162,471 +201,6 @@
     <!-- JavaScript -->
     <script src="/js/supabase-client.js"></script>
     <script src="/js/main.js"></script>
-    
-    <!-- Page Specific Styles -->
-    <style>
-        .product-section {
-            padding: 120px 0 60px;
-            background: var(--darker);
-        }
-        
-        .breadcrumb {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 40px;
-            font-size: 0.9rem;
-        }
-        
-        .breadcrumb a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-        
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-        
-        .breadcrumb span {
-            color: var(--text-muted);
-        }
-        
-        .product-detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 60px;
-            margin-bottom: 80px;
-        }
-        
-        .product-image-container {
-            position: relative;
-        }
-        
-        .product-detail-image {
-            width: 100%;
-            height: 500px;
-            object-fit: cover;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .product-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-        
-        .product-title {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 20px;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.2;
-        }
-        
-        .product-prices {
-            margin-bottom: 30px;
-        }
-        
-        .product-prices .price {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .product-prices .price-rl {
-            color: var(--danger);
-            text-decoration: line-through;
-            font-size: 1.1rem;
-        }
-        
-        .product-prices .price-parcelado {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-        
-        .product-prices .price-kks {
-            color: var(--yellow);
-            font-size: 2rem;
-            font-weight: 800;
-        }
-        
-        .product-description {
-            color: var(--text-muted);
-            line-height: 1.8;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(139, 92, 246, 0.05);
-            border-radius: var(--border-radius);
-            border-left: 4px solid var(--primary);
-        }
-        
-        .product-meta {
-            background: var(--gray);
-            padding: 20px;
-            border-radius: var(--border-radius);
-            margin-bottom: 30px;
-        }
-        
-        .product-meta p {
-            margin-bottom: 10px;
-            color: var(--text);
-        }
-        
-        .product-meta p:last-child {
-            margin-bottom: 0;
-        }
-        
-        .product-meta strong {
-            color: var(--yellow);
-        }
-        
-        .product-actions {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .product-actions .btn {
-            flex: 1;
-            min-width: 200px;
-            justify-content: center;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-        }
-        
-        .back-to-products {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            margin-bottom: 30px;
-            transition: color 0.3s ease;
-        }
-        
-        .back-to-products:hover {
-            color: var(--yellow);
-        }
-        
-        /* Features */
-        .product-features {
-            background: var(--dark);
-            padding: 40px 0;
-            margin: 60px 0;
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 30px;
-        }
-        
-        .feature-item {
-            text-align: center;
-            padding: 30px 20px;
-            background: rgba(139, 92, 246, 0.05);
-            border-radius: var(--border-radius);
-            border: 1px solid rgba(139, 92, 246, 0.1);
-        }
-        
-        .feature-icon {
-            font-size: 2.5rem;
-            color: var(--yellow);
-            margin-bottom: 15px;
-        }
-        
-        .feature-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: var(--text);
-        }
-        
-        .feature-description {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-        
-        /* Notification Styles */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: var(--border-radius);
-            color: white;
-            font-weight: 600;
-            z-index: 9999;
-            animation: slideInRight 0.3s ease;
-            max-width: 300px;
-        }
-        
-        .notification-success {
-            background: var(--success);
-        }
-        
-        .notification-info {
-            background: var(--primary);
-        }
-        
-        .notification-warning {
-            background: var(--warning);
-        }
-        
-        .notification-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .notification-content button {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .whatsapp-float {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: #25D366;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            text-decoration: none;
-            box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
-            transition: transform 0.3s ease;
-            z-index: 999;
-        }
-        
-        .whatsapp-float:hover {
-            transform: scale(1.1);
-            color: white;
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .product-detail-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
-            
-            .product-title {
-                font-size: 2rem;
-            }
-            
-            .product-actions {
-                flex-direction: column;
-            }
-            
-            .product-actions .btn {
-                min-width: auto;
-            }
-            
-            .product-detail-image {
-                height: 300px;
-            }
-        }
-        
-        /* Estilos para compartilhamento */
-        .product-share {
-            border-top: 1px solid rgba(139, 92, 246, 0.2);
-            padding-top: 20px;
-        }
-        
-        .product-share h4 {
-            margin-bottom: 15px;
-            color: var(--text);
-            font-size: 1rem;
-            font-weight: 600;
-        }
-        
-        .share-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        
-        .share-buttons .btn {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        
-        .share-buttons .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
-        }
-        
-        .share-buttons .btn i {
-            font-size: 1.1rem;
-        }
-        
-        @media (max-width: 768px) {
-            .product-share {
-                margin-top: 20px;
-            }
-            
-            .share-buttons {
-                justify-content: center;
-            }
-        }
-    </style>
-
-    <!-- Product Features Section -->
-    <section class="product-features">
-        <div class="container">
-            <div class="features-grid">
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
-                    </div>
-                    <h4 class="feature-title">Entrega Imediata</h4>
-                    <p class="feature-description">Receba seus dados na hora via WhatsApp</p>
-                </div>
-                
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h4 class="feature-title">Contas Originais</h4>
-                    <p class="feature-description">Todos os itens são legítimos e seguros</p>
-                </div>
-                
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
-                    <h4 class="feature-title">Suporte 24/7</h4>
-                    <p class="feature-description">Atendimento completo via WhatsApp</p>
-                </div>
-                
-                <div class="feature-item">
-                    <div class="feature-icon">
-                        <i class="fas fa-credit-card"></i>
-                    </div>
-                    <h4 class="feature-title">Pagamento Seguro</h4>
-                    <p class="feature-description">PIX, Cartão, Boleto - Parcelamento disponível</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CSS para Media Tabs -->
-    <style>
-        .product-media-tabs {
-            width: 100%;
-        }
-        
-        .media-tab-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-        
-        .media-tab-btn {
-            background: var(--dark);
-            color: var(--text-secondary);
-            border: 2px solid var(--primary);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        .media-tab-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .media-tab-btn.active {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
-        }
-        
-        .media-content {
-            position: relative;
-            border-radius: 12px;
-            overflow: hidden;
-            background: var(--dark);
-        }
-        
-        .media-item {
-            display: none;
-            width: 100%;
-        }
-        
-        .media-item.active {
-            display: block;
-        }
-        
-        .product-detail-video {
-            width: 100%;
-            height: auto;
-            max-height: 400px;
-            border-radius: 12px;
-            background: #000;
-        }
-        
-        .product-detail-image {
-            border-radius: 12px;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .media-tab-buttons {
-                gap: 0.5rem;
-            }
-            
-            .media-tab-btn {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.8rem;
-            }
-            
-            .product-detail-video {
-                max-height: 250px;
-            }
-        }
-    </style>
 
     <!-- Modal de Imagem -->
     <div id="imageModal" class="image-modal">
