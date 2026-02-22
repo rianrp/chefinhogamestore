@@ -519,6 +519,42 @@ function formatKks(value) {
     return parseFloat(value.toFixed(2)).toString();
 }
 
+// =====================================================
+// YouTube - Funções auxiliares
+// =====================================================
+
+// Extrair ID do vídeo do YouTube a partir de uma URL
+function getYoutubeVideoId(url) {
+    if (!url) return null;
+    
+    // Padrões de URL do YouTube
+    const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([^&?\s]+)/,
+        /^([a-zA-Z0-9_-]{11})$/ // ID direto
+    ];
+    
+    for (const pattern of patterns) {
+        const match = url.match(pattern);
+        if (match && match[1]) {
+            return match[1];
+        }
+    }
+    
+    return null;
+}
+
+// Gerar URL de embed do YouTube
+function getYoutubeEmbedUrl(url) {
+    const videoId = getYoutubeVideoId(url);
+    if (!videoId) return null;
+    return `https://www.youtube.com/embed/${videoId}`;
+}
+
+// Verificar se produto tem vídeo do YouTube
+function hasYoutubeVideo(product) {
+    return product && product.youtube_url && getYoutubeVideoId(product.youtube_url);
+}
+
 // Filtrar produtos
 function filterProducts(category = '', searchTerm = '') {
     if (!siteData.products) return [];
@@ -678,9 +714,11 @@ function renderProducts(products, containerId) {
     // Renderizar estrutura básica dos produtos primeiro
     container.innerHTML = products.map(product => {
         const anuncioInfo = getAnuncioInfo(product);
+        const hasYT = hasYoutubeVideo(product);
         return `
         <div class="card product-card ${anuncioInfo.cssClass}" data-product-id="${product.id}" ${anuncioInfo.borderStyle}>
             ${anuncioInfo.badge}
+            ${hasYT ? `<div class="youtube-badge" title="Este produto tem vídeo no YouTube"><i class="fab fa-youtube"></i></div>` : ''}
             <img alt="${product.name}" class="product-image" 
                  title="Clique para ver em tela cheia"
                  onerror="this.src='https://via.placeholder.com/300x250/8B5CF6/ffffff?text=Erro+ao+Carregar'">
@@ -895,6 +933,7 @@ function renderProductsList(products, containerId) {
     container.innerHTML = products
     .map((product) => {
         const anuncioInfo = getAnuncioInfo(product);
+        const hasYT = hasYoutubeVideo(product);
 
         return `
             <div class="card product-card-list ${anuncioInfo.cssClass}"
@@ -902,6 +941,7 @@ function renderProductsList(products, containerId) {
                  ${anuncioInfo.borderStyle || ''}>
                  
                 ${anuncioInfo.badge || ''}
+                ${hasYT ? `<div class="youtube-badge youtube-badge-list" title="Este produto tem vídeo no YouTube"><i class="fab fa-youtube"></i></div>` : ''}
 
                 <div class="product-list-content">
                     <img 
@@ -1171,40 +1211,79 @@ const PageHandlers = {
         // Renderizar detalhes do produto
         const container = document.getElementById('productDetails');
         if (container) {
+            // Verificar quais mídias o produto tem
+            const hasVideo = !!product.video_url;
+            const hasYoutube = hasYoutubeVideo(product);
+            const youtubeEmbedUrl = hasYoutube ? getYoutubeEmbedUrl(product.youtube_url) : null;
+            const hasMultipleMedia = hasVideo || hasYoutube;
+            
+            // Gerar HTML da seção de mídia
+            let mediaHTML = '';
+            
+            if (hasMultipleMedia) {
+                // Tem mais de uma mídia - usar abas
+                mediaHTML = `
+                    <div class="product-media-tabs">
+                        <div class="media-tab-buttons">
+                            <button class="media-tab-btn active" onclick="showMedia('image-${product.id}')">
+                                <i class="fas fa-image"></i> Imagem
+                            </button>
+                            ${hasYoutube ? `
+                                <button class="media-tab-btn" onclick="showMedia('youtube-${product.id}')">
+                                    <i class="fab fa-youtube" style="color: #FF0000;"></i> YouTube
+                                </button>
+                            ` : ''}
+                            ${hasVideo ? `
+                                <button class="media-tab-btn" onclick="showMedia('video-${product.id}')">
+                                    <i class="fas fa-play"></i> Vídeo
+                                </button>
+                            ` : ''}
+                        </div>
+                        <div class="media-content">
+                            <div id="image-${product.id}" class="media-item active">
+                                <img src="${getImageUrl(product)}" alt="${product.name}" class="product-detail-image"
+                                     onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
+                                     title="Clique para ver em tela cheia"
+                                     onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
+                            </div>
+                            ${hasYoutube ? `
+                                <div id="youtube-${product.id}" class="media-item">
+                                    <div class="youtube-embed-container">
+                                        <iframe 
+                                            src="${youtubeEmbedUrl}" 
+                                            title="Vídeo do produto - ${product.name}"
+                                            frameborder="0" 
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                            allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${hasVideo ? `
+                                <div id="video-${product.id}" class="media-item">
+                                    <video class="product-detail-video" controls preload="metadata">
+                                        <source src="${product.video_url}" type="video/mp4">
+                                        Seu navegador não suporta vídeo.
+                                    </video>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Só tem imagem
+                mediaHTML = `
+                    <img src="${getImageUrl(product)}" alt="${product.name}" class="product-detail-image"
+                         onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '')"
+                         title="Clique para ver em tela cheia"
+                         onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
+                `;
+            }
+            
             container.innerHTML = `
                 <div class="product-detail-grid">
                     <div class="product-image-container">
-                        ${product.video_url ? `
-                            <div class="product-media-tabs">
-                                <div class="media-tab-buttons">
-                                    <button class="media-tab-btn active" onclick="showMedia('image-${product.id}')">
-                                        <i class="fas fa-image"></i> Imagem
-                                    </button>
-                                    <button class="media-tab-btn" onclick="showMedia('video-${product.id}')">
-                                        <i class="fas fa-play"></i> Vídeo
-                                    </button>
-                                </div>
-                                <div class="media-content">
-                                    <div id="image-${product.id}" class="media-item active">
-                                        <img src="${getImageUrl(product)}" alt="${product.name}" class="product-detail-image"
-                                             onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
-                                             title="Clique para ver em tela cheia"
-                                             onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
-                                    </div>
-                                    <div id="video-${product.id}" class="media-item">
-                                        <video class="product-detail-video" controls preload="metadata">
-                                            <source src="${product.video_url}" type="video/mp4">
-                                            Seu navegador não suporta vídeo.
-                                        </video>
-                                    </div>
-                                </div>
-                            </div>
-                        ` : `
-                            <img src="${getImageUrl(product)}" alt="${product.name}" class="product-detail-image"
-                                 onclick="openImageModal('${getImageUrl(product)}', '${product.name.replace(/'/g, "\\'")}', '${(product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' ')}', '${product.video_url || ''}')"
-                                 title="Clique para ver em tela cheia"
-                                 onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
-                        `}
+                        ${mediaHTML}
                     </div>
                     <div class="product-info">
                         ${(() => {

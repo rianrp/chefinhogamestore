@@ -204,6 +204,23 @@
                             <textarea id="productDescription" placeholder="Informações adicionais do produto..."></textarea>
                         </div>
 
+                        <!-- Campo YouTube -->
+                        <div class="form-field">
+                            <label>
+                                <i class="fab fa-youtube" style="color: #FF0000;"></i>
+                                Link do YouTube (Opcional)
+                            </label>
+                            <input type="url" id="productYoutube" placeholder="https://www.youtube.com/watch?v=...">
+                            <small style="color: #71717A; font-size: 0.8rem; margin-top: 6px; display: block;">
+                                Cole o link do vídeo do YouTube. Aceita links normais, shorts e youtu.be
+                            </small>
+                            <div id="youtubePreview" style="display: none; margin-top: 12px;">
+                                <div style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 8px;">
+                                    <iframe id="youtubePreviewFrame" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" allowfullscreen></iframe>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Seção Anúncio -->
                         <div class="anuncio-section" style="border: 1px solid rgba(252, 211, 77, 0.3); border-radius: 12px; padding: 20px; margin-top: 10px; background: rgba(252, 211, 77, 0.05);">
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
@@ -321,6 +338,9 @@
             document.getElementById('imagePreview').src = '';
             document.getElementById('isAnuncio').checked = false;
             document.getElementById('anuncioFields').style.display = 'none';
+            document.getElementById('productYoutube').value = '';
+            document.getElementById('youtubePreview').style.display = 'none';
+            document.getElementById('youtubePreviewFrame').src = '';
         }
         
         // Editar produto
@@ -340,6 +360,14 @@
             // Mostrar preview se tiver imagem
             if (product.image_url) {
                 document.getElementById('imagePreview').src = product.image_url;
+            }
+            
+            // Preencher campo YouTube
+            document.getElementById('productYoutube').value = product.youtube_url || '';
+            if (product.youtube_url) {
+                showYoutubePreview(product.youtube_url);
+            } else {
+                document.getElementById('youtubePreview').style.display = 'none';
             }
 
             // Preencher campos de anúncio
@@ -413,6 +441,52 @@
                     handleImageUpload(file);
                 }
             });
+            
+            // Preview do YouTube
+            const youtubeInput = document.getElementById('productYoutube');
+            youtubeInput.addEventListener('input', (e) => {
+                const url = e.target.value.trim();
+                if (url) {
+                    showYoutubePreview(url);
+                } else {
+                    document.getElementById('youtubePreview').style.display = 'none';
+                }
+            });
+        }
+        
+        // Função para extrair ID do YouTube
+        function getYoutubeVideoId(url) {
+            if (!url) return null;
+            
+            // Padrões de URL do YouTube
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([^&?\s]+)/,
+                /^([a-zA-Z0-9_-]{11})$/ // ID direto
+            ];
+            
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            
+            return null;
+        }
+        
+        // Função para mostrar preview do YouTube
+        function showYoutubePreview(url) {
+            const videoId = getYoutubeVideoId(url);
+            const previewContainer = document.getElementById('youtubePreview');
+            const iframe = document.getElementById('youtubePreviewFrame');
+            
+            if (videoId) {
+                iframe.src = `https://www.youtube.com/embed/${videoId}`;
+                previewContainer.style.display = 'block';
+            } else {
+                previewContainer.style.display = 'none';
+                iframe.src = '';
+            }
         }
         
         // Upload de imagem com preview
@@ -725,6 +799,7 @@
                     kks_price: parseFloat(document.getElementById('productKks').value) || 0,
                     image_url: document.getElementById('productImage').value || '',
                     description: document.getElementById('productDescription').value || '',
+                    youtube_url: document.getElementById('productYoutube').value || null,
                     quantity: 1,
                     is_active: true,
                     is_anuncio: isAnuncio,

@@ -1622,3 +1622,87 @@ body {
         font-size: 0.75rem !important;
     }
 }
+
+/* =====================================================
+   YouTube Video Feature
+   ===================================================== */
+
+/* Badge de YouTube nos cards */
+.youtube-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    background: #FF0000;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 8px rgba(255, 0, 0, 0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.youtube-badge:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.6);
+}
+
+/* Badge de YouTube na view de lista */
+.youtube-badge-list {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Container para embed do YouTube (16:9) */
+.youtube-embed-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: var(--border-radius-sm);
+    background: var(--dark);
+}
+
+.youtube-embed-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: var(--border-radius-sm);
+}
+
+/* Aba do YouTube nas tabs de mídia */
+.media-tab-btn .fab.fa-youtube {
+    color: #FF0000;
+}
+
+.media-tab-btn:hover .fab.fa-youtube,
+.media-tab-btn.active .fab.fa-youtube {
+    color: #FF0000;
+}
+
+/* YouTube na página de detalhes */
+.product-detail-grid .youtube-embed-container {
+    max-height: 400px;
+    padding-bottom: 56.25%;
+}
+
+/* Mobile adjustments para YouTube */
+@media (max-width: 768px) {
+    .youtube-badge {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+    
+    .product-detail-grid .youtube-embed-container {
+        max-height: 300px;
+    }
+}
