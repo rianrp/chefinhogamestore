@@ -69,6 +69,27 @@ class ImageKitUploader {
         }
     }
 
+    // Extrair timestamp da imagen URL do ImageKit
+    extractTimestampFromUrl(imageUrl) {
+        if (!imageUrl || !imageUrl.includes('produtos_')) return null;
+        
+        // Padrão: produtos_1771727827420_hash.jpg
+        const match = imageUrl.match(/produtos_([0-9]+)_/);
+        return match ? match[1] : null;
+    }
+    
+    // Construir URL da imagem baseada no timestamp
+    buildImageUrlFromTimestamp(timestamp, fallbackUrl = '') {
+        if (!timestamp) return fallbackUrl;
+        
+        // Se o timestamp parece ser um ID do Supabase (muito alto), usar fallback
+        if (timestamp.length < 13) return fallbackUrl;
+        
+        // Construir URL padrão do ImageKit baseada no timestamp
+        // Note: Não podemos saber o hash exato, mas podemos tentar o padrão
+        return `${this.urlEndpoint}/produtos/produtos_${timestamp}_*.jpg`;
+    }
+
     // Gerar URL otimizada do ImageKit a partir de URL existente
     getOptimizedUrl(originalUrl, options = {}) {
         if (!originalUrl) return '';
@@ -178,10 +199,11 @@ class ChefinhoSupabase {
         }
     }
 
-    // Buscar produto por ID
+    // Buscar produto por ID (Supabase ID ou Timestamp da imagem)
     async getProductById(id) {
         try {
-            const response = await fetch(
+            // Primeira tentativa: buscar por ID do Supabase
+            let response = await fetch(
                 `${this.url}/rest/v1/products?id=eq.${id}`,
                 { headers: this.getHeaders() }
             );
@@ -190,8 +212,35 @@ class ChefinhoSupabase {
                 throw new Error(`Erro HTTP: ${response.status}`);
             }
 
-            const products = await response.json();
-            return products[0] || null;
+            let products = await response.json();
+            
+            // Se encontrou pelo ID do Supabase, retorna
+            if (products && products.length > 0) {
+                console.log('🔍 Produto encontrado por ID Supabase:', id);
+                return products[0];
+            }
+            
+            // Segunda tentativa: buscar por timestamp na image_url
+            console.log('🔄 Tentando buscar por timestamp da imagem:', id);
+            response = await fetch(
+                `${this.url}/rest/v1/products?image_url=like.*${id}*`,
+                { headers: this.getHeaders() }
+            );
+            
+            if (!response.ok) {
+                throw new Error(`Erro HTTP na busca por timestamp: ${response.status}`);
+            }
+            
+            products = await response.json();
+            
+            if (products && products.length > 0) {
+                console.log('✅ Produto encontrado por timestamp da imagem:', id);
+                return products[0];
+            }
+            
+            console.log('❌ Produto não encontrado com ID/timestamp:', id);
+            return null;
+            
         } catch (error) {
             console.error('Erro ao buscar produto:', error);
             throw error;

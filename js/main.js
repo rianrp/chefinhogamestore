@@ -29,23 +29,23 @@ let currentFilters = {
 };
 
 // Inicialização
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     console.log('DOM carregado, iniciando aplicação...');
     await loadSiteData();
     updateCartCount();
     initializeEventListeners();
-    
+
     // Log do sistema de categorias dinâmicas
     if (siteData) {
         console.log('🏷️ Sistema de Categorias Dinâmicas Ativo');
         console.log('📋 Categorias encontradas:', getAllCategories());
     }
-    
+
     // Aguardar um pouco para garantir que todos os dados estejam carregados
     setTimeout(() => {
         // Executar handler da página atual após carregar os dados
         let page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-        
+
         if (PageHandlers[page]) {
             PageHandlers[page]();
         }
@@ -55,11 +55,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Funções de API - Sempre usa Supabase
 async function getProdutos() {
     console.log('🔄 Carregando dados do Supabase...');
-    
+
     if (typeof supabase === 'undefined' || !supabase.getSiteData) {
         throw new Error('Cliente Supabase não disponível');
     }
-    
+
     const data = await supabase.getSiteData();
     console.log('✅ Supabase:', data.products?.length || 0, 'produtos');
     return data;
@@ -69,20 +69,20 @@ async function getProdutos() {
 async function loadSiteData() {
     try {
         console.log('🔄 Iniciando carregamento de dados...');
-        
+
         siteData = await getProdutos();
-        
+
         if (siteData && siteData.products) {
             console.log('✅ Dados carregados com sucesso!');
             console.log('📊 Total de produtos:', siteData.products.length);
             console.log('🏷️ Categorias encontradas:', [...new Set(siteData.products.map(p => p.category))].filter(Boolean));
-            
+
             // Mostrar produtos mais recentes no console
             const recentProducts = siteData.products
                 .filter(p => p.created_at)
                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                 .slice(0, 3);
-            
+
             if (recentProducts.length > 0) {
                 console.log('🆕 Produtos mais recentes:');
                 recentProducts.forEach(p => {
@@ -92,7 +92,7 @@ async function loadSiteData() {
         } else {
             console.warn('⚠️ Dados carregados mas sem produtos');
         }
-        
+
     } catch (error) {
         console.error('❌ Erro ao carregar dados:', error);
         showNotification('Erro ao carregar produtos. Verifique a conexão e recarregue a página.', 'error');
@@ -103,19 +103,19 @@ async function loadSiteData() {
 function addToCart(productId, productData = null) {
     // Se productData foi fornecido diretamente, usar ele
     let product = productData;
-    
+
     // Caso contrário, buscar nos dados do site
     if (!product && siteData && siteData.products) {
         product = siteData.products.find(p => p.id === productId);
     }
-    
+
     if (!product) {
         showNotification('Produto não encontrado!', 'warning');
         return;
     }
 
     const existingItem = cart.find(item => item.id === productId);
-    
+
     if (existingItem) {
         existingItem.quantity += 1;
     } else {
@@ -127,16 +127,16 @@ function addToCart(productId, productData = null) {
             quantity: 1,
             type: product.type || 'digital'
         };
-        
+
         // Se for produto do Rucoy, adicionar informações específicas
         if (product.character) {
             cartItem.character = product.character;
             cartItem.type = 'rucoy-kks';
         }
-        
+
         cart.push(cartItem);
     }
-    
+
     saveCart();
     updateCartCount();
     showNotification('Produto adicionado ao carrinho!', 'success');
@@ -148,7 +148,7 @@ function removeFromCart(productId) {
     saveCart();
     updateCartCount();
     showNotification('Produto removido do carrinho!', 'info');
-    
+
     // Re-renderizar o carrinho se estivermos na página do carrinho
     if (document.getElementById('cartItems')) {
         renderCart();
@@ -195,21 +195,21 @@ function generateWhatsAppMessage() {
         showNotification('Seu carrinho está vazio!', 'warning');
         return;
     }
-    
+
     const total = getCartTotal();
-    
+
     // Verificar se há produtos do Rucoy no carrinho
     const hasRucoyItems = cart.some(item => item.type === 'rucoy-kks');
-    
+
     let message; // Declarar a variável fora dos blocos
-    
+
     if (hasRucoyItems) {
         // Se há produtos do Rucoy, usar formatação especial
         const rucoyItems = cart.filter(item => item.type === 'rucoy-kks');
         const otherItems = cart.filter(item => item.type !== 'rucoy-kks');
-        
+
         message = `${emojis.gamepad} *PEDIDO - CHEFINHO GAMING STORE*\n\n`;
-        
+
         if (rucoyItems.length > 0) {
             message += `${emojis.trophy} *RUCOY ONLINE - KKs:*\n`;
             rucoyItems.forEach((item, index) => {
@@ -218,7 +218,7 @@ function generateWhatsAppMessage() {
                 message += `   ${emojis.money} R$ ${item.price.toFixed(2)}\n\n`;
             });
         }
-        
+
         if (otherItems.length > 0) {
             message += `${emojis.package} *OUTROS ITENS:*\n`;
             otherItems.forEach((item, index) => {
@@ -228,7 +228,7 @@ function generateWhatsAppMessage() {
                 message += `   ${emojis.dollar} Subtotal: R$ ${(item.price * item.quantity).toFixed(2)}\n\n`;
             });
         }
-        
+
         message += `${emojis.dollar} *TOTAL: R$ ${total.toFixed(2)}*\n\n`;
         message += `${emojis.lightning} *INFORMAÇÕES IMPORTANTES:*\n`;
         message += `• KKs Rucoy: Entrega em até 30 minutos\n`;
@@ -239,22 +239,22 @@ function generateWhatsAppMessage() {
         // Formatação padrão para outros produtos
         message = `${emojis.gamepad} *PEDIDO - CHEFINHO GAMING STORE* ${emojis.gamepad}\n\n`;
         message += `${emojis.package} *ITENS SELECIONADOS:*\n`;
-        
+
         cart.forEach((item, index) => {
             message += `${index + 1}. ${item.name}\n`;
             message += `   ${emojis.money} R$ ${item.price.toFixed(2)}\n`;
             message += `   ${emojis.chart} Quantidade: ${item.quantity}\n`;
             message += `   ${emojis.dollar} Subtotal: R$ ${(item.price * item.quantity).toFixed(2)}\n\n`;
         });
-        
+
         message += `${emojis.money} *TOTAL: R$ ${total.toFixed(2)}*\n\n`;
         message += `${emojis.fire} Quero finalizar minha compra!`;
     }
-    
+
     const whatsappNumber = siteData?.site?.whatsapp || '556993450986';
     const encodedMessage = encodeURIComponent(message);
     const whatsappUrl = `https://api.whatsapp.com/send/?phone=${whatsappNumber}&text=${encodedMessage}&type=phone_number&app_absent=0`;
-    
+
     window.open(whatsappUrl, '_blank');
     showNotification('Redirecionando para WhatsApp...', 'success');
 }
@@ -274,7 +274,7 @@ function showNotification(message, type = 'info') {
     if (existing) {
         existing.remove();
     }
-    
+
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
@@ -283,9 +283,9 @@ function showNotification(message, type = 'info') {
             <button onclick="this.parentElement.parentElement.remove()">&times;</button>
         </div>
     `;
-    
+
     document.body.appendChild(notification);
-    
+
     // Auto remove após 3 segundos
     setTimeout(() => {
         if (notification.parentElement) {
@@ -296,55 +296,67 @@ function showNotification(message, type = 'info') {
 
 // Compartilhar produto específico
 function shareProduct(product, platform = 'whatsapp') {
-    // URL normal da página - as meta tags são atualizadas automaticamente pelo updateProductMetaTags()
-    const productUrl = `${window.location.origin}/produto.html?id=${product.id}`;
-    
+    // Extrair timestamp da image_url para uso alternativo
+    let shareId = product.id;
+    if (product.image_url && product.image_url.includes('produtos_')) {
+        const match = product.image_url.match(/produtos_([0-9]+)_/);
+        if (match) {
+            const imageTimestamp = match[1];
+            // Usar timestamp da imagem como ID de share para URLs mais úteis
+            shareId = imageTimestamp;
+            console.log('🔄 Usando timestamp da imagem como ID de share:', shareId);
+        }
+    }
+
+    // URL normal da página - funciona com ID do Supabase ou timestamp da imagem
+    const productUrl = `${window.location.origin}/produto.html?id=${shareId}`;
+
     const shareText = `${product.name} - ${getCategoryName(product.category)}`;
     const priceText = product.rl_price > 0 ? `por R$ ${product.rl_price.toFixed(2)}` : 'com valor negociável';
     const fullText = `🎮 ${shareText} ${priceText}! Confira na Chefinho Gaming Store`;
-    
+
     let shareUrl = '';
-    
+
     switch (platform) {
         case 'whatsapp':
             const whatsappNumber = siteData?.site?.whatsapp || '556993450986';
             const message = `${fullText}\n\n👆 Acesse o link para ver detalhes, imagens e vídeos!\n\n${productUrl}`;
             shareUrl = `https://api.whatsapp.com/send/?phone=${whatsappNumber}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
             break;
-            
+
         case 'facebook':
             // Facebook lê automaticamente as meta tags da página do produto
             shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
             break;
-            
+
         case 'twitter':
             shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullText)}&url=${encodeURIComponent(productUrl)}`;
             break;
-            
+
         case 'telegram':
             // Telegram lê automaticamente as meta tags da página do produto
             shareUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(fullText)}`;
             break;
-            
+
         case 'copy':
             navigator.clipboard.writeText(productUrl).then(() => {
                 showNotification('Link do produto copiado! Os previews são gerados automaticamente ✨', 'success');
             });
             return;
-            
+
         default:
             shareUrl = productUrl;
     }
-    
+
     if (shareUrl) {
         window.open(shareUrl, '_blank');
-        
+
         // Mensagem diferente para platforms que fazem preview automático
         const previewPlatforms = ['whatsapp', 'telegram', 'facebook'];
-        const message = previewPlatforms.includes(platform) 
+        const message = previewPlatforms.includes(platform)
             ? `Compartilhando ${product.name} via ${platform} - preview da imagem será mostrado automaticamente! 📱`
             : `Compartilhando via ${platform}...`;
-            
+
         showNotification(message, 'info');
     }
 }
@@ -352,7 +364,7 @@ function shareProduct(product, platform = 'whatsapp') {
 // Obter todas as categorias (principais + dinâmicas)
 function getAllCategories() {
     const allCategories = new Map();
-    
+
     // Primeiro, adicionar as categorias principais definidas no data.json
     if (siteData.categories) {
         siteData.categories.forEach(cat => {
@@ -366,7 +378,7 @@ function getAllCategories() {
             });
         });
     }
-    
+
     // Depois, adicionar categorias dinâmicas baseadas nos produtos
     if (siteData.products) {
         siteData.products.forEach(product => {
@@ -388,7 +400,7 @@ function getAllCategories() {
             }
         });
     }
-    
+
     return Array.from(allCategories.values()).sort((a, b) => {
         // Categorias principais primeiro, depois dinâmicas
         if (a.type === 'main' && b.type === 'dynamic') return -1;
@@ -414,11 +426,11 @@ function formatCategoryName(categoryId) {
         'cs2': 'Counter-Strike 2',
         'lol': 'League of Legends'
     };
-    
+
     if (knownCategories[categoryId.toLowerCase()]) {
         return knownCategories[categoryId.toLowerCase()];
     }
-    
+
     // Para categorias não mapeadas, fazer capitalização automática
     return categoryId
         .split(' ')
@@ -441,20 +453,20 @@ function getDefaultCategoryIcon(categoryId) {
         'cs2': 'fas fa-bomb',
         'lol': 'fas fa-dragon'
     };
-    
+
     return iconMap[categoryId.toLowerCase()] || 'fas fa-gamepad';
 }
 
 // Obter nome da categoria (melhorado)
 function getCategoryName(categoryId) {
     if (!categoryId) return 'Sem categoria';
-    
+
     // Primeiro tentar encontrar nas categorias principais
     if (siteData.categories) {
         const mainCategory = siteData.categories.find(cat => cat.id === categoryId);
         if (mainCategory) return mainCategory.name;
     }
-    
+
     // Se não encontrou, usar formatação dinâmica
     return formatCategoryName(categoryId);
 }
@@ -502,13 +514,13 @@ function getAnuncioInfo(product) {
     };
 
     const cfg = configs[plano] || configs.basico;
-    
+
     const badge = `<div class="anuncio-badge anuncio-${plano}" style="position:absolute;top:10px;left:10px;z-index:5;background:${cfg.color};color:${cfg.textColor};padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:5px;text-transform:uppercase;"><i class="${cfg.icon}"></i>${cfg.label}</div>`;
-    
+
     const borderStyle = `style="position:relative;border:${cfg.border};box-shadow:${cfg.glow};"`;
-    
-    const anuncianteTag = product.anunciante_nome 
-        ? `<span class="anunciante-tag" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:${cfg.color};margin-top:5px;"><i class="fas fa-user-tag"></i>por ${product.anunciante_nome}</span>` 
+
+    const anuncianteTag = product.anunciante_nome
+        ? `<span class="anunciante-tag" style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;color:${cfg.color};margin-top:5px;"><i class="fas fa-user-tag"></i>por ${product.anunciante_nome}</span>`
         : '';
 
     return {
@@ -522,12 +534,12 @@ function getAnuncioInfo(product) {
 // Formatar valor KKs (mostra decimais apenas quando necessário)
 function formatKks(value) {
     if (!value || value === 0) return '0';
-    
+
     // Se for número inteiro, mostra sem decimais
     if (value % 1 === 0) {
         return value.toFixed(0);
     }
-    
+
     // Se tiver decimais, mostra até 2 casas (remove zeros à direita)
     return parseFloat(value.toFixed(2)).toString();
 }
@@ -540,7 +552,17 @@ function formatKks(value) {
 function updateProductMetaTags(product) {
     const baseUrl = window.location.origin;
     const productUrl = `${baseUrl}/produto.html?id=${product.id}`;
-    
+
+    // Extrair timestamp da image_url do ImageKit para URL alternativa
+    let imageTimestamp = null;
+    if (product.image_url && product.image_url.includes('produtos_')) {
+        const match = product.image_url.match(/produtos_([0-9]+)_/);
+        if (match) {
+            imageTimestamp = match[1];
+            console.log('🕰️ Timestamp da imagem extraído:', imageTimestamp);
+        }
+    }
+
     // URL da imagem do produto - versão síncrona para meta tags
     let productImage = '';
     if (product.image_url && product.image_url.trim() !== '') {
@@ -549,27 +571,27 @@ function updateProductMetaTags(product) {
         // Fallback para imagem padrão se não tiver image_url
         productImage = `${baseUrl}/img/chefinho.png`;
     }
-    
+
     // Garantir que a URL seja absoluta
     if (productImage && !productImage.startsWith('http')) {
         productImage = `${baseUrl}${productImage}`;
     }
-    
+
     const productTitle = `${product.name} - Chefinho Gaming Store`;
     const categoryName = getCategoryName(product.category);
     const priceText = product.rl_price > 0 ? `R$ ${product.rl_price.toFixed(2)}` : 'Valor negociável';
-    const productDescription = product.description 
-        ? `${product.description} - ${categoryName} por ${priceText}. Entrega imediata via WhatsApp na Chefinho Gaming Store.` 
+    const productDescription = product.description
+        ? `${product.description} - ${categoryName} por ${priceText}. Entrega imediata via WhatsApp na Chefinho Gaming Store.`
         : `${product.name} - ${categoryName} disponível por ${priceText}. Entrega imediata via WhatsApp na Chefinho Gaming Store.`;
-    
+
     // Atualizar título da página
     document.title = productTitle;
-    
+
     // Função helper para atualizar/criar meta tag
     function updateMetaTag(property, content, isName = false) {
         const selector = isName ? `meta[name="${property}"]` : `meta[property="${property}"]`;
         let meta = document.querySelector(selector);
-        
+
         if (meta) {
             meta.setAttribute('content', content);
         } else {
@@ -583,10 +605,10 @@ function updateProductMetaTags(product) {
             document.head.appendChild(meta);
         }
     }
-    
+
     // Description padrão
     updateMetaTag('description', productDescription, true);
-    
+
     // Open Graph / Facebook
     updateMetaTag('og:type', 'product');
     updateMetaTag('og:url', productUrl);
@@ -597,28 +619,32 @@ function updateProductMetaTags(product) {
     updateMetaTag('og:locale', 'pt_BR');
     updateMetaTag('og:image:width', '1200');
     updateMetaTag('og:image:height', '630');
-    
+
     // Twitter
     updateMetaTag('twitter:card', 'summary_large_image');
     updateMetaTag('twitter:url', productUrl);
     updateMetaTag('twitter:title', productTitle);
     updateMetaTag('twitter:description', productDescription);
     updateMetaTag('twitter:image', productImage);
-    
+
     // Product specific (Schema.org)
     if (product.rl_price > 0) {
         updateMetaTag('product:price:amount', product.rl_price.toFixed(2));
         updateMetaTag('product:price:currency', 'BRL');
     }
     updateMetaTag('product:availability', product.quantity > 0 ? 'in stock' : 'out of stock');
-    
-    // Log para debug
+
+    // Log para debug com timestamp
     console.log('📱 Meta tags atualizadas:', {
         produto: product.name,
         imagem: productImage,
         imagemOriginal: product.image_url,
-        url: productUrl
+        timestampImagem: imageTimestamp,
+        idSupabase: product.id,
+        urlCompartilhamento: productUrl
     });
+
+    console.log('🔗 URL de compartilhamento:', productUrl);
 }
 
 // =====================================================
@@ -628,20 +654,20 @@ function updateProductMetaTags(product) {
 // Extrair ID do vídeo do YouTube a partir de uma URL
 function getYoutubeVideoId(url) {
     if (!url) return null;
-    
+
     // Padrões de URL do YouTube
     const patterns = [
         /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([^&?\s]+)/,
         /^([a-zA-Z0-9_-]{11})$/ // ID direto
     ];
-    
+
     for (const pattern of patterns) {
         const match = url.match(pattern);
         if (match && match[1]) {
             return match[1];
         }
     }
-    
+
     return null;
 }
 
@@ -660,10 +686,10 @@ function hasYoutubeVideo(product) {
 // Filtrar produtos
 function filterProducts(category = '', searchTerm = '') {
     if (!siteData.products) return [];
-    
+
     return siteData.products.filter(product => {
         const matchesCategory = !category || product.category === category;
-        const matchesSearch = !searchTerm || 
+        const matchesSearch = !searchTerm ||
             product.name.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesCategory && matchesSearch && product.is_active;
     });
@@ -675,7 +701,7 @@ const thumbnailCache = new Map();
 // Gerar thumbnail automaticamente do vídeo
 function generateVideoThumbnail(videoUrl, callback, timeOffset = 5) {
     console.log('🎬 Gerando thumbnail do vídeo:', videoUrl);
-    
+
     // Verificar cache primeiro
     const cacheKey = `${videoUrl}_${timeOffset}`;
     if (thumbnailCache.has(cacheKey)) {
@@ -683,62 +709,62 @@ function generateVideoThumbnail(videoUrl, callback, timeOffset = 5) {
         callback(thumbnailCache.get(cacheKey));
         return;
     }
-    
+
     const video = document.createElement('video');
     video.crossOrigin = 'anonymous';
     video.muted = true; // Importante para alguns navegadores
     video.preload = 'metadata';
-    
+
     video.onloadedmetadata = () => {
         // Definir tempo para captura (5 segundos ou 10% do vídeo)
         const captureTime = Math.min(timeOffset, video.duration * 0.1);
         video.currentTime = captureTime;
     };
-    
+
     video.onseeked = () => {
         try {
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth || 800;
             canvas.height = video.videoHeight || 600;
-            
+
             const ctx = canvas.getContext('2d');
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
+
             // Adicionar overlay indicando que é vídeo
             ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
             ctx.fillRect(canvas.width - 80, canvas.height - 80, 80, 80);
-            
+
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 40px Arial';
             ctx.textAlign = 'center';
             ctx.fillText('▶️', canvas.width - 40, canvas.height - 30);
-            
+
             const thumbnailUrl = canvas.toDataURL('image/jpeg', 0.8);
-            
+
             // Salvar no cache
             thumbnailCache.set(cacheKey, thumbnailUrl);
-            
+
             console.log('✅ Thumbnail gerado com sucesso');
             callback(thumbnailUrl);
-            
+
         } catch (error) {
             console.error('❌ Erro ao gerar thumbnail:', error);
             callback(null);
         }
     };
-    
+
     video.onerror = (error) => {
         console.error('❌ Erro ao carregar vídeo:', error);
         callback(null);
     };
-    
+
     video.src = videoUrl;
 }
 
 // Função auxiliar para obter URL da imagem do produto (com otimização ImageKit)
 function getImageUrl(product, callback = null) {
     const defaultImage = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
-    
+
     // Função para otimizar URL com ImageKit se disponível
     const optimizeUrl = (url) => {
         if (typeof imageKit !== 'undefined' && imageKit.getProductCard) {
@@ -746,14 +772,14 @@ function getImageUrl(product, callback = null) {
         }
         return url;
     };
-    
+
     // Se tem image_url válida, usar ela
     if (product.image_url && product.image_url.trim() !== '') {
         const optimized = optimizeUrl(product.image_url);
         if (callback) callback(optimized);
         return optimized;
     }
-    
+
     // Se não tem imagem mas tem vídeo, gerar thumbnail
     if (product.video_url && callback) {
         generateVideoThumbnail(product.video_url, (thumbnailUrl) => {
@@ -761,7 +787,7 @@ function getImageUrl(product, callback = null) {
         });
         return null; // Indica que será assíncrono
     }
-    
+
     // Fallback padrão
     if (callback) callback(defaultImage);
     return defaultImage;
@@ -772,11 +798,11 @@ function setProductImage(imgElement, product) {
     // Primeiro, definir uma imagem temporária
     const tempImage = 'https://znsfsumrrhjewbteiztr.supabase.co/storage/v1/object/public/contas/contas/boss-jewel.jpg';
     imgElement.src = tempImage;
-    
+
     // Depois, obter a imagem correta (possivelmente gerando thumbnail)
     getImageUrl(product, (finalImageUrl) => {
         imgElement.src = finalImageUrl;
-        
+
         // Adicionar classe para indicar que é thumbnail de vídeo
         if (!product.image_url && product.video_url) {
             imgElement.classList.add('video-thumbnail');
@@ -790,16 +816,16 @@ function renderProducts(products, containerId) {
     console.log('=== RENDER PRODUCTS ===');
     console.log('Produtos recebidos:', products?.length || 0);
     console.log('Container ID:', containerId);
-    
+
     const container = document.getElementById(containerId);
     if (!container) {
         console.error('Container não encontrado:', containerId);
         return;
     }
-    
+
     console.log('Container encontrado:', container);
     console.log('Renderizando produtos:', products?.length || 0, 'no container:', containerId);
-    
+
     if (!products || products.length === 0) {
         console.log('Nenhum produto para renderizar');
         container.innerHTML = `
@@ -812,7 +838,7 @@ function renderProducts(products, containerId) {
     }
 
     console.log('Primeiros 2 produtos a serem renderizados:', products.slice(0, 2));
-    
+
     // Renderizar estrutura básica dos produtos primeiro
     container.innerHTML = products.map(product => {
         const anuncioInfo = getAnuncioInfo(product);
@@ -827,14 +853,14 @@ function renderProducts(products, containerId) {
             <div class="card-body">
                 <h3 class="product-name">${product.name}</h3>
                 <div class="product-prices">
-                    ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? 
-                        `<span class="price price-main" style="color: #FCD34D;"><i class="fab fa-whatsapp"></i> Valor negociável</span>` : 
-                        product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : `<span class="price price-main">${formatKks(product.kks_price)} Kks</span>`
-                    }
+                    ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ?
+                `<span class="price price-main" style="color: #FCD34D;"><i class="fab fa-whatsapp"></i> Valor negociável</span>` :
+                product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : `<span class="price price-main">${formatKks(product.kks_price)} Kks</span>`
+            }
                     ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                    ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? '' : 
-                        product.rl_price <= 0 ? `<span class="price price-kks-secondary">Apenas em KKs</span>` : `<span class="price price-kks-secondary">${formatKks(product.kks_price)} KKs</span>`
-                    }
+                    ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? '' :
+                product.rl_price <= 0 ? `<span class="price price-kks-secondary">Apenas em KKs</span>` : `<span class="price price-kks-secondary">${formatKks(product.kks_price)} KKs</span>`
+            }
                 </div>
                 ${product.description ? `<p class="product-description">${product.description.substring(0, 100)}...</p>` : ''}
                 ${anuncioInfo.anuncianteTag}
@@ -852,23 +878,23 @@ function renderProducts(products, containerId) {
             </div>
         </div>
     `}).join('');
-    
+
     // Depois processar as imagens de forma assíncrona
     products.forEach(product => {
         const productCard = container.querySelector(`[data-product-id="${product.id}"]`);
         if (productCard) {
             const imgElement = productCard.querySelector('img');
-            
+
             // Configurar imagem
             setProductImage(imgElement, product);
-            
+
             // Configurar clique no modal após obter a imagem final
             getImageUrl(product, (finalImageUrl) => {
                 imgElement.onclick = () => {
                     openImageModal(
-                        finalImageUrl, 
-                        product.name.replace(/'/g, "\\'"), 
-                        (product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' '), 
+                        finalImageUrl,
+                        product.name.replace(/'/g, "\\'"),
+                        (product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' '),
                         product.video_url || ''
                     );
                 };
@@ -884,18 +910,18 @@ function renderCategories(containerId) {
         console.log('Container não encontrado:', containerId);
         return;
     }
-    
+
     const allCategories = getAllCategories();
     console.log('Renderizando categorias:', allCategories.length, '(principais + dinâmicas)');
-    
+
     // Filtrar apenas categorias que têm produtos
     const categoriesWithProducts = allCategories.filter(cat => cat.productCount > 0);
-    
+
     if (categoriesWithProducts.length === 0) {
         container.innerHTML = '<p class="text-muted">Nenhuma categoria disponível</p>';
         return;
     }
-    
+
     container.innerHTML = categoriesWithProducts.map(category => `
         <a href="produtos.html?category=${category.id}" class="card category-card ${category.type === 'dynamic' ? 'dynamic-category' : 'main-category'}">
             <div class="category-icon">
@@ -922,15 +948,15 @@ function initializeEventListeners() {
             itemsPerPageSelect.value = itemsPerPage;
         }
     }
-    
+
     // Busca com debounce para melhor performance
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         let searchTimeout;
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
             clearTimeout(searchTimeout);
             const searchTerm = this.value;
-            
+
             // Debounce de 300ms para evitar muitas requisições
             searchTimeout = setTimeout(() => {
                 const urlParams = new URLSearchParams(window.location.search);
@@ -939,38 +965,38 @@ function initializeEventListeners() {
             }, 300);
         });
     }
-    
+
     // Filtro de categoria
     const categoryFilter = document.getElementById('categoryFilter');
     if (categoryFilter) {
-        categoryFilter.addEventListener('change', function() {
+        categoryFilter.addEventListener('change', function () {
             const category = this.value;
             const searchTerm = document.getElementById('searchInput')?.value || '';
             applyFilters(category, searchTerm, true);
         });
     }
-    
+
     // Itens por página
     const itemsPerPageSelect = document.getElementById('itemsPerPage');
     if (itemsPerPageSelect) {
-        itemsPerPageSelect.addEventListener('change', function() {
+        itemsPerPageSelect.addEventListener('change', function () {
             changeItemsPerPage(this.value);
         });
     }
-    
+
     // Botões de visualização (grid/lista)
     const viewButtons = document.querySelectorAll('.view-btn');
     console.log('Configurando event listeners para botões de visualização. Botões encontrados:', viewButtons.length);
     viewButtons.forEach(btn => {
         console.log('Configurando botão:', btn.dataset.view);
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const viewType = this.dataset.view;
             console.log('Botão clicado:', viewType);
-            
+
             // Atualizar botões ativos
             viewButtons.forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
+
             // Alterar visualização
             toggleView(viewType);
         });
@@ -985,10 +1011,10 @@ function toggleView(viewType) {
         console.error('❌ Container productsGrid não encontrado');
         return;
     }
-    
+
     // Remover classes de visualização existentes
     container.classList.remove('products-grid', 'products-list');
-    
+
     if (viewType === 'list') {
         console.log('📋 Mudando para modo lista com paginação');
         container.classList.add('products-list');
@@ -996,10 +1022,10 @@ function toggleView(viewType) {
         console.log('🔲 Mudando para modo grid com paginação');
         container.classList.add('products-grid');
     }
-    
+
     // Re-renderizar apenas a página atual
     renderCurrentPage();
-    
+
     console.log('✅ Visualização alterada para:', viewType);
 }
 
@@ -1008,16 +1034,16 @@ function renderProductsList(products, containerId) {
     console.log('=== RENDER PRODUCTS LIST ===');
     console.log('Produtos recebidos:', products?.length || 0);
     console.log('Container ID:', containerId);
-    
+
     const container = document.getElementById(containerId);
     if (!container) {
         console.error('Container não encontrado:', containerId);
         return;
     }
-    
+
     console.log('Container encontrado:', container);
     console.log('Renderizando produtos em lista:', products?.length || 0, 'no container:', containerId);
-    
+
     if (!products || products.length === 0) {
         console.log('Nenhum produto para renderizar em lista');
         container.innerHTML = `
@@ -1030,14 +1056,14 @@ function renderProductsList(products, containerId) {
     }
 
     console.log('Gerando HTML para produtos em lista...');
-    
+
     // Renderizar estrutura básica primeiro
     container.innerHTML = products
-    .map((product) => {
-        const anuncioInfo = getAnuncioInfo(product);
-        const hasYT = hasYoutubeVideo(product);
+        .map((product) => {
+            const anuncioInfo = getAnuncioInfo(product);
+            const hasYT = hasYoutubeVideo(product);
 
-        return `
+            return `
             <div class="card product-card-list ${anuncioInfo.cssClass}"
                  data-product-id="${product.id}"
                  ${anuncioInfo.borderStyle || ''}>
@@ -1056,13 +1082,12 @@ function renderProductsList(products, containerId) {
                     <div class="product-info-list">
                         <h3 class="product-name">${product.name}</h3>
 
-                        ${
-                            product.description
-                                ? `<p class="product-description-list">
+                        ${product.description
+                    ? `<p class="product-description-list">
                                     ${product.description.substring(0, 150)}...
                                    </p>`
-                                : ''
-                        }
+                    : ''
+                }
 
                         <div class="product-meta-list">
                             <span class="product-category">
@@ -1076,33 +1101,30 @@ function renderProductsList(products, containerId) {
                     </div>
 
                     <div class="product-prices-list">
-                        ${
-                            (!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0)
-                                ? `<span class="price price-main" style="color: #FCD34D;">
+                        ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0)
+                    ? `<span class="price price-main" style="color: #FCD34D;">
                                     <i class="fab fa-whatsapp"></i> Valor negociável
                                    </span>`
-                                : product.rl_price > 0
-                                ? `<span class="price price-main">
+                    : product.rl_price > 0
+                        ? `<span class="price price-main">
                                     R$ ${product.rl_price.toFixed(2)}
                                    </span>`
-                                : ''
-                        }
+                        : ''
+                }
 
-                        ${
-                            product.parcelado_price > 0
-                                ? `<span class="price price-parcelado">
+                        ${product.parcelado_price > 0
+                    ? `<span class="price price-parcelado">
                                     Parcelado: R$ ${product.parcelado_price.toFixed(2)}
                                    </span>`
-                                : ''
-                        }
+                    : ''
+                }
 
-                        ${
-                            (!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0)
-                                ? ''
-                                : `<span class="price price-kks-secondary">
+                        ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0)
+                    ? ''
+                    : `<span class="price price-kks-secondary">
                                     ${formatKks(product.kks_price)} KKs
                                    </span>`
-                        }
+                }
                     </div>
 
                     <div class="product-actions-list">
@@ -1122,56 +1144,56 @@ function renderProductsList(products, containerId) {
                 </div>
             </div>
         `;
-    })
-    .join('');
-    
+        })
+        .join('');
+
     // Depois processar as imagens de forma assíncrona
     products.forEach(product => {
         const productCard = container.querySelector(`[data-product-id="${product.id}"]`);
         if (productCard) {
             const imgElement = productCard.querySelector('img');
-            
+
             // Configurar imagem
             setProductImage(imgElement, product);
-            
+
             // Configurar clique no modal
             getImageUrl(product, (finalImageUrl) => {
                 imgElement.onclick = () => {
                     openImageModal(
-                        finalImageUrl, 
-                        product.name.replace(/'/g, "\\'"), 
-                        (product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' '), 
+                        finalImageUrl,
+                        product.name.replace(/'/g, "\\'"),
+                        (product.description || '').replace(/'/g, "\\'").replace(/\n/g, ' '),
                         product.video_url || ''
                     );
                 };
             });
         }
     });
-    
+
     console.log('HTML gerado e inserido no container');
 }
 
 // Funções para páginas específicas
 const PageHandlers = {
     // Página inicial
-    index: function() {
+    index: function () {
         console.log('Executando handler da página index');
-        
+
         // Aguardar os dados serem carregados
         if (!siteData.categories || !siteData.products) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.index(), 100);
             return;
         }
-        
+
         console.log('Renderizando categorias...');
         renderCategories('categoriesGrid');
-        
+
         // Produtos em destaque (primeiros 8)
         const featuredProducts = siteData.products?.slice(0, 8) || [];
         console.log('Produtos em destaque:', featuredProducts.length);
         renderProducts(featuredProducts, 'featuredProducts');
-        
+
         // Atualizar estatísticas
         if (siteData.stats) {
             const statsContainer = document.querySelector('.stats');
@@ -1193,27 +1215,27 @@ const PageHandlers = {
             }
         }
     },
-    
+
     // Página de produtos (com sistema de paginação)
-    produtos: function() {
+    produtos: function () {
         console.log('🔄 Executando handler da página produtos com paginação');
         console.log('siteData disponível:', !!siteData);
         console.log('Produtos disponíveis:', siteData?.products?.length || 0);
-        
+
         // Aguardar os dados serem carregados
         if (!siteData.categories || !siteData.products) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.produtos(), 200);
             return;
         }
-        
+
         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category') || '';
         const searchTerm = urlParams.get('search') || '';
         const page = parseInt(urlParams.get('page')) || 1;
-        
+
         console.log('📋 Parâmetros:', { category, searchTerm, page });
-        
+
         // Configurar valores iniciais dos filtros
         if (category) {
             const categoryFilter = document.getElementById('categoryFilter');
@@ -1221,59 +1243,59 @@ const PageHandlers = {
                 categoryFilter.value = category;
             }
         }
-        
+
         if (searchTerm) {
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
                 searchInput.value = searchTerm;
             }
         }
-        
+
         // Garantir que o container está no modo grid inicialmente
         const container = document.getElementById('productsGrid');
         if (container) {
             container.classList.remove('products-list');
             container.classList.add('products-grid');
         }
-        
+
         // Preencher select de categorias (usando sistema dinâmico)
         const categoryFilter = document.getElementById('categoryFilter');
         if (categoryFilter) {
             const allCategories = getAllCategories();
             const categoriesWithProducts = allCategories.filter(cat => cat.productCount > 0);
-            
+
             categoryFilter.innerHTML = `
                 <option value="">Todas as categorias (${siteData.products?.length || 0} produtos)</option>
-                ${categoriesWithProducts.map(cat => 
-                    `<option value="${cat.id}" ${cat.id === category ? 'selected' : ''}>
+                ${categoriesWithProducts.map(cat =>
+                `<option value="${cat.id}" ${cat.id === category ? 'selected' : ''}>
                         ${cat.name} (${cat.productCount})
                         ${cat.type === 'dynamic' ? ' 🔄' : ''}
                     </option>`
-                ).join('')}
+            ).join('')}
             `;
         }
-        
+
         // Configurar página inicial
         currentPage = page;
-        
+
         // Aplicar filtros e renderizar com paginação
         applyFilters(category, searchTerm, false);
-        
+
         console.log('✅ Sistema de paginação inicializado');
         console.log(`📄 Página ${currentPage} | ${itemsPerPage} itens por página | ${totalItems} total`);
     },
-    
+
     // Página de produto individual
-    produto: function() {
+    produto: async function () {
         // Aguardar os dados serem carregados
         if (!siteData || !siteData.products) {
             setTimeout(() => this.produto(), 100);
             return;
         }
-        
+
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
-        
+
         if (!productId) {
             const container = document.getElementById('productDetails');
             if (container) {
@@ -1288,10 +1310,34 @@ const PageHandlers = {
             }
             return;
         }
-        
-        // Buscar produto por ID
-        const product = siteData.products?.find(p => p.id === productId || p.id === parseInt(productId));
-        
+
+        // Buscar produto por ID (híbrido: ID do Supabase ou timestamp da imagem)
+        let product = siteData.products?.find(p => p.id === productId || p.id === parseInt(productId));
+
+        // Se não encontrou nos dados carregados, buscar no servidor com busca híbrida
+        if (!product) {
+            console.log('🔍 Produto não encontrado no cache, buscando no servidor...');
+            try {
+                product = await supabase.getProductById(productId);
+            } catch (error) {
+                console.error('❌ Erro ao buscar produto no servidor:', error);
+            }
+        }
+
+        // Se ainda não encontrou, tentar buscar por timestamp da imagem nos dados já carregados
+        if (!product) {
+            console.log('🔄 Tentando buscar por timestamp nos dados carregados...');
+            product = siteData.products?.find(p => {
+                if (!p.image_url || !p.image_url.includes('produtos_')) return false;
+                const match = p.image_url.match(/produtos_([0-9]+)_/);
+                return match && match[1] === productId;
+            });
+
+            if (product) {
+                console.log('✅ Produto encontrado por timestamp da imagem:', productId);
+            }
+        }
+
         if (!product) {
             const container = document.getElementById('productDetails');
             if (container) {
@@ -1306,10 +1352,10 @@ const PageHandlers = {
             }
             return;
         }
-        
+
         // Atualizar meta tags para compartilhamento com dados do produto
         updateProductMetaTags(product);
-        
+
         // Renderizar detalhes do produto
         const container = document.getElementById('productDetails');
         if (container) {
@@ -1318,10 +1364,10 @@ const PageHandlers = {
             const hasYoutube = hasYoutubeVideo(product);
             const youtubeEmbedUrl = hasYoutube ? getYoutubeEmbedUrl(product.youtube_url) : null;
             const hasMultipleMedia = hasVideo || hasYoutube;
-            
+
             // Gerar HTML da seção de mídia
             let mediaHTML = '';
-            
+
             if (hasMultipleMedia) {
                 // Tem mais de uma mídia - usar abas
                 mediaHTML = `
@@ -1381,7 +1427,7 @@ const PageHandlers = {
                          onerror="this.src='https://via.placeholder.com/500x400/8B5CF6/ffffff?text=Erro+ao+Carregar'">
                 `;
             }
-            
+
             container.innerHTML = `
                 <div class="product-detail-grid">
                     <div class="product-image-container">
@@ -1389,15 +1435,15 @@ const PageHandlers = {
                     </div>
                     <div class="product-info">
                         ${(() => {
-                            const anuncioInfo = getAnuncioInfo(product);
-                            return anuncioInfo.badge ? `<div style="margin-bottom: 12px;">${anuncioInfo.badge.replace('position:absolute;top:10px;left:10px;z-index:5;', 'position:relative;display:inline-flex;')}</div>` : '';
-                        })()}
+                    const anuncioInfo = getAnuncioInfo(product);
+                    return anuncioInfo.badge ? `<div style="margin-bottom: 12px;">${anuncioInfo.badge.replace('position:absolute;top:10px;left:10px;z-index:5;', 'position:relative;display:inline-flex;')}</div>` : '';
+                })()}
                         <h1 class="product-title">${product.name}</h1>
                         <div class="product-prices mb-4">
-                            ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? 
-                                `<span class="price price-main" style="font-size: 1.2rem; color: #FCD34D;"><i class="fab fa-whatsapp"></i> Valor negociável pelo WhatsApp</span>` : 
-                                product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''
-                            }
+                            ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ?
+                    `<span class="price price-main" style="font-size: 1.2rem; color: #FCD34D;"><i class="fab fa-whatsapp"></i> Valor negociável pelo WhatsApp</span>` :
+                    product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''
+                }
                             ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
                             ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? '' : `<span class="price price-kks-secondary">${formatKks(product.kks_price)} KKs</span>`}
                         </div>
@@ -1441,24 +1487,24 @@ const PageHandlers = {
                 </div>
             `;
         }
-        
+
         // Produtos relacionados
-        const relatedProducts = siteData.products?.filter(p => 
+        const relatedProducts = siteData.products?.filter(p =>
             p.category === product.category && p.id !== product.id && p.is_active
         ).slice(0, 4) || [];
-        
+
         if (relatedProducts.length > 0) {
             renderProducts(relatedProducts, 'relatedProducts');
         }
     },
-    
+
     // Página do carrinho
-    carrinho: function() {
+    carrinho: function () {
         renderCart();
     },
-    
+
     // Página Rucoy KKs
-    rucoy: function() {
+    rucoy: function () {
         console.log('Executando handler da página Rucoy');
         initializeRucoyPage();
     }
@@ -1468,9 +1514,9 @@ const PageHandlers = {
 function renderCart() {
     const container = document.getElementById('cartItems');
     const totalContainer = document.getElementById('cartTotal');
-    
+
     if (!container) return;
-    
+
     if (cart.length === 0) {
         container.innerHTML = `
             <div class="empty-cart text-center">
@@ -1488,7 +1534,7 @@ function renderCart() {
         }
         return;
     }
-    
+
     container.innerHTML = cart.map(item => `
         <div class="cart-item card">
             <div class="cart-item-content">
@@ -1499,14 +1545,14 @@ function renderCart() {
                     ${item.type === 'rucoy-kks' ? `<p class="cart-item-character"><i class="fas fa-user"></i> ${item.character}</p>` : ''}
                     <p class="cart-item-price">R$ ${item.price.toFixed(2)}</p>
                 </div>
-                ${item.type === 'rucoy-kks' ? 
-                    `<div class="cart-item-rucoy">
+                ${item.type === 'rucoy-kks' ?
+            `<div class="cart-item-rucoy">
                         <span class="rucoy-badge">Rucoy KKs</span>
                         <button class="remove-btn" onclick="removeFromCart('${item.id}')">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>` :
-                    `<div class="cart-item-quantity">
+            `<div class="cart-item-quantity">
                         <button class="quantity-btn" onclick="updateCartQuantity('${item.id}', ${item.quantity - 1})">-</button>
                         <span class="quantity">${item.quantity}</span>
                         <button class="quantity-btn" onclick="updateCartQuantity('${item.id}', ${item.quantity + 1})">+</button>
@@ -1517,11 +1563,11 @@ function renderCart() {
                     <button class="remove-btn" onclick="removeFromCart('${item.id}')">
                         <i class="fas fa-trash"></i>
                     </button>`
-                }
+        }
             </div>
         </div>
     `).join('');
-    
+
     if (totalContainer) {
         const total = getCartTotal();
         totalContainer.innerHTML = `
@@ -1552,18 +1598,18 @@ function renderCart() {
             </div>
         `;
     }
-    
+
     // Página de contato
     function contato() {
         console.log('Executando handler da página contato');
-        
+
         // Aguardar os dados serem carregados
         if (!siteData.site) {
             console.log('Dados ainda não carregados, aguardando...');
             setTimeout(() => this.contato(), 100);
             return;
         }
-        
+
         // Atualizar informações de contato com dados do site
         const contactMethods = document.querySelectorAll('.contact-method');
         contactMethods.forEach(method => {
@@ -1576,14 +1622,14 @@ function renderCart() {
                 }
             }
         });
-        
+
         // Atualizar número do WhatsApp na interface
         const phoneDisplay = document.querySelector('.contact-details p');
         if (phoneDisplay && siteData.site.whatsapp) {
             const formattedPhone = siteData.site.whatsapp.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
             phoneDisplay.textContent = formattedPhone;
         }
-        
+
         // Atualizar botão flutuante do WhatsApp
         const whatsappFloat = document.querySelector('.whatsapp-float');
         if (whatsappFloat && siteData.site.whatsapp) {
@@ -1608,22 +1654,22 @@ function initializeRucoyPage() {
     const characterInput = document.getElementById('characterName');
     const buyNowBtn = document.getElementById('buyNowBtn');
     const addToCartBtn = document.getElementById('addToCartBtn');
-    
+
     // Preço por KK
     const pricePerKK = 1.45;
-    
+
     // Função para atualizar totais
     function updateTotals() {
         const quantity = parseInt(quantityInput.value) || 1;
         const totalPrice = (quantity * pricePerKK).toFixed(2);
-        
+
         totalKksSpan.textContent = `${quantity}KK`;
         totalPriceSpan.textContent = `R$ ${totalPrice}`;
     }
-    
+
     // Event listeners para controles de quantidade
     if (decreaseBtn) {
-        decreaseBtn.addEventListener('click', function() {
+        decreaseBtn.addEventListener('click', function () {
             const currentValue = parseInt(quantityInput.value) || 1;
             if (currentValue > 1) {
                 quantityInput.value = currentValue - 1;
@@ -1631,9 +1677,9 @@ function initializeRucoyPage() {
             }
         });
     }
-    
+
     if (increaseBtn) {
-        increaseBtn.addEventListener('click', function() {
+        increaseBtn.addEventListener('click', function () {
             const currentValue = parseInt(quantityInput.value) || 1;
             if (currentValue < 999) {
                 quantityInput.value = currentValue + 1;
@@ -1641,9 +1687,9 @@ function initializeRucoyPage() {
             }
         });
     }
-    
+
     if (quantityInput) {
-        quantityInput.addEventListener('input', function() {
+        quantityInput.addEventListener('input', function () {
             let value = parseInt(this.value) || 1;
             if (value < 1) value = 1;
             if (value > 999) value = 999;
@@ -1651,47 +1697,47 @@ function initializeRucoyPage() {
             updateTotals();
         });
     }
-    
+
     // Função para validar formulário
     function validateForm() {
         const quantity = parseInt(quantityInput.value) || 1;
         const characterName = characterInput.value.trim();
-        
+
         if (!characterName) {
             showNotification('Por favor, digite o nome do seu personagem', 'warning');
             characterInput.focus();
             return false;
         }
-        
+
         if (characterName.length < 2) {
             showNotification('O nome do personagem deve ter pelo menos 2 caracteres', 'warning');
             characterInput.focus();
             return false;
         }
-        
+
         return { quantity, characterName };
     }
-    
+
     // Event listener para comprar agora
     if (buyNowBtn) {
-        buyNowBtn.addEventListener('click', function() {
+        buyNowBtn.addEventListener('click', function () {
             const formData = validateForm();
             if (formData) {
                 buyRucoyKKsNow(formData.quantity, formData.characterName);
             }
         });
     }
-    
+
     // Event listener para adicionar ao carrinho
     if (addToCartBtn) {
-        addToCartBtn.addEventListener('click', function() {
+        addToCartBtn.addEventListener('click', function () {
             const formData = validateForm();
             if (formData) {
                 addRucoyKKsToCart(formData.quantity, formData.characterName);
             }
         });
     }
-    
+
     // Inicializar totais
     updateTotals();
 }
@@ -1700,7 +1746,7 @@ function initializeRucoyPage() {
 function buyRucoyKKsNow(quantity, characterName) {
     const pricePerKK = 1.45;
     const totalPrice = (quantity * pricePerKK).toFixed(2);
-    
+
     // Criar objeto do produto
     const rucoyProduct = {
         id: 'rucoy-kks',
@@ -1711,10 +1757,10 @@ function buyRucoyKKsNow(quantity, characterName) {
         character: characterName,
         type: 'rucoy-kks'
     };
-    
+
     // Gerar mensagem para WhatsApp
     const message = generateRucoyWhatsAppMessage([rucoyProduct]);
-    
+
     // Redirecionar para WhatsApp
     if (siteData.site && siteData.site.whatsapp) {
         const whatsappUrl = `https://api.whatsapp.com/send/?phone=${siteData.site.whatsapp}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
@@ -1729,7 +1775,7 @@ function buyRucoyKKsNow(quantity, characterName) {
 function addRucoyKKsToCart(quantity, characterName) {
     const pricePerKK = 1.45;
     const totalPrice = (quantity * pricePerKK).toFixed(2);
-    
+
     // Criar objeto do produto
     const rucoyProduct = {
         id: `rucoy-kks-${Date.now()}`, // ID único para cada item
@@ -1740,18 +1786,18 @@ function addRucoyKKsToCart(quantity, characterName) {
         character: characterName,
         type: 'rucoy-kks'
     };
-    
+
     // Adicionar ao carrinho
     cart.push(rucoyProduct);
     localStorage.setItem('chefinho-cart', JSON.stringify(cart));
     updateCartCount();
-    
+
     showNotification(`${quantity}KK para ${characterName} adicionado ao carrinho!`, 'success');
-    
+
     // Limpar formulário
     document.getElementById('kkQuantity').value = 1;
     document.getElementById('characterName').value = '';
-    
+
     // Atualizar totais
     const totalKksSpan = document.getElementById('totalKks');
     const totalPriceSpan = document.getElementById('totalPrice');
@@ -1763,7 +1809,7 @@ function addRucoyKKsToCart(quantity, characterName) {
 function generateRucoyWhatsAppMessage(items) {
     let message = `🎮 *PEDIDO RUCOY ONLINE - CHEFINHO GAMING STORE*\n\n`;
     message += `📋 *DETALHES DO PEDIDO:*\n`;
-    
+
     let total = 0;
     items.forEach((item, index) => {
         message += `\n${index + 1}. ${item.name}\n`;
@@ -1771,14 +1817,14 @@ function generateRucoyWhatsAppMessage(items) {
         message += `   💰 Valor: R$ ${item.price.toFixed(2)}\n`;
         total += item.price;
     });
-    
+
     message += `\n💵 *TOTAL: R$ ${total.toFixed(2)}*\n\n`;
     message += `⚡ *INFORMAÇÕES IMPORTANTES:*\n`;
     message += `• Entrega em até 30 minutos\n`;
     message += `• Confirme se o nome do personagem está correto\n`;
     message += `• Você deve estar online no momento da entrega\n\n`;
     message += `🛒 Pedido realizado através do site da Chefinho Gaming Store`;
-    
+
     return message;
 }
 
@@ -1788,22 +1834,22 @@ function showMedia(mediaId) {
     document.querySelectorAll('.media-item').forEach(item => {
         item.classList.remove('active');
     });
-    
+
     // Remover classe active de todos os botões
     document.querySelectorAll('.media-tab-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    
+
     // Ativar o media selecionado
     const selectedMedia = document.getElementById(mediaId);
     if (selectedMedia) {
         selectedMedia.classList.add('active');
     }
-    
+
     // Ativar o botão correspondente baseado no tipo de mídia
     const buttons = document.querySelectorAll('.media-tab-btn');
     let activeButtonIndex = 0;
-    
+
     if (mediaId.includes('youtube-')) {
         activeButtonIndex = 1; // YouTube é o segundo botão
     } else if (mediaId.includes('video-')) {
@@ -1811,11 +1857,11 @@ function showMedia(mediaId) {
         const hasYoutubeBtn = document.querySelector('.media-tab-btn .fab.fa-youtube');
         activeButtonIndex = hasYoutubeBtn ? 2 : 1;
     }
-    
+
     if (buttons[activeButtonIndex]) {
         buttons[activeButtonIndex].classList.add('active');
     }
-    
+
     // Pausar vídeo se trocar para outra mídia
     if (!mediaId.includes('video-')) {
         document.querySelectorAll('.product-detail-video').forEach(video => {
@@ -1831,13 +1877,13 @@ function showMedia(mediaId) {
 // Gerar URL de thumbnail do vídeo
 function getVideoThumbnail(videoUrl) {
     if (!videoUrl) return null;
-    
+
     // Se for um vídeo do Supabase, tentar gerar thumbnail
     if (videoUrl.includes('supabase.co')) {
         // Placeholder: em produção real, você poderia usar um serviço de thumbnail
         return `https://via.placeholder.com/800x450/8B5CF6/ffffff?text=📹+Video+Preview`;
     }
-    
+
     // Para outros vídeos, retornar null para usar placeholder
     return null;
 }
@@ -1850,24 +1896,24 @@ function getProductImage(product, size = 'medium') {
         medium: '500x400',
         large: '800x600'
     };
-    
+
     const placeholderSize = sizes[size] || sizes.medium;
-    
+
     // Se tem imagem, usar ela
     if (product.image_url && product.image_url.trim() !== '') {
         return product.image_url;
     }
-    
+
     // Se não tem imagem mas tem vídeo, tentar thumbnail
     if (product.video_url) {
         const thumbnail = getVideoThumbnail(product.video_url);
         if (thumbnail) return thumbnail;
-        
+
         // Fallback: placeholder específico para produtos com vídeo
         const productName = encodeURIComponent(product.name || 'Produto');
         return `https://via.placeholder.com/${placeholderSize}/8B5CF6/ffffff?text=📹+${productName}`;
     }
-    
+
     // Fallback final: placeholder genérico
     const productName = encodeURIComponent(product.name || 'Produto');
     return `https://via.placeholder.com/${placeholderSize}/8B5CF6/ffffff?text=${productName}`;
@@ -1880,7 +1926,7 @@ function openImageModal(imageSrc, title, description, videoUrl = null) {
     const modalImage = document.getElementById('modalImage');
     const modalTitle = document.getElementById('modalTitle');
     const modalDescription = document.getElementById('modalDescription');
-    
+
     if (modal && modalImage) {
         // Se não há imagem mas há vídeo, usar thumbnail do vídeo
         if ((!imageSrc || imageSrc === '') && videoUrl) {
@@ -1888,10 +1934,10 @@ function openImageModal(imageSrc, title, description, videoUrl = null) {
             imageSrc = thumbnail || `https://via.placeholder.com/800x450/8B5CF6/ffffff?text=${encodeURIComponent(title || 'Produto com Vídeo')}`;
             console.log('📹 Usando thumbnail do vídeo:', imageSrc);
         }
-        
+
         modalImage.src = imageSrc;
         modalImage.alt = title || 'Imagem do produto';
-        
+
         if (modalTitle) modalTitle.textContent = title || '';
         if (modalDescription) {
             let desc = description || '';
@@ -1901,10 +1947,10 @@ function openImageModal(imageSrc, title, description, videoUrl = null) {
             }
             modalDescription.textContent = desc;
         }
-        
+
         modal.classList.add('active');
         document.body.style.overflow = 'hidden'; // Prevenir scroll do fundo
-        
+
         console.log('✅ Modal aberto com sucesso');
     } else {
         console.error('❌ Elementos do modal não encontrados');
@@ -1921,19 +1967,19 @@ function closeImageModal() {
 }
 
 // Event listeners para o modal
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Fechar modal clicando no fundo
     const modal = document.getElementById('imageModal');
     if (modal) {
-        modal.addEventListener('click', function(e) {
+        modal.addEventListener('click', function (e) {
             if (e.target === modal) {
                 closeImageModal();
             }
         });
     }
-    
+
     // Fechar modal com ESC
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeImageModal();
         }
@@ -1945,7 +1991,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Função demo para adicionar produto com nova categoria (apenas para demonstração)
 function addExampleProduct() {
     if (!siteData || !siteData.products) return;
-    
+
     const exampleProduct = {
         "id": "demo-1",
         "name": "GTA V - Conta com $500M + RP Boost",
@@ -1960,31 +2006,31 @@ function addExampleProduct() {
         "created_at": "2025-11-08",
         "is_active": true
     };
-    
+
     // Adicionar temporariamente para demonstração
     siteData.products.push(exampleProduct);
-    
+
     console.log('✅ Produto de exemplo adicionado com nova categoria "gta v"');
     console.log('🔄 Sistema detectou automaticamente e criou categoria dinâmica');
     console.log('📋 Categorias atualizadas:', getAllCategories());
-    
+
     // Re-renderizar a página atual
     const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
     if (PageHandlers[page]) {
         PageHandlers[page]();
     }
-    
+
     showNotification('Produto de exemplo GTA V adicionado! Categoria criada automaticamente.', 'success');
 }
 
 // Função para mostrar estatísticas do sistema de categorias
 function showCategoryStats() {
     if (!siteData) return;
-    
+
     const allCategories = getAllCategories();
     const mainCategories = allCategories.filter(cat => cat.type === 'main');
     const dynamicCategories = allCategories.filter(cat => cat.type === 'dynamic');
-    
+
     const stats = {
         total: allCategories.length,
         principais: mainCategories.length,
@@ -1992,11 +2038,11 @@ function showCategoryStats() {
         totalProdutos: siteData.products?.length || 0,
         categoriasComProdutos: allCategories.filter(cat => cat.productCount > 0).length
     };
-    
+
     console.log('📊 Estatísticas do Sistema de Categorias:', stats);
     console.log('🏷️ Categorias Principais:', mainCategories);
     console.log('🔄 Categorias Dinâmicas:', dynamicCategories);
-    
+
     return stats;
 }
 
@@ -2006,21 +2052,21 @@ function showCategoryStats() {
 function applyFilters(category = '', searchTerm = '', resetPage = true) {
     currentFilters.category = category;
     currentFilters.search = searchTerm;
-    
+
     if (resetPage) {
         currentPage = 1;
     }
-    
+
     // Filtrar produtos
     filteredProducts = filterProducts(category, searchTerm);
     totalItems = filteredProducts.length;
-    
+
     // Renderizar página atual
     renderCurrentPage();
-    
+
     // Atualizar paginação
     renderPagination();
-    
+
     // Atualizar info dos produtos
     updateProductsInfo();
 }
@@ -2030,13 +2076,13 @@ function renderCurrentPage() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const pageProducts = filteredProducts.slice(startIndex, endIndex);
-    
+
     console.log(`📄 Página ${currentPage}: produtos ${startIndex + 1}-${Math.min(endIndex, totalItems)} de ${totalItems}`);
-    
+
     // Verificar modo de visualização
     const container = document.getElementById('productsGrid');
     const isList = container?.classList.contains('products-list');
-    
+
     if (isList) {
         renderProductsList(pageProducts, 'productsGrid');
     } else {
@@ -2048,20 +2094,20 @@ function renderCurrentPage() {
 function renderPagination() {
     const container = document.getElementById('paginationContainer');
     const pagination = document.getElementById('pagination');
-    
+
     if (!container || !pagination) return;
-    
+
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
+
     if (totalPages <= 1) {
         container.style.display = 'none';
         return;
     }
-    
+
     container.style.display = 'flex';
-    
+
     let paginationHTML = '';
-    
+
     // Botão Primeira Página
     if (currentPage > 1) {
         paginationHTML += `
@@ -2070,7 +2116,7 @@ function renderPagination() {
             </button>
         `;
     }
-    
+
     // Botão Anterior
     paginationHTML += `
         <button class="pagination-btn prev-next ${currentPage <= 1 ? 'disabled' : ''}" 
@@ -2078,10 +2124,10 @@ function renderPagination() {
             <i class="fas fa-angle-left"></i> Anterior
         </button>
     `;
-    
+
     // Números das páginas
     const pageNumbers = generatePageNumbers(currentPage, totalPages);
-    
+
     pageNumbers.forEach(page => {
         if (page === '...') {
             paginationHTML += '<span class="pagination-ellipsis">...</span>';
@@ -2095,7 +2141,7 @@ function renderPagination() {
             `;
         }
     });
-    
+
     // Botão Próximo
     paginationHTML += `
         <button class="pagination-btn prev-next ${currentPage >= totalPages ? 'disabled' : ''}" 
@@ -2103,7 +2149,7 @@ function renderPagination() {
             Próximo <i class="fas fa-angle-right"></i>
         </button>
     `;
-    
+
     // Botão Última Página
     if (currentPage < totalPages) {
         paginationHTML += `
@@ -2112,15 +2158,15 @@ function renderPagination() {
             </button>
         `;
     }
-    
+
     pagination.innerHTML = paginationHTML;
-    
+
     // Info da paginação
     const paginationInfo = document.getElementById('paginationInfo');
     if (paginationInfo) {
         const startItem = (currentPage - 1) * itemsPerPage + 1;
         const endItem = Math.min(currentPage * itemsPerPage, totalItems);
-        
+
         paginationInfo.innerHTML = `
             <div>
                 Mostrando ${startItem}-${endItem} de ${totalItems} produtos (Página ${currentPage} de ${totalPages})
@@ -2138,7 +2184,7 @@ function renderPagination() {
 function generatePageNumbers(current, total) {
     const pages = [];
     const delta = 2; // Quantas páginas mostrar antes/depois da atual
-    
+
     // Sempre mostrar primeira página
     if (current > delta + 1) {
         pages.push(1);
@@ -2146,15 +2192,15 @@ function generatePageNumbers(current, total) {
             pages.push('...');
         }
     }
-    
+
     // Páginas ao redor da atual
     const start = Math.max(1, current - delta);
     const end = Math.min(total, current + delta);
-    
+
     for (let i = start; i <= end; i++) {
         pages.push(i);
     }
-    
+
     // Sempre mostrar última página
     if (current < total - delta) {
         if (current < total - delta - 1) {
@@ -2162,40 +2208,40 @@ function generatePageNumbers(current, total) {
         }
         pages.push(total);
     }
-    
+
     return pages;
 }
 
 // Ir para página específica
 function goToPage(page) {
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
+
     if (page < 1 || page > totalPages || page === currentPage) {
         return;
     }
-    
+
     const previousPage = currentPage;
     currentPage = page;
-    
+
     // Scroll suave para o topo dos produtos
     const productsSection = document.querySelector('.products-section');
     if (productsSection) {
         productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-    
+
     // Mostrar loading
     showPageLoading();
-    
+
     // Log para debug
     console.log(`📄 Navegando da página ${previousPage} para ${currentPage}`);
-    
+
     // Simular pequeno delay para UX suave (menos delay para melhor performance)
     setTimeout(() => {
         renderCurrentPage();
         renderPagination();
         hidePageLoading();
         updateURL();
-        
+
         // Anunciar mudança para leitores de tela
         const announcement = `Página ${currentPage} de ${totalPages} carregada`;
         announceToScreenReader(announcement);
@@ -2220,9 +2266,9 @@ function announceToScreenReader(message) {
         border: 0 !important;
     `;
     announcement.textContent = message;
-    
+
     document.body.appendChild(announcement);
-    
+
     setTimeout(() => {
         document.body.removeChild(announcement);
     }, 1000);
@@ -2232,10 +2278,10 @@ function announceToScreenReader(message) {
 function jumpToPage() {
     const input = document.getElementById('pageJumpInput');
     if (!input) return;
-    
+
     const page = parseInt(input.value);
     const totalPages = Math.ceil(totalItems / itemsPerPage);
-    
+
     if (page >= 1 && page <= totalPages) {
         goToPage(page);
         updateURL();
@@ -2248,26 +2294,26 @@ function jumpToPage() {
 // Atualizar URL com parâmetros da paginação (opcional, para bookmarking)
 function updateURL() {
     const url = new URL(window.location);
-    
+
     // Atualizar parâmetros
     if (currentFilters.category) {
         url.searchParams.set('category', currentFilters.category);
     } else {
         url.searchParams.delete('category');
     }
-    
+
     if (currentFilters.search) {
         url.searchParams.set('search', currentFilters.search);
     } else {
         url.searchParams.delete('search');
     }
-    
+
     if (currentPage > 1) {
         url.searchParams.set('page', currentPage.toString());
     } else {
         url.searchParams.delete('page');
     }
-    
+
     // Atualizar URL sem recarregar a página
     window.history.replaceState({}, '', url);
 }
@@ -2276,7 +2322,7 @@ function updateURL() {
 function updateProductsInfo() {
     const productsCount = document.getElementById('productsCount');
     if (!productsCount) return;
-    
+
     if (totalItems === 0) {
         productsCount.textContent = 'Nenhum produto encontrado';
     } else if (currentFilters.category || currentFilters.search) {
@@ -2310,10 +2356,10 @@ function hidePageLoading() {
 function changeItemsPerPage(newItemsPerPage) {
     itemsPerPage = parseInt(newItemsPerPage);
     currentPage = 1; // Resetar para primeira página
-    
+
     renderCurrentPage();
     renderPagination();
-    
+
     // Salvar preferência no localStorage
     localStorage.setItem('chefinho-items-per-page', itemsPerPage.toString());
 }
