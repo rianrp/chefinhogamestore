@@ -296,7 +296,7 @@ function showNotification(message, type = 'info') {
 
 // Compartilhar produto específico
 function shareProduct(product, platform = 'whatsapp') {
-    // Extrair nome da imagem sem .jpg da image_url para compartilhamento
+    // Extrair nome da imagem sem .jpg para compartilhamento
     let shareId = product.id; // Fallback para ID do Supabase
     
     if (product.image_url && product.image_url.includes('produtos/produtos_')) {
@@ -311,34 +311,34 @@ function shareProduct(product, platform = 'whatsapp') {
         }
     }
     
-    // URL com nome da imagem (sem .jpg) - WhatsApp vai acessar esta
     const productUrl = `${window.location.origin}/produto.html?id=${encodeURIComponent(shareId)}`;
     
     const shareText = `${product.name} - ${getCategoryName(product.category)}`;
     const priceText = product.rl_price > 0 ? `por R$ ${product.rl_price.toFixed(2)}` : 'com valor negociável';
     const fullText = `🎮 ${shareText} ${priceText}! Confira na Chefinho Gaming Store`;
-    
+
     let shareUrl = '';
-    
+
     switch (platform) {
         case 'whatsapp':
             const whatsappNumber = siteData?.site?.whatsapp || '556993450986';
             const message = `${fullText}\n\n👆 Acesse o link para ver detalhes, imagens e vídeos!\n\n${productUrl}`;
             shareUrl = `https://api.whatsapp.com/send/?phone=${whatsappNumber}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
             break;
-            
+
         case 'facebook':
             shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
             break;
-            
+
         case 'twitter':
             shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullText)}&url=${encodeURIComponent(productUrl)}`;
             break;
-            
+
         case 'telegram':
+            // Telegram lê automaticamente as meta tags da página do produto
             shareUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(fullText)}`;
             break;
-            
+
         case 'copy':
             navigator.clipboard.writeText(productUrl).then(() => {
                 const isImageName = shareId.includes('produtos_');
@@ -352,16 +352,16 @@ function shareProduct(product, platform = 'whatsapp') {
         default:
             shareUrl = productUrl;
     }
-    
+
     if (shareUrl) {
         window.open(shareUrl, '_blank');
-        
+
         const isImageName = shareId.includes('produtos_');
         const previewPlatforms = ['whatsapp', 'telegram', 'facebook'];
         const message = previewPlatforms.includes(platform)
             ? `Compartilhando ${product.name} via ${platform} - preview ${isImageName ? 'com imagem direta' : 'automático'} será mostrado! 📱`
             : `Compartilhando via ${platform}...`;
-            
+
         showNotification(message, 'info');
     }
 }
@@ -557,7 +557,17 @@ function formatKks(value) {
 function updateProductMetaTags(product) {
     const baseUrl = window.location.origin;
     const productUrl = `${baseUrl}/produto.html?id=${product.id}`;
-    
+
+    // Extrair timestamp da image_url do ImageKit para URL alternativa
+    let imageTimestamp = null;
+    if (product.image_url && product.image_url.includes('produtos_')) {
+        const match = product.image_url.match(/produtos_([0-9]+)_/);
+        if (match) {
+            imageTimestamp = match[1];
+            console.log('🕰️ Timestamp da imagem extraído:', imageTimestamp);
+        }
+    }
+
     // URL da imagem do produto - versão síncrona para meta tags
     let productImage = '';
     if (product.image_url && product.image_url.trim() !== '') {
@@ -566,27 +576,27 @@ function updateProductMetaTags(product) {
         // Fallback para imagem padrão se não tiver image_url
         productImage = `${baseUrl}/img/chefinho.png`;
     }
-    
+
     // Garantir que a URL seja absoluta
     if (productImage && !productImage.startsWith('http')) {
         productImage = `${baseUrl}${productImage}`;
     }
-    
+
     const productTitle = `${product.name} - Chefinho Gaming Store`;
     const categoryName = getCategoryName(product.category);
     const priceText = product.rl_price > 0 ? `R$ ${product.rl_price.toFixed(2)}` : 'Valor negociável';
     const productDescription = product.description
         ? `${product.description} - ${categoryName} por ${priceText}. Entrega imediata via WhatsApp na Chefinho Gaming Store.`
         : `${product.name} - ${categoryName} disponível por ${priceText}. Entrega imediata via WhatsApp na Chefinho Gaming Store.`;
-    
+
     // Atualizar título da página
     document.title = productTitle;
-    
+
     // Função helper para atualizar/criar meta tag
     function updateMetaTag(property, content, isName = false) {
         const selector = isName ? `meta[name="${property}"]` : `meta[property="${property}"]`;
         let meta = document.querySelector(selector);
-        
+
         if (meta) {
             meta.setAttribute('content', content);
         } else {
@@ -1306,15 +1316,13 @@ const PageHandlers = {
             return;
         }
 
-        console.log('🔍 Buscando produto com ID:', productId);
-        
         // Detectar se o ID é um nome de arquivo de imagem (contém 'produtos_')
         const isImageFileName = productId.includes('produtos_');
         let product = null;
         let constructedImageUrl = null;
         
         if (isImageFileName) {
-            // É um nome de arquivo - construir URL da imagem
+            // É um nome de arquivo - construir URL da imagem adicionando .jpg
             constructedImageUrl = `https://ik.imagekit.io/setkpevha/produtos/${productId}.jpg`;
             console.log('🖼️ Detectado nome de imagem, URL construída:', constructedImageUrl);
             
@@ -1339,6 +1347,16 @@ const PageHandlers = {
         } else {
             // ID normal do Supabase
             product = siteData.products?.find(p => p.id === productId || p.id === parseInt(productId));
+            
+            // Se não encontrou nos dados carregados, buscar no servidor
+            if (!product) {
+                console.log('🔍 Produto não encontrado no cache, buscando no servidor...');
+                try {
+                    product = await supabase.getProductById(productId);
+                } catch (error) {
+                    console.error('❌ Erro ao buscar produto no servidor:', error);
+                }
+            }
         }
 
         if (!product) {
@@ -1356,14 +1374,14 @@ const PageHandlers = {
             return;
         }
 
-        // Atualizar meta tags para compartilhamento (usando URL construída se disponível)
+        // Atualizar meta tags para compartilhamento
+        // Se veio por nome de imagem, usar a URL construída para as meta tags
         if (constructedImageUrl && product) {
-            // Temporariamente substituir a image_url para as meta tags
             const originalImageUrl = product.image_url;
             product.image_url = constructedImageUrl;
             updateProductMetaTags(product);
             product.image_url = originalImageUrl; // Restaurar original
-            console.log('📱 Meta tags atualizadas com URL construída:', constructedImageUrl);
+            console.log('📱 Meta tags com URL construída:', constructedImageUrl);
         } else if (product) {
             updateProductMetaTags(product);
         }
