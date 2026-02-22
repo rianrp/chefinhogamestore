@@ -460,6 +460,28 @@ body {
     border-color: #DC2626;
 }
 
+/* Botões de reordenação */
+.btn-order {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 0.75rem;
+    background: #1E293B !important;
+    border-color: #334155 !important;
+}
+
+.btn-order:hover {
+    background: #334155 !important;
+    border-color: #475569 !important;
+    color: #FCD34D;
+}
+
+.product-order-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-right: 8px;
+}
+
 .alert {
     padding: 16px;
     border-radius: 8px;

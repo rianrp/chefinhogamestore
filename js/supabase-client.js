@@ -414,6 +414,102 @@ class ChefinhoSupabase {
     }
 
     // =====================================================
+    // Reordenação de Produtos (Display Order)
+    // =====================================================
+
+    async moveProductUp(productId) {
+        try {
+            const response = await fetch(
+                `${this.url}/rest/v1/rpc/move_product_up`,
+                {
+                    method: 'POST',
+                    headers: this.getHeaders(true),
+                    body: JSON.stringify({ p_product_id: productId })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Erro ao mover produto para cima');
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Erro ao mover produto para cima:', error);
+            throw error;
+        }
+    }
+
+    async moveProductDown(productId) {
+        try {
+            const response = await fetch(
+                `${this.url}/rest/v1/rpc/move_product_down`,
+                {
+                    method: 'POST',
+                    headers: this.getHeaders(true),
+                    body: JSON.stringify({ p_product_id: productId })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Erro ao mover produto para baixo');
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Erro ao mover produto para baixo:', error);
+            throw error;
+        }
+    }
+
+    async moveProductToTop(productId) {
+        try {
+            const response = await fetch(
+                `${this.url}/rest/v1/rpc/move_product_to_top`,
+                {
+                    method: 'POST',
+                    headers: this.getHeaders(true),
+                    body: JSON.stringify({ p_product_id: productId })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Erro ao mover produto para o topo');
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Erro ao mover produto para o topo:', error);
+            throw error;
+        }
+    }
+
+    async moveProductToBottom(productId) {
+        try {
+            const response = await fetch(
+                `${this.url}/rest/v1/rpc/move_product_to_bottom`,
+                {
+                    method: 'POST',
+                    headers: this.getHeaders(true),
+                    body: JSON.stringify({ p_product_id: productId })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error('Erro ao mover produto para o final');
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Erro ao mover produto para o final:', error);
+            throw error;
+        }
+    }
+
+    // =====================================================
     // Upload de Imagens (Supabase Storage)
     // =====================================================
 

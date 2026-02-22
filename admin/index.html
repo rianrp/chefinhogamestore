@@ -560,6 +560,14 @@
                         </div>
                     </div>
                     <div class="product-actions">
+                        <div class="product-order-controls" style="display: flex; flex-direction: column; gap: 4px; margin-right: 8px;">
+                            <button class="btn-icon btn-order" onclick="moveProductUp('${p.id}')" title="Mover para cima">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button class="btn-icon btn-order" onclick="moveProductDown('${p.id}')" title="Mover para baixo">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
                         <button class="btn-icon" onclick="editProduct('${p.id}')" title="Editar">
                             <i class="fas fa-edit"></i>
                         </button>
@@ -717,6 +725,80 @@
         
         function clearAlert() {
             document.getElementById('alertContainer').innerHTML = '';
+        }
+
+        // =====================================================
+        // Reordenação de Produtos
+        // =====================================================
+
+        async function moveProductUp(productId) {
+            try {
+                showAlert('⬆️ Movendo produto para cima...', 'info');
+                
+                const result = await supabase.moveProductUp(productId);
+                
+                if (result) {
+                    await loadProducts();
+                    showAlert('✅ Produto movido para cima!', 'success');
+                    setTimeout(clearAlert, 2000);
+                } else {
+                    showAlert('ℹ️ Produto já está no topo', 'info');
+                    setTimeout(clearAlert, 2000);
+                }
+            } catch (error) {
+                console.error('Erro ao mover produto:', error);
+                showAlert('❌ Erro ao mover produto', 'error');
+            }
+        }
+
+        async function moveProductDown(productId) {
+            try {
+                showAlert('⬇️ Movendo produto para baixo...', 'info');
+                
+                const result = await supabase.moveProductDown(productId);
+                
+                if (result) {
+                    await loadProducts();
+                    showAlert('✅ Produto movido para baixo!', 'success');
+                    setTimeout(clearAlert, 2000);
+                } else {
+                    showAlert('ℹ️ Produto já está no final', 'info');
+                    setTimeout(clearAlert, 2000);
+                }
+            } catch (error) {
+                console.error('Erro ao mover produto:', error);
+                showAlert('❌ Erro ao mover produto', 'error');
+            }
+        }
+
+        async function moveProductToTop(productId) {
+            try {
+                showAlert('⬆️⬆️ Movendo produto para o topo...', 'info');
+                
+                await supabase.moveProductToTop(productId);
+                await loadProducts();
+                
+                showAlert('✅ Produto movido para o topo!', 'success');
+                setTimeout(clearAlert, 2000);
+            } catch (error) {
+                console.error('Erro ao mover produto:', error);
+                showAlert('❌ Erro ao mover produto', 'error');
+            }
+        }
+
+        async function moveProductToBottom(productId) {
+            try {
+                showAlert('⬇️⬇️ Movendo produto para o final...', 'info');
+                
+                await supabase.moveProductToBottom(productId);
+                await loadProducts();
+                
+                showAlert('✅ Produto movido para o final!', 'success');
+                setTimeout(clearAlert, 2000);
+            } catch (error) {
+                console.error('Erro ao mover produto:', error);
+                showAlert('❌ Erro ao mover produto', 'error');
+            }
         }
 
         // =====================================================

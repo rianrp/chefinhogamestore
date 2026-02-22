@@ -674,9 +674,14 @@ function renderProducts(products, containerId) {
             <div class="card-body">
                 <h3 class="product-name">${product.name}</h3>
                 <div class="product-prices">
-                    ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : `<span class="price price-main">${product.kks_price.toFixed(2)}Kks</span>`}
+                    ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? 
+                        `<span class="price price-main" style="color: #FCD34D;"><i class="fab fa-whatsapp"></i> Valor negociável</span>` : 
+                        product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : `<span class="price price-main">${product.kks_price.toFixed(2)}Kks</span>`
+                    }
                     ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                    ${product.rl_price <= 0 ? `<span class="price price-kks-secondary">Apenas em KKs</span>` : `<span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>`}
+                    ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? '' : 
+                        product.rl_price <= 0 ? `<span class="price price-kks-secondary">Apenas em KKs</span>` : `<span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>`
+                    }
                 </div>
                 ${product.description ? `<p class="product-description">${product.description.substring(0, 100)}...</p>` : ''}
                 ${anuncioInfo.anuncianteTag}
@@ -917,7 +922,11 @@ function renderProductsList(products, containerId) {
 
                     <div class="product-prices-list">
                         ${
-                            product.rl_price > 0
+                            (!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0)
+                                ? `<span class="price price-main" style="color: #FCD34D;">
+                                    <i class="fab fa-whatsapp"></i> Valor negociável
+                                   </span>`
+                                : product.rl_price > 0
                                 ? `<span class="price price-main">
                                     R$ ${product.rl_price.toFixed(2)}
                                    </span>`
@@ -932,9 +941,13 @@ function renderProductsList(products, containerId) {
                                 : ''
                         }
 
-                        <span class="price price-kks-secondary">
-                            ${product.kks_price.toFixed(0)} KKs
-                        </span>
+                        ${
+                            (!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0)
+                                ? ''
+                                : `<span class="price price-kks-secondary">
+                                    ${product.kks_price.toFixed(0)} KKs
+                                   </span>`
+                        }
                     </div>
 
                     <div class="product-actions-list">
@@ -1187,9 +1200,12 @@ const PageHandlers = {
                         })()}
                         <h1 class="product-title">${product.name}</h1>
                         <div class="product-prices mb-4">
-                            ${product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''}
+                            ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? 
+                                `<span class="price price-main" style="font-size: 1.2rem; color: #FCD34D;"><i class="fab fa-whatsapp"></i> Valor negociável pelo WhatsApp</span>` : 
+                                product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''
+                            }
                             ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                            <span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>
+                            ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? '' : `<span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>`}
                         </div>
                         ${product.description ? `<div class="product-description mb-4"><p>${product.description}</p></div>` : ''}
                         <div class="product-meta mb-4">
