@@ -296,7 +296,9 @@ function showNotification(message, type = 'info') {
 
 // Compartilhar produto específico
 function shareProduct(product, platform = 'whatsapp') {
+    // URL normal da página - as meta tags são atualizadas automaticamente pelo updateProductMetaTags()
     const productUrl = `${window.location.origin}/produto.html?id=${product.id}`;
+    
     const shareText = `${product.name} - ${getCategoryName(product.category)}`;
     const priceText = product.rl_price > 0 ? `por R$ ${product.rl_price.toFixed(2)}` : 'com valor negociável';
     const fullText = `🎮 ${shareText} ${priceText}! Confira na Chefinho Gaming Store`;
@@ -311,7 +313,7 @@ function shareProduct(product, platform = 'whatsapp') {
             break;
             
         case 'facebook':
-            // Facebook vai automaticamente buscar as meta tags da página
+            // Facebook lê automaticamente as meta tags da página do produto
             shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
             break;
             
@@ -320,13 +322,13 @@ function shareProduct(product, platform = 'whatsapp') {
             break;
             
         case 'telegram':
-            // Telegram também busca meta tags automaticamente
+            // Telegram lê automaticamente as meta tags da página do produto
             shareUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(fullText)}`;
             break;
             
         case 'copy':
             navigator.clipboard.writeText(productUrl).then(() => {
-                showNotification('Link do produto copiado! Cole em qualquer app para compartilhar com preview da imagem 📱', 'success');
+                showNotification('Link do produto copiado! Os previews são gerados automaticamente ✨', 'success');
             });
             return;
             
