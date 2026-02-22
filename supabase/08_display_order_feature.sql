@@ -15,8 +15,9 @@ CREATE INDEX IF NOT EXISTS idx_products_display_order ON products(display_order,
 
 -- 3. Inicializar display_order para produtos existentes
 -- (ordenar por created_at DESC, produtos mais recentes primeiro)
+-- Produtos mais recentes = números menores (1, 2, 3...)
 UPDATE products
-SET display_order = subquery.row_num * 10
+SET display_order = subquery.row_num
 FROM (
     SELECT id, ROW_NUMBER() OVER (ORDER BY created_at DESC) as row_num
     FROM products
@@ -74,15 +75,16 @@ BEGIN
                 'anuncio_fim', anuncio_fim,
                 'anunciante_nome', anunciante_nome
             ) ORDER BY
-                -- Primeiro por ordem customizada
-                display_order ASC,
-                -- Anúncios Elite fixados
+                -- ANÚNCIOS TÊM PRIORIDADE MÁXIMA
+                -- Anúncios Elite fixados (sempre no topo)
                 CASE WHEN is_anuncio AND anuncio_plano = 'elite' AND (anuncio_fim IS NULL OR anuncio_fim > NOW()) THEN 0 ELSE 1 END,
                 -- Depois anúncios Pro
                 CASE WHEN is_anuncio AND anuncio_plano = 'pro' AND (anuncio_fim IS NULL OR anuncio_fim > NOW()) THEN 0 ELSE 1 END,
                 -- Depois anúncios Básico
                 CASE WHEN is_anuncio AND anuncio_plano = 'basico' AND (anuncio_fim IS NULL OR anuncio_fim > NOW()) THEN 0 ELSE 1 END,
-                -- Depois por data de criação
+                -- DEPOIS: ordem customizada (apenas para produtos não-anúncios)
+                display_order ASC,
+                -- Por último: data de criação (fallback)
                 created_at DESC
             )
             FROM products
@@ -94,19 +96,18 @@ BEGIN
 END;
 $$;
 
--- 5. Função auxiliar para reordenar produto (mover para cima)
-CREATE OR REPLACE FUNCTION move_product_up(p_product_id VARCHAR(50))
+-- 5. Função simplificada para atualizar display_order
+CREATE OR REPLACE FUNCTION update_product_display_order(p_product_id VARCHAR(50), p_new_order INTEGER)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 DECLARE
-    current_order INTEGER;
-    target_order INTEGER;
-    current_product_id VARCHAR(50);
+    old_order INTEGER;
+    other_product_id VARCHAR(50);
 BEGIN
     -- Obter ordem atual do produto
-    SELECT display_order INTO current_order
+    SELECT display_order INTO old_order
     FROM products
     WHERE id = p_product_id;
     
@@ -114,109 +115,21 @@ BEGIN
         RETURN false;
     END IF;
     
-    -- Encontrar o produto imediatamente acima (menor display_order)
-    SELECT id, display_order INTO current_product_id, target_order
+    -- Verificar se já existe outro produto com essa ordem
+    SELECT id INTO other_product_id
     FROM products
-    WHERE display_order < current_order
+    WHERE display_order = p_new_order
+      AND id != p_product_id
       AND is_active = true
-    ORDER BY display_order DESC
     LIMIT 1;
     
-    IF NOT FOUND THEN
-        -- Já está no topo
-        RETURN false;
+    IF FOUND THEN
+        -- Trocar as posições (swap)
+        UPDATE products SET display_order = old_order WHERE id = other_product_id;
     END IF;
     
-    -- Trocar as ordens
-    UPDATE products SET display_order = current_order WHERE id = current_product_id;
-    UPDATE products SET display_order = target_order WHERE id = p_product_id;
-    
-    RETURN true;
-END;
-$$;
-
--- 6. Função auxiliar para reordenar produto (mover para baixo)
-CREATE OR REPLACE FUNCTION move_product_down(p_product_id VARCHAR(50))
-RETURNS BOOLEAN
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-    current_order INTEGER;
-    target_order INTEGER;
-    current_product_id VARCHAR(50);
-BEGIN
-    -- Obter ordem atual do produto
-    SELECT display_order INTO current_order
-    FROM products
-    WHERE id = p_product_id;
-    
-    IF NOT FOUND THEN
-        RETURN false;
-    END IF;
-    
-    -- Encontrar o produto imediatamente abaixo (maior display_order)
-    SELECT id, display_order INTO current_product_id, target_order
-    FROM products
-    WHERE display_order > current_order
-      AND is_active = true
-    ORDER BY display_order ASC
-    LIMIT 1;
-    
-    IF NOT FOUND THEN
-        -- Já está no final
-        RETURN false;
-    END IF;
-    
-    -- Trocar as ordens
-    UPDATE products SET display_order = current_order WHERE id = current_product_id;
-    UPDATE products SET display_order = target_order WHERE id = p_product_id;
-    
-    RETURN true;
-END;
-$$;
-
--- 7. Função para mover produto para o topo
-CREATE OR REPLACE FUNCTION move_product_to_top(p_product_id VARCHAR(50))
-RETURNS BOOLEAN
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-    min_order INTEGER;
-BEGIN
-    -- Obter a menor ordem atual
-    SELECT MIN(display_order) - 10 INTO min_order
-    FROM products
-    WHERE is_active = true;
-    
-    -- Mover produto para o topo
-    UPDATE products
-    SET display_order = min_order
-    WHERE id = p_product_id;
-    
-    RETURN true;
-END;
-$$;
-
--- 8. Função para mover produto para o final
-CREATE OR REPLACE FUNCTION move_product_to_bottom(p_product_id VARCHAR(50))
-RETURNS BOOLEAN
-LANGUAGE plpgsql
-SECURITY DEFINER
-AS $$
-DECLARE
-    max_order INTEGER;
-BEGIN
-    -- Obter a maior ordem atual
-    SELECT MAX(display_order) + 10 INTO max_order
-    FROM products
-    WHERE is_active = true;
-    
-    -- Mover produto para o final
-    UPDATE products
-    SET display_order = max_order
-    WHERE id = p_product_id;
+    -- Atualizar o produto atual
+    UPDATE products SET display_order = p_new_order WHERE id = p_product_id;
     
     RETURN true;
 END;
@@ -231,8 +144,8 @@ DECLARE
     max_order INTEGER;
 BEGIN
     IF NEW.display_order IS NULL OR NEW.display_order = 999999 THEN
-        -- Obter a maior ordem atual e adicionar 10
-        SELECT COALESCE(MAX(display_order), 0) + 10 INTO max_order
+        -- Obter a maior ordem atual e adicionar 1
+        SELECT COALESCE(MAX(display_order), 0) + 1 INTO max_order
         FROM products
         WHERE is_active = true;
         
@@ -253,11 +166,20 @@ CREATE TRIGGER trigger_set_product_display_order
 -- Instruções de Uso:
 -- 
 -- 1. Execute este script no SQL Editor do Supabase
--- 2. No admin panel, use os botões ↑ e ↓ para reordenar
--- 3. Os produtos serão exibidos seguindo a ordem definida
+-- 2. No admin panel:
+--    - Digite um número no campo "Ordem" de cada produto
+--    - Número 1 = aparece primeiro no site
+--    - Número 2 = aparece segundo, e assim por diante
+--    - Se digitar um número que já existe, os produtos trocam de posição
+-- 3. Use a paginação para navegar entre muitos produtos
 -- 
--- Ordem de prioridade na exibição:
--- 1. display_order (customizado pelo admin)
--- 2. Anúncios (Elite > Pro > Básico)
+-- ORDEM DE PRIORIDADE NA EXIBIÇÃO:
+-- 1. Anúncios (Elite > Pro > Básico) ← SEMPRE NO TOPO
+-- 2. display_order (1, 2, 3, 4... ordem customizada pelo admin)
 -- 3. Data de criação (mais recentes primeiro)
+-- 
+-- EXEMPLOS:
+-- - Produto com ordem "1" = primeiro na lista
+-- - Produto com ordem "2" = segundo na lista
+-- - Anúncios sempre aparecem antes, independente da ordem
 -- =====================================================

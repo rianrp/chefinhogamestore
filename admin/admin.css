@@ -460,26 +460,104 @@ body {
     border-color: #DC2626;
 }
 
-/* Botões de reordenação */
-.btn-order {
-    width: 32px !important;
-    height: 32px !important;
-    font-size: 0.75rem;
-    background: #1E293B !important;
-    border-color: #334155 !important;
-}
-
-.btn-order:hover {
-    background: #334155 !important;
-    border-color: #475569 !important;
-    color: #FCD34D;
-}
-
-.product-order-controls {
+/* Input de ordem de exibição */
+.product-order-input {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    margin-right: 8px;
+    margin-right: 12px;
+    min-width: 70px;
+}
+
+.order-input {
+    width: 70px;
+    padding: 6px 8px;
+    background: #18181B;
+    border: 1px solid #3F3F46;
+    border-radius: 6px;
+    color: #E4E4E7;
+    font-size: 0.9rem;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.order-input:focus {
+    outline: none;
+    border-color: #8B5CF6;
+    background: #27272A;
+}
+
+.order-input:hover {
+    border-color: #52525B;
+}
+
+/* Paginação */
+.pagination-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: #18181B;
+    border-radius: 12px;
+    margin-top: 20px;
+    border: 1px solid #27272A;
+}
+
+.pagination-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: #A1A1AA;
+    font-size: 0.9rem;
+}
+
+.pagination-info select {
+    padding: 8px 12px;
+    background: #27272A;
+    border: 1px solid #3F3F46;
+    border-radius: 6px;
+    color: #E4E4E7;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pagination-info select:hover {
+    border-color: #52525B;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-pages {
+    padding: 0 16px;
+    color: #E4E4E7;
+    font-weight: 500;
+}
+
+.btn-pagination {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #27272A;
+    border: 1px solid #3F3F46;
+    border-radius: 6px;
+    color: #E4E4E7;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-pagination:hover:not(:disabled) {
+    background: #3F3F46;
+    color: #8B5CF6;
+}
+
+.btn-pagination:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
 .alert {
@@ -726,41 +804,184 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    
+    .container {
+        padding: 12px;
+    }
+    
+    /* Login */
     .login-box {
-        padding: 32px 24px;
+        padding: 32px 20px;
+    }
+    
+    /* Topbar */
+    .topbar {
+        padding: 12px 0;
+    }
+    
+    .topbar-content {
+        flex-direction: column;
+        align-items: flex-start;
     }
     
     .topbar h1 {
         font-size: 1.25rem;
     }
     
+    /* Stats */
     .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
     
-    .form-row {
-        grid-template-columns: 1fr;
+    .stat-box {
+        padding: 14px;
     }
     
-    .product-item {
+    .stat-label {
+        font-size: 0.75rem;
+    }
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    /* Seções */
+    .section {
+        padding: 12px;
+    }
+    
+    .section-header {
         flex-direction: column;
+        gap: 12px;
         align-items: flex-start;
+    }
+    
+    .section-header .btn-outline {
+        width: 100%;
+    }
+    
+    /* Produtos - Cards limpos */
+    .product-item {
+        flex-wrap: wrap;
+        padding: 12px;
+        gap: 12px;
+    }
+    
+    .product-thumb,
+    .product-thumb-placeholder {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .product-info {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .product-name {
+        font-size: 0.95rem;
+        white-space: normal;
+        line-height: 1.3;
+    }
+    
+    .product-meta {
+        flex-direction: column;
+        gap: 6px;
+        font-size: 0.8rem;
     }
     
     .product-actions {
         width: 100%;
-        justify-content: flex-end;
+        justify-content: space-between;
+        margin-top: 8px;
+        padding-top: 10px;
+        border-top: 1px solid #27272A;
     }
     
-    .section {
-        padding: 16px;
+    .product-order-input {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        min-width: auto;
     }
     
-    .container {
-        padding: 16px;
+    .product-order-input label {
+        font-size: 0.8rem !important;
+        color: #A1A1AA !important;
+        margin: 0 !important;
     }
     
-    /* Modal fullscreen no mobile */
+    .order-input {
+        width: 55px;
+        padding: 8px 6px;
+        font-size: 0.9rem;
+    }
+    
+    .btn-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1rem;
+    }
+    
+    /* Paginação */
+    .pagination-container {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px 12px;
+    }
+    
+    .pagination-info {
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .pagination-info span {
+        font-size: 0.85rem;
+    }
+    
+    .pagination-info select {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+    
+    .pagination-controls {
+        justify-content: center;
+    }
+    
+    .pagination-pages {
+        font-size: 0.85rem;
+    }
+    
+    .btn-pagination {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+    
+    /* Formulários */
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-field label {
+        font-size: 0.85rem;
+    }
+    
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+        font-size: 0.95rem;
+    }
+    
+    /* Modal fullscreen */
     .modal {
         padding: 0;
     }
@@ -775,75 +996,84 @@ body {
         flex-direction: column;
     }
     
+    .modal-header {
+        padding: 16px;
+        flex-shrink: 0;
+    }
+    
+    .modal-title {
+        font-size: 1.25rem;
+    }
+    
     .modal-body {
         flex: 1;
         overflow-y: auto;
-        padding: 20px;
-        padding-bottom: 0;
+        padding: 16px;
     }
     
     .modal-body form {
         display: flex;
         flex-direction: column;
-        height: 100%;
+        min-height: 100%;
     }
     
-    /* Área de imagem menor no mobile */
+    /* Upload de imagem */
     .image-upload-wrapper {
-        height: 200px;
+        height: 180px;
     }
     
     .btn-edit-image {
-        bottom: 12px;
-        right: 12px;
-        padding: 10px 20px;
-        font-size: 0.8rem;
+        padding: 10px 18px;
+        font-size: 0.85rem;
     }
     
-    /* Grid de formulário mais espaçado no mobile */
+    /* Grid de formulário */
     .form-grid {
         gap: 16px;
-        margin-bottom: 0;
         flex: 1;
-        overflow-y: auto;
-        padding-bottom: 20px;
     }
     
-    /* Botões em coluna no mobile */
+    /* Seção anúncio */
+    .anuncio-section {
+        padding: 16px !important;
+    }
+    
+    /* Botões do formulário */
     .form-actions {
         flex-direction: column-reverse;
-        position: relative;
         background: #18181B;
-        padding: 16px 20px;
+        padding: 16px;
         border-top: 1px solid #27272A;
         margin: 0;
-        gap: 12px;
+        gap: 10px;
         flex-shrink: 0;
+        position: sticky;
+        bottom: 0;
     }
     
     .form-actions .btn-gradient,
-    .form-actions .btn-outline {
+    .form-actions .btn-outline,
+    .form-actions .btn-danger {
         width: 100%;
         justify-content: center;
-        padding: 16px 24px;
-        font-size: 1rem;
+        padding: 14px 20px;
+        font-size: 0.95rem;
     }
     
-    .form-actions .btn-gradient {
-        order: -1;
-    }
-    
+    .form-actions .btn-gradient,
     .form-actions .btn-danger {
         order: -1;
-        width: 100%;
-        justify-content: center;
-        padding: 16px 24px;
-        font-size: 1rem;
     }
     
-    /* Modal de confirmação no mobile */
+    /* Modal de confirmação */
     .confirm-modal {
-        max-width: 100%;
+        max-width: calc(100% - 40px);
         margin: 20px;
+        max-height: auto;
+        height: auto;
+    }
+    
+    .confirm-modal .modal-body {
+        padding: 20px;
     }
 }
