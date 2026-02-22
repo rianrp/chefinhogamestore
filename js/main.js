@@ -297,32 +297,36 @@ function showNotification(message, type = 'info') {
 // Compartilhar produto específico
 function shareProduct(product, platform = 'whatsapp') {
     const productUrl = `${window.location.origin}/produto.html?id=${product.id}`;
-    const shareText = `Olha esse produto incrível: ${product.name} por R$ ${product.rl_price.toFixed(2)}! 🎮`;
+    const shareText = `${product.name} - ${getCategoryName(product.category)}`;
+    const priceText = product.rl_price > 0 ? `por R$ ${product.rl_price.toFixed(2)}` : 'com valor negociável';
+    const fullText = `🎮 ${shareText} ${priceText}! Confira na Chefinho Gaming Store`;
     
     let shareUrl = '';
     
     switch (platform) {
         case 'whatsapp':
             const whatsappNumber = siteData?.site?.whatsapp || '556993450986';
-            const message = `${shareText}\n\nVeja mais detalhes: ${productUrl}`;
+            const message = `${fullText}\n\n👆 Acesse o link para ver detalhes, imagens e vídeos!\n\n${productUrl}`;
             shareUrl = `https://api.whatsapp.com/send/?phone=${whatsappNumber}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
             break;
             
         case 'facebook':
+            // Facebook vai automaticamente buscar as meta tags da página
             shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(productUrl)}`;
             break;
             
         case 'twitter':
-            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(productUrl)}`;
+            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullText)}&url=${encodeURIComponent(productUrl)}`;
             break;
             
         case 'telegram':
-            shareUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(shareText)}`;
+            // Telegram também busca meta tags automaticamente
+            shareUrl = `https://t.me/share/url?url=${encodeURIComponent(productUrl)}&text=${encodeURIComponent(fullText)}`;
             break;
             
         case 'copy':
             navigator.clipboard.writeText(productUrl).then(() => {
-                showNotification('Link copiado para a área de transferência!', 'success');
+                showNotification('Link do produto copiado! Cole em qualquer app para compartilhar com preview da imagem 📱', 'success');
             });
             return;
             
@@ -332,7 +336,14 @@ function shareProduct(product, platform = 'whatsapp') {
     
     if (shareUrl) {
         window.open(shareUrl, '_blank');
-        showNotification(`Compartilhando via ${platform}...`, 'info');
+        
+        // Mensagem diferente para platforms que fazem preview automático
+        const previewPlatforms = ['whatsapp', 'telegram', 'facebook'];
+        const message = previewPlatforms.includes(platform) 
+            ? `Compartilhando ${product.name} via ${platform} - preview da imagem será mostrado automaticamente! 📱`
+            : `Compartilhando via ${platform}...`;
+            
+        showNotification(message, 'info');
     }
 }
 
@@ -517,6 +528,87 @@ function formatKks(value) {
     
     // Se tiver decimais, mostra até 2 casas (remove zeros à direita)
     return parseFloat(value.toFixed(2)).toString();
+}
+
+// =====================================================
+// Share/Meta Tags - Funções auxiliares  
+// =====================================================
+
+// Atualizar meta tags da página para compartilhamento
+function updateProductMetaTags(product) {
+    const baseUrl = window.location.origin;
+    const productUrl = `${baseUrl}/produto.html?id=${product.id}`;
+    
+    // URL da imagem do produto com fallback para imagem padrão
+    let productImage = getImageUrl(product);
+    if (!productImage || productImage.includes('placeholder') || productImage.includes('erro')) {
+        productImage = `${baseUrl}/img/og-image.svg`; // Fallback para imagem padrão
+    }
+    
+    const productTitle = `${product.name} - Chefinho Gaming Store`;
+    const categoryName = getCategoryName(product.category);
+    const priceText = product.rl_price > 0 ? `R$ ${product.rl_price.toFixed(2)}` : 'Valor negociável';
+    const productDescription = product.description 
+        ? `${product.description} - ${categoryName} por ${priceText}. Entrega imediata via WhatsApp na Chefinho Gaming Store.` 
+        : `${product.name} - ${categoryName} disponível por ${priceText}. Entrega imediata via WhatsApp na Chefinho Gaming Store.`;
+    
+    // Atualizar título da página
+    document.title = productTitle;
+    
+    // Função helper para atualizar/criar meta tag
+    function updateMetaTag(property, content, isName = false) {
+        const selector = isName ? `meta[name="${property}"]` : `meta[property="${property}"]`;
+        let meta = document.querySelector(selector);
+        
+        if (meta) {
+            meta.setAttribute('content', content);
+        } else {
+            meta = document.createElement('meta');
+            if (isName) {
+                meta.setAttribute('name', property);
+            } else {
+                meta.setAttribute('property', property);
+            }
+            meta.setAttribute('content', content);
+            document.head.appendChild(meta);
+        }
+    }
+    
+    // Description padrão
+    updateMetaTag('description', productDescription, true);
+    
+    // Open Graph / Facebook
+    updateMetaTag('og:type', 'product');
+    updateMetaTag('og:url', productUrl);
+    updateMetaTag('og:title', productTitle);
+    updateMetaTag('og:description', productDescription);
+    updateMetaTag('og:image', productImage);
+    updateMetaTag('og:site_name', 'Chefinho Gaming Store');
+    updateMetaTag('og:locale', 'pt_BR');
+    updateMetaTag('og:image:width', '1200');
+    updateMetaTag('og:image:height', '630');
+    
+    // Twitter
+    updateMetaTag('twitter:card', 'summary_large_image');
+    updateMetaTag('twitter:url', productUrl);
+    updateMetaTag('twitter:title', productTitle);
+    updateMetaTag('twitter:description', productDescription);
+    updateMetaTag('twitter:image', productImage);
+    
+    // Product specific (Schema.org)
+    if (product.rl_price > 0) {
+        updateMetaTag('product:price:amount', product.rl_price.toFixed(2));
+        updateMetaTag('product:price:currency', 'BRL');
+    }
+    updateMetaTag('product:availability', product.quantity > 0 ? 'in stock' : 'out of stock');
+    
+    // WhatsApp e Telegram usam Open Graph automaticamente
+    console.log('📱 Meta tags atualizadas para compartilhamento:', {
+        title: productTitle,
+        url: productUrl,
+        image: productImage,
+        description: productDescription.substring(0, 100) + '...'
+    });
 }
 
 // =====================================================
@@ -1205,8 +1297,8 @@ const PageHandlers = {
             return;
         }
         
-        // Meta tags são atualizadas automaticamente pela Edge Function no servidor
-        // Não é necessário JavaScript para isso
+        // Atualizar meta tags para compartilhamento com dados do produto
+        updateProductMetaTags(product);
         
         // Renderizar detalhes do produto
         const container = document.getElementById('productDetails');
