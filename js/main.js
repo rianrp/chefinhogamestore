@@ -506,6 +506,19 @@ function getAnuncioInfo(product) {
     };
 }
 
+// Formatar valor KKs (mostra decimais apenas quando necessário)
+function formatKks(value) {
+    if (!value || value === 0) return '0';
+    
+    // Se for número inteiro, mostra sem decimais
+    if (value % 1 === 0) {
+        return value.toFixed(0);
+    }
+    
+    // Se tiver decimais, mostra até 2 casas (remove zeros à direita)
+    return parseFloat(value.toFixed(2)).toString();
+}
+
 // Filtrar produtos
 function filterProducts(category = '', searchTerm = '') {
     if (!siteData.products) return [];
@@ -676,11 +689,11 @@ function renderProducts(products, containerId) {
                 <div class="product-prices">
                     ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? 
                         `<span class="price price-main" style="color: #FCD34D;"><i class="fab fa-whatsapp"></i> Valor negociável</span>` : 
-                        product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : `<span class="price price-main">${product.kks_price.toFixed(2)}Kks</span>`
+                        product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : `<span class="price price-main">${formatKks(product.kks_price)} Kks</span>`
                     }
                     ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
                     ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? '' : 
-                        product.rl_price <= 0 ? `<span class="price price-kks-secondary">Apenas em KKs</span>` : `<span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>`
+                        product.rl_price <= 0 ? `<span class="price price-kks-secondary">Apenas em KKs</span>` : `<span class="price price-kks-secondary">${formatKks(product.kks_price)} KKs</span>`
                     }
                 </div>
                 ${product.description ? `<p class="product-description">${product.description.substring(0, 100)}...</p>` : ''}
@@ -945,7 +958,7 @@ function renderProductsList(products, containerId) {
                             (!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0)
                                 ? ''
                                 : `<span class="price price-kks-secondary">
-                                    ${product.kks_price.toFixed(0)} KKs
+                                    ${formatKks(product.kks_price)} KKs
                                    </span>`
                         }
                     </div>
@@ -1205,7 +1218,7 @@ const PageHandlers = {
                                 product.rl_price > 0 ? `<span class="price price-main">R$ ${product.rl_price.toFixed(2)}</span>` : ''
                             }
                             ${product.parcelado_price > 0 ? `<span class="price price-parcelado">Parcelado: R$ ${product.parcelado_price.toFixed(2)}</span>` : ''}
-                            ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? '' : `<span class="price price-kks-secondary">${product.kks_price.toFixed(0)} KKs</span>`}
+                            ${(!product.rl_price || product.rl_price <= 0) && (!product.kks_price || product.kks_price <= 0) ? '' : `<span class="price price-kks-secondary">${formatKks(product.kks_price)} KKs</span>`}
                         </div>
                         ${product.description ? `<div class="product-description mb-4"><p>${product.description}</p></div>` : ''}
                         <div class="product-meta mb-4">
