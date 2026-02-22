@@ -311,7 +311,8 @@ function shareProduct(product, platform = 'whatsapp') {
         }
     }
     
-    const productUrl = `${window.location.origin}/produto.html?id=${encodeURIComponent(shareId)}`;
+    // Usar endpoint /api/p/ para gerar meta tags corretas para WhatsApp/Telegram
+    const productUrl = `${window.location.origin}/api/p/${encodeURIComponent(shareId)}`;
     
     const shareText = `${product.name} - ${getCategoryName(product.category)}`;
     const priceText = product.rl_price > 0 ? `por R$ ${product.rl_price.toFixed(2)}` : 'com valor negociável';
