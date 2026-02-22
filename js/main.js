@@ -539,10 +539,18 @@ function updateProductMetaTags(product) {
     const baseUrl = window.location.origin;
     const productUrl = `${baseUrl}/produto.html?id=${product.id}`;
     
-    // URL da imagem do produto com fallback para imagem padrão
-    let productImage = getImageUrl(product);
-    if (!productImage || productImage.includes('placeholder') || productImage.includes('erro')) {
-        productImage = `${baseUrl}/img/og-image.svg`; // Fallback para imagem padrão
+    // URL da imagem do produto - versão síncrona para meta tags
+    let productImage = '';
+    if (product.image_url && product.image_url.trim() !== '') {
+        productImage = product.image_url;
+    } else {
+        // Fallback para imagem padrão se não tiver image_url
+        productImage = `${baseUrl}/img/chefinho.png`;
+    }
+    
+    // Garantir que a URL seja absoluta
+    if (productImage && !productImage.startsWith('http')) {
+        productImage = `${baseUrl}${productImage}`;
     }
     
     const productTitle = `${product.name} - Chefinho Gaming Store`;
@@ -602,12 +610,12 @@ function updateProductMetaTags(product) {
     }
     updateMetaTag('product:availability', product.quantity > 0 ? 'in stock' : 'out of stock');
     
-    // WhatsApp e Telegram usam Open Graph automaticamente
-    console.log('📱 Meta tags atualizadas para compartilhamento:', {
-        title: productTitle,
-        url: productUrl,
-        image: productImage,
-        description: productDescription.substring(0, 100) + '...'
+    // Log para debug
+    console.log('📱 Meta tags atualizadas:', {
+        produto: product.name,
+        imagem: productImage,
+        imagemOriginal: product.image_url,
+        url: productUrl
     });
 }
 
