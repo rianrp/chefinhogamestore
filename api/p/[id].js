@@ -32,8 +32,8 @@ export default async function handler(request) {
         
         // Tentar buscar dados do produto no Supabase
         try {
-            const supabaseUrl = 'https://kirrtgqquxujcjeebqgr.supabase.co';
-            const supabaseKey = 'sb_publishable_8RXpynIaSeZFMoJXqWvfuw_ZxJaoC9i';
+            const supabaseUrl = process.env.SUPABASE_URL || 'https://kirrtgqquxujcjeebqgr.supabase.co';
+            const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_8RXpynIaSeZFMoJXqWvfuw_ZxJaoC9i';
             
             // Extrair timestamp do nome do arquivo
             const timestampMatch = id.match(/produtos_([0-9]+)_/);
@@ -70,8 +70,8 @@ export default async function handler(request) {
     } else {
         // ID normal do Supabase - buscar produto
         try {
-            const supabaseUrl = 'https://kirrtgqquxujcjeebqgr.supabase.co';
-            const supabaseKey = 'sb_publishable_8RXpynIaSeZFMoJXqWvfuw_ZxJaoC9i';
+            const supabaseUrl = process.env.SUPABASE_URL || 'https://kirrtgqquxujcjeebqgr.supabase.co';
+            const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY || 'sb_publishable_8RXpynIaSeZFMoJXqWvfuw_ZxJaoC9i';
             
             const response = await fetch(
                 `${supabaseUrl}/rest/v1/products?id=eq.${id}&is_active=eq.true`,

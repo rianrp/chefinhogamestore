@@ -1,51 +1,54 @@
-// =====================================================
-// Chefinho Gaming Store - Cliente Supabase + ImageKit
-// =====================================================
-
-// Configuração do Supabase
+// Configurações públicas (seguro expor - são chaves anônimas/públicas)
 const SUPABASE_URL = 'https://kirrtgqquxujcjeebqgr.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_8RXpynIaSeZFMoJXqWvfuw_ZxJaoC9i';
 
-// =====================================================
-// ImageKit.io - Upload de Imagens DIRETO
-// =====================================================
 const IMAGEKIT_CONFIG = {
     publicKey: 'public_RFHx5SA7xB0qBre+v5ntPZg4Jew=',
-    privateKey: 'private_E3xQV5Eao948+1ADX0oYoibXaB0=', // ⚠️ EM PRODUÇÃO, MOVER PARA BACKEND!
     urlEndpoint: 'https://ik.imagekit.io/chefinho',
-    uploadEndpoint: 'https://upload.imagekit.io/api/v1/files/upload'
+    uploadEndpoint: 'https://upload.imagekit.io/api/v1/files/upload',
+    authEndpoint: '/api/imagekit-auth' // Endpoint seguro para auth
 };
 
-// Classe para gerenciar uploads de imagem
 class ImageKitUploader {
     constructor(config) {
         this.publicKey = config.publicKey;
-        this.privateKey = config.privateKey;
         this.urlEndpoint = config.urlEndpoint;
         this.uploadEndpoint = config.uploadEndpoint;
+        this.authEndpoint = config.authEndpoint;
     }
     
-    // Upload DIRETO para ImageKit.io
     async uploadImage(file, folder = 'produtos') {
         try {
             console.log('📤 [ImageKit] Iniciando upload:', file.name);
             
+            // 1. Buscar autenticação do servidor
+            console.log('🔐 [ImageKit] Solicitando credenciais...');
+            const authResponse = await fetch(this.authEndpoint, {
+                method: 'POST'
+            });
+            
+            if (!authResponse.ok) {
+                throw new Error('Falha ao obter credenciais de upload');
+            }
+            
+            const { token, expire, signature } = await authResponse.json();
+            console.log('✅ [ImageKit] Credenciais obtidas');
+            
+            // 2. Preparar upload com credenciais temporárias
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('fileName', `${folder}/${Date.now()}_${file.name}`);
+            formData.append('fileName', `${folder}_${Date.now()}_${file.name}`);
             formData.append('publicKey', this.publicKey);
             formData.append('folder', `/${folder}`);
+            formData.append('token', token);
+            formData.append('expire', expire);
+            formData.append('signature', signature);
             
-            // Autenticação básica com private key
-            const auth = btoa(`${this.privateKey}:`);
+            console.log('📤 [ImageKit] Enviando arquivo...');
             
-            console.log('🔐 [ImageKit] Autenticando...');
-            
+            // 3. Fazer upload
             const response = await fetch(this.uploadEndpoint, {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Basic ${auth}`
-                },
                 body: formData
             });
             
@@ -115,12 +118,10 @@ class ImageKitUploader {
         return `${this.urlEndpoint}/tr:${transformStr}/${encodedUrl}`;
     }
 
-    // Gerar thumbnail
     getThumbnail(url, size = 200) {
         return this.getOptimizedUrl(url, { width: size, height: size, quality: 70 });
     }
 
-    // Gerar imagem para card de produto
     getProductCard(url) {
         return this.getOptimizedUrl(url, { width: 400, height: 300, quality: 80 });
     }
@@ -139,10 +140,10 @@ class ChefinhoSupabase {
     constructor(url, key) {
         this.url = url;
         this.key = key;
-        this.adminToken = localStorage.getItem('admin_token');
+        this.adminToken = localStorage.getItem('admin_token'); // Token Supabase (admin_users)
+        this.apiToken = localStorage.getItem('admin_api_token'); // Token para /api/admin/*
     }
 
-    // Headers padrão para requisições
     getHeaders(includeAuth = false) {
         const headers = {
             'apikey': this.key,
@@ -157,11 +158,6 @@ class ChefinhoSupabase {
         return headers;
     }
 
-    // =====================================================
-    // MÉTODOS PÚBLICOS (sem autenticação)
-    // =====================================================
-
-    // Buscar todos os dados do site (usa função do banco)
     async getSiteData() {
         try {
             const response = await fetch(`${this.url}/rest/v1/rpc/get_site_data`, {
@@ -317,6 +313,22 @@ class ChefinhoSupabase {
             if (result && result.length > 0 && result[0].success) {
                 this.adminToken = result[0].token;
                 localStorage.setItem('admin_token', this.adminToken);
+                
+                // Solicitar ADMIN_API_TOKEN se não existir
+                if (!this.apiToken) {
+                    const apiToken = prompt(
+                        '🔐 Digite o ADMIN_API_TOKEN:\n\n' +
+                        'Este token protege operações no servidor.\n' +
+                        'Você deve ter recebido este token do administrador.'
+                    );
+                    
+                    if (apiToken && apiToken.trim()) {
+                        this.setApiToken(apiToken.trim());
+                    } else {
+                        console.warn('⚠️ ADMIN_API_TOKEN não configurado - operações admin podem falhar');
+                    }
+                }
+                
                 return { success: true, token: this.adminToken };
             }
 
@@ -353,7 +365,9 @@ class ChefinhoSupabase {
     // Logout
     logout() {
         this.adminToken = null;
+        this.apiToken = null;
         localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_api_token');
     }
 
     // Verificar se está logado
@@ -366,20 +380,43 @@ class ChefinhoSupabase {
         this.adminToken = token;
         localStorage.setItem('admin_token', token);
     }
+    
+    // Definir API token
+    setApiToken(token) {
+        this.apiToken = token;
+        localStorage.setItem('admin_api_token', token);
+    }
+    
+    // Obter API token
+    getApiToken() {
+        return this.apiToken || localStorage.getItem('admin_api_token');
+    }
 
     // =====================================================
-    // CRUD de Produtos (Admin)
+    // CRUD de Produtos (Admin) - Via API Serverless
     // =====================================================
 
     // Buscar TODOS os produtos (incluindo inativos) - Admin
     async getAllProducts() {
         try {
-            const response = await fetch(
-                `${this.url}/rest/v1/products?order=created_at.desc`,
-                { headers: this.getHeaders(true) }
-            );
+            const apiToken = this.getApiToken();
+            
+            if (!apiToken) {
+                throw new Error('ADMIN_API_TOKEN não configurado. Execute: supabase.setApiToken("seu_token")');
+            }
+            
+            const response = await fetch('/api/admin/products', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json'
+                }
+            });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Não autorizado - ADMIN_API_TOKEN inválido');
+                }
                 throw new Error(`Erro HTTP: ${response.status}`);
             }
 
@@ -393,13 +430,25 @@ class ChefinhoSupabase {
     // Adicionar produto
     async addProduct(product) {
         try {
-            const response = await fetch(`${this.url}/rest/v1/products`, {
+            const apiToken = this.getApiToken();
+            
+            if (!apiToken) {
+                throw new Error('ADMIN_API_TOKEN não configurado');
+            }
+            
+            const response = await fetch('/api/admin/products', {
                 method: 'POST',
-                headers: this.getHeaders(true),
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(product)
             });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Não autorizado - ADMIN_API_TOKEN inválido');
+                }
                 const error = await response.json();
                 throw new Error(error.message || 'Erro ao adicionar produto');
             }
@@ -414,16 +463,25 @@ class ChefinhoSupabase {
     // Atualizar produto
     async updateProduct(id, updates) {
         try {
-            const response = await fetch(
-                `${this.url}/rest/v1/products?id=eq.${id}`,
-                {
-                    method: 'PATCH',
-                    headers: this.getHeaders(true),
-                    body: JSON.stringify(updates)
-                }
-            );
+            const apiToken = this.getApiToken();
+            
+            if (!apiToken) {
+                throw new Error('ADMIN_API_TOKEN não configurado');
+            }
+            
+            const response = await fetch('/api/admin/products', {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id, ...updates })
+            });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Não autorizado - ADMIN_API_TOKEN inválido');
+                }
                 const error = await response.json();
                 throw new Error(error.message || 'Erro ao atualizar produto');
             }
@@ -443,15 +501,25 @@ class ChefinhoSupabase {
     // Deletar produto permanentemente
     async hardDeleteProduct(id) {
         try {
-            const response = await fetch(
-                `${this.url}/rest/v1/products?id=eq.${id}`,
-                {
-                    method: 'DELETE',
-                    headers: this.getHeaders(true)
-                }
-            );
+            const apiToken = this.getApiToken();
+            
+            if (!apiToken) {
+                throw new Error('ADMIN_API_TOKEN não configurado');
+            }
+            
+            const response = await fetch('/api/admin/products', {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${apiToken}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id })
+            });
 
             if (!response.ok) {
+                if (response.status === 401) {
+                    throw new Error('Não autorizado - ADMIN_API_TOKEN inválido');
+                }
                 throw new Error('Erro ao deletar produto');
             }
 

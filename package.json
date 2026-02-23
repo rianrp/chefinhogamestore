@@ -11,7 +11,12 @@
     "type": "git",
     "url": "git+https://github.com/rianrp/chefinhogamestore.git"
   },
-  "keywords": ["gaming", "store", "supabase", "ecommerce"],
+  "keywords": [
+    "gaming",
+    "store",
+    "supabase",
+    "ecommerce"
+  ],
   "author": "Chefinho",
   "license": "ISC",
   "bugs": {

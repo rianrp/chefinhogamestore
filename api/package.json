@@ -1,0 +1,9 @@
+{
+  "name": "chefinho-api",
+  "version": "1.0.0",
+  "description": "Serverless functions for Chefinho Gaming Store",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  }
+}
