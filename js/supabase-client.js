@@ -9,7 +9,7 @@ const IMAGEKIT_CONFIG = {
     authEndpoint: '/api/imagekit-auth' // Endpoint seguro para auth
 };
 
-class ImageKitUploader {
+class ImageKitUploader {     
     constructor(config) {
         this.publicKey = config.publicKey;
         this.urlEndpoint = config.urlEndpoint;
