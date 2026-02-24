@@ -47,9 +47,9 @@ INSERT INTO site_config (key, value) VALUES
         "whatsapp": "+55 69 9345-0986",
         "email": "contato@chefinho.com",
         "hours": {
-            "weekdays": "Segunda à Sexta: 8h às 18h",
-            "saturday": "Sábado: 8h às 14h",
-            "sunday": "Domingo: Fechado"
+            "weekdays": "Segunda à Sexta: 9h às 23h",
+            "saturday": "Sábado: 9h às 23h",
+            "sunday": "Domingo: 9h às 23h"
         }
     }'::jsonb),
     ('social', '{

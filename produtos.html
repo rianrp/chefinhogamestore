@@ -1,33 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos - Chefinho Gaming Store</title>
-    <meta name="description" content="Explore todos os produtos gaming da Chefinho. Periféricos, Hardware, Setup e Consoles com os melhores preços.">
-    
+    <meta name="description"
+        content="Explore todos os produtos gaming da Chefinho. Periféricos, Hardware, Setup e Consoles com os melhores preços.">
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://chefinhogamestore.netlify.app/produtos.html">
     <meta property="og:title" content="Produtos Gaming - Chefinho Gaming Store">
-    <meta property="og:description" content="Explore todos os produtos gaming da Chefinho. Periféricos, Hardware, Setup e Consoles com os melhores preços.">
+    <meta property="og:description"
+        content="Explore todos os produtos gaming da Chefinho. Periféricos, Hardware, Setup e Consoles com os melhores preços.">
     <meta property="og:image" content="https://chefinhogamestore.netlify.app/img/og-image.svg">
     <meta property="og:site_name" content="Chefinho Gaming Store">
     <meta property="og:locale" content="pt_BR">
-    
+
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://chefinhogamestore.netlify.app/produtos.html">
     <meta property="twitter:title" content="Produtos Gaming - Chefinho Gaming Store">
-    <meta property="twitter:description" content="Explore todos os produtos gaming da Chefinho. Periféricos, Hardware, Setup e Consoles com os melhores preços.">
+    <meta property="twitter:description"
+        content="Explore todos os produtos gaming da Chefinho. Periféricos, Hardware, Setup e Consoles com os melhores preços.">
     <meta property="twitter:image" content="https://chefinhogamestore.netlify.app/img/og-image.svg">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
-    
+
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
@@ -36,6 +40,7 @@
     <link rel="shortcut icon" href="/favicons/favicon.ico">
     <meta name="theme-color" content="#8B5CF6">
 </head>
+
 <body>
     <!-- Header -->
     <header class="header">
@@ -45,7 +50,7 @@
                     <i class="fas fa-gamepad"></i>
                     Chefinho
                 </a>
-                
+
                 <!-- Desktop Navigation -->
                 <ul class="nav-links">
                     <li><a href="index.html">Início</a></li>
@@ -54,13 +59,13 @@
                     <li><a href="anunciar.html">Anunciar</a></li>
                     <li><a href="contato.html">Contato</a></li>
                 </ul>
-                
+
                 <div class="nav-actions">
                     <a href="carrinho.html" class="cart-icon">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="cart-count">0</span>
                     </a>
-                    
+
                     <!-- Mobile Menu Button -->
                     <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
                         <span class="hamburger-line"></span>
@@ -69,7 +74,7 @@
                     </button>
                 </div>
             </nav>
-            
+
             <!-- Mobile Menu -->
             <div class="mobile-menu" id="mobileMenu">
                 <div class="mobile-menu-content">
@@ -82,7 +87,7 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
-                    
+
                     <nav class="mobile-nav">
                         <a href="index.html" class="mobile-nav-item">
                             <i class="fas fa-home"></i>
@@ -106,10 +111,11 @@
                             <span class="mobile-cart-count">0</span>
                         </a>
                     </nav>
-                    
+
                     <!-- Quick Actions -->
                     <div class="mobile-quick-actions">
-                        <a href="#" onclick="generateWhatsAppMessage(); return false;" class="mobile-action-btn whatsapp-btn">
+                        <a href="#" onclick="generateWhatsAppMessage(); return false;"
+                            class="mobile-action-btn whatsapp-btn">
                             <i class="fab fa-whatsapp"></i>
                             <span>WhatsApp</span>
                         </a>
@@ -118,7 +124,7 @@
                             <span>Rucoy KKs</span>
                         </a> -->
                     </div>
-                    
+
                     <!-- Contact Info -->
                     <div class="mobile-contact-info">
                         <div class="contact-item">
@@ -127,12 +133,12 @@
                         </div>
                         <div class="contact-item">
                             <i class="fas fa-clock"></i>
-                            <span>Segunda à Sexta: 8h às 18h</span>
+                            <span>Segunda à Sexta: 9h às 23h</span>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <!-- Mobile Menu Overlay -->
             <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
         </div>
@@ -143,7 +149,8 @@
         <div class="container">
             <div class="page-header-content">
                 <h1 class="page-title">Produtos</h1>
-                <p class="page-description">Personagens, contas e itens para seus jogos favoritos com os melhores preços</p>
+                <p class="page-description">Personagens, contas e itens para seus jogos favoritos com os melhores preços
+                </p>
                 <nav class="breadcrumb">
                     <a href="index.html">Início</a>
                     <span>/</span>
@@ -163,14 +170,14 @@
                         <input type="text" id="searchInput" placeholder="Buscar produtos...">
                     </div>
                 </div>
-                
+
                 <div class="filter-container">
                     <select id="categoryFilter" class="filter-select">
                         <option value="">Todas as categorias</option>
                         <!-- Categorias carregadas via JavaScript -->
                     </select>
                 </div>
-                
+
                 <div class="view-toggle">
                     <button class="view-btn active" data-view="grid" title="Grade">
                         <i class="fas fa-th"></i>
@@ -200,13 +207,13 @@
                     </select>
                 </div>
             </div>
-            
+
             <div class="products-container">
                 <div class="products-grid" id="productsGrid">
                     <!-- Produtos carregados via JavaScript -->
                 </div>
             </div>
-            
+
             <!-- Pagination -->
             <div class="pagination-container" id="paginationContainer" style="display: none;">
                 <div class="pagination" id="pagination">
@@ -216,7 +223,7 @@
                     <!-- Info da página atual -->
                 </div>
             </div>
-            
+
             <!-- Loading -->
             <div id="loading" class="loading" style="display: none;">
                 <div class="loading-spinner"></div>
@@ -234,7 +241,8 @@
                         <i class="fas fa-gamepad"></i>
                         Chefinho
                     </h3>
-                    <p>Sua loja gamer de confiança. Personagens, contas e itens para seus jogos favoritos com os melhores preços do mercado.</p>
+                    <p>Sua loja gamer de confiança. Personagens, contas e itens para seus jogos favoritos com os
+                        melhores preços do mercado.</p>
                     <div class="social-links">
                         <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
                         <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
@@ -242,17 +250,14 @@
                         <a href="#" title="Twitch"><i class="fab fa-twitch"></i></a>
                     </div>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Atendimento</h3>
                     <p><i class="fab fa-whatsapp"></i> +55 69 9345-0986</p>
-                    <p><i class="fas fa-envelope"></i> contato@chefinho.com</p>
                     <p><strong>Horários:</strong></p>
-                    <p>Segunda à Sexta: 8h às 18h</p>
-                    <p>Sábado: 8h às 14h</p>
-                    <p>Domingo: Fechado</p>
+                    <p>Todos os dias: 9h às 23h</p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Links Rápidos</h3>
                     <p><a href="index.html">Início</a></p>
@@ -262,19 +267,19 @@
                     <p><a href="produtos.html?category=kina">Rucoy Knight</a></p>
                     <p><a href="produtos.html?category=pally">Rucoy Paladin</a></p>
                 </div>
-                
+
                 <div class="footer-section">
                     <h3>Como Funciona</h3>
                     <p>1. Escolha seus itens</p>
                     <p>2. Adicione ao carrinho</p>
                     <p>3. Finalize no WhatsApp</p>
-                    <p>4. Receba seus dados</p>   
+                    <p>4. Receba seus dados</p>
                     <br>
-                    <p><strong>Pagamento:</strong> PIX, Cartão, Boleto</p>
+                    <p><strong>Pagamento:</strong> Somente via PIX</p>
                     <p><strong>Entrega:</strong> Imediata via WhatsApp</p>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>&copy; 2025 Chefinho Gaming Store. Todos os direitos reservados.</p>
                 <p>Desenvolvido com 💜 para gamers brasileiros</p>
@@ -290,7 +295,7 @@
     <!-- JavaScript -->
     <script src="js/supabase-client.js"></script>
     <script src="js/main.js"></script>
-    
+
     <!-- Mobile Menu Script -->
     <script>
         // Mobile Menu Control
@@ -298,10 +303,10 @@
             const mobileMenu = document.getElementById('mobileMenu');
             const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
             const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
-            
+
             if (mobileMenu && mobileMenuOverlay && mobileMenuBtn) {
                 const isActive = mobileMenu.classList.contains('active');
-                
+
                 if (isActive) {
                     mobileMenu.classList.remove('active');
                     mobileMenuOverlay.classList.remove('active');
@@ -315,8 +320,8 @@
                 }
             }
         }
-        
-        document.addEventListener('keydown', function(e) {
+
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 const mobileMenu = document.getElementById('mobileMenu');
                 if (mobileMenu && mobileMenu.classList.contains('active')) {
@@ -324,13 +329,13 @@
                 }
             }
         });
-        
+
         document.querySelectorAll('.mobile-nav-item').forEach(link => {
-            link.addEventListener('click', function() {
+            link.addEventListener('click', function () {
                 setTimeout(toggleMobileMenu, 100);
             });
         });
-        
+
         function updateMobileCartCount() {
             const mobileCartCount = document.querySelector('.mobile-cart-count');
             if (mobileCartCount && typeof cart !== 'undefined') {
@@ -339,18 +344,18 @@
                 mobileCartCount.style.display = count > 0 ? 'inline-block' : 'none';
             }
         }
-        
-        const originalUpdateCartCount = window.updateCartCount || function() {};
-        window.updateCartCount = function() {
+
+        const originalUpdateCartCount = window.updateCartCount || function () { };
+        window.updateCartCount = function () {
             originalUpdateCartCount();
             updateMobileCartCount();
         };
-        
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             updateMobileCartCount();
         });
     </script>
-    
+
     <!-- Page Specific Styles -->
     <style>
         .page-header {
@@ -359,7 +364,7 @@
             text-align: center;
             border-bottom: 1px solid rgba(139, 92, 246, 0.1);
         }
-        
+
         .page-title {
             font-size: 3rem;
             font-weight: 800;
@@ -369,13 +374,13 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
+
         .page-description {
             font-size: 1.2rem;
             color: var(--text-muted);
             margin-bottom: 20px;
         }
-        
+
         .breadcrumb {
             display: flex;
             align-items: center;
@@ -383,39 +388,39 @@
             gap: 10px;
             font-size: 0.9rem;
         }
-        
+
         .breadcrumb a {
             color: var(--primary);
             text-decoration: none;
         }
-        
+
         .breadcrumb span {
             color: var(--text-muted);
         }
-        
+
         .filters-section {
             background: var(--dark);
             padding: 30px 0;
             border-bottom: 1px solid rgba(139, 92, 246, 0.1);
         }
-        
+
         .filters-container {
             display: flex;
             gap: 20px;
             align-items: center;
             flex-wrap: wrap;
         }
-        
+
         .search-container {
             flex: 1;
             min-width: 300px;
         }
-        
+
         .search-box {
             position: relative;
             width: 100%;
         }
-        
+
         .search-box i {
             position: absolute;
             left: 15px;
@@ -423,7 +428,7 @@
             transform: translateY(-50%);
             color: var(--text-muted);
         }
-        
+
         .search-box input {
             width: 100%;
             padding: 12px 15px 12px 45px;
@@ -434,13 +439,13 @@
             font-size: 1rem;
             transition: all 0.3s ease;
         }
-        
+
         .search-box input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
-        
+
         .filter-select {
             padding: 12px 15px;
             background: var(--gray);
@@ -452,13 +457,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .filter-select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
         }
-        
+
         .view-toggle {
             display: flex;
             gap: 5px;
@@ -466,7 +471,7 @@
             border-radius: var(--border-radius);
             padding: 5px;
         }
-        
+
         .view-btn {
             padding: 8px 12px;
             background: transparent;
@@ -476,23 +481,23 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .view-btn.active,
         .view-btn:hover {
             background: var(--primary);
             color: white;
         }
-        
+
         .products-section {
             min-height: 60vh;
         }
-        
+
         .loading {
             text-align: center;
             padding: 60px 20px;
             color: var(--text-muted);
         }
-        
+
         .loading-spinner {
             width: 40px;
             height: 40px;
@@ -502,21 +507,26 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
-        
+
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         .nav-links .active {
             color: var(--yellow);
         }
-        
+
         .product-actions {
             display: flex;
             gap: 10px;
         }
-        
+
         .product-description {
             color: var(--text-muted);
             font-size: 0.9rem;
@@ -527,7 +537,7 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        
+
         /* Notification Styles */
         .notification {
             position: fixed;
@@ -541,26 +551,26 @@
             animation: slideInRight 0.3s ease;
             max-width: 300px;
         }
-        
+
         .notification-success {
             background: var(--success);
         }
-        
+
         .notification-info {
             background: var(--primary);
         }
-        
+
         .notification-warning {
             background: var(--warning);
         }
-        
+
         .notification-content {
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 10px;
         }
-        
+
         .notification-content button {
             background: none;
             border: none;
@@ -574,7 +584,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .whatsapp-float {
             position: fixed;
             bottom: 20px;
@@ -593,30 +603,31 @@
             transition: transform 0.3s ease;
             z-index: 999;
         }
-        
+
         .whatsapp-float:hover {
             transform: scale(1.1);
             color: white;
         }
-        
+
         @keyframes slideInRight {
             from {
                 transform: translateX(100%);
                 opacity: 0;
             }
+
             to {
                 transform: translateX(0);
                 opacity: 1;
             }
         }
-        
+
         .no-products {
             grid-column: 1 / -1;
             text-align: center;
             padding: 60px 20px;
             color: var(--text-muted);
         }
-        
+
         /* Products Info Bar */
         .products-info {
             display: flex;
@@ -626,12 +637,12 @@
             border-bottom: 1px solid rgba(139, 92, 246, 0.1);
             margin-bottom: 30px;
         }
-        
+
         .products-count {
             font-weight: 500;
             color: var(--text);
         }
-        
+
         .results-per-page {
             display: flex;
             align-items: center;
@@ -639,7 +650,7 @@
             font-size: 0.9rem;
             color: var(--text-muted);
         }
-        
+
         .items-per-page-select {
             padding: 8px 12px;
             background: var(--gray);
@@ -650,13 +661,13 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .items-per-page-select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
         }
-        
+
         /* Pagination Styles */
         .pagination-container {
             display: flex;
@@ -667,7 +678,7 @@
             padding: 30px 0;
             border-top: 1px solid rgba(139, 92, 246, 0.1);
         }
-        
+
         .pagination {
             display: flex;
             align-items: center;
@@ -675,7 +686,7 @@
             flex-wrap: wrap;
             justify-content: center;
         }
-        
+
         .pagination-btn {
             padding: 10px 15px;
             background: var(--gray);
@@ -694,7 +705,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .pagination-btn:hover:not(.disabled) {
             background: var(--primary);
             color: white;
@@ -702,56 +713,56 @@
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
-        
+
         .pagination-btn.active {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
             box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
         }
-        
+
         .pagination-btn.disabled {
             opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
         }
-        
+
         .pagination-btn.prev-next {
             padding: 10px 20px;
             font-weight: 600;
         }
-        
+
         .pagination-btn.first-last {
             background: var(--yellow);
             color: var(--dark);
             border-color: var(--yellow);
         }
-        
+
         .pagination-btn.first-last:hover:not(.disabled) {
             background: #F59E0B;
             border-color: #F59E0B;
             color: var(--dark);
         }
-        
+
         .pagination-ellipsis {
             padding: 10px 5px;
             color: var(--text-muted);
             font-weight: 600;
         }
-        
+
         .pagination-info {
             text-align: center;
             color: var(--text-muted);
             font-size: 0.9rem;
         }
-        
+
         .pagination-jump {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-top: 10px;
         }
-        
+
         .pagination-jump input {
             width: 60px;
             padding: 8px 10px;
@@ -762,13 +773,13 @@
             text-align: center;
             font-size: 0.9rem;
         }
-        
+
         .pagination-jump input:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.1);
         }
-        
+
         .pagination-jump button {
             padding: 8px 15px;
             background: var(--primary);
@@ -780,107 +791,107 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .pagination-jump button:hover {
             background: var(--secondary);
             transform: translateY(-1px);
         }
-        
+
         .flex-1 {
             flex: 1;
         }
-        
+
         @media (max-width: 768px) {
             .filters-container {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
+
             .search-container {
                 min-width: auto;
             }
-            
+
             .filter-select {
                 min-width: auto;
             }
-            
+
             .page-title {
                 font-size: 2.5rem;
             }
-            
+
             .product-list-content {
                 flex-direction: column;
                 gap: 15px;
             }
-            
+
             .product-image-list {
                 width: 100%;
                 height: 200px;
             }
-            
+
             .product-actions-list {
                 justify-content: center;
             }
-            
+
             /* Paginação Responsiva */
             .products-info {
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
             }
-            
+
             .pagination {
                 gap: 5px;
                 padding: 0 10px;
             }
-            
+
             .pagination-btn {
                 padding: 8px 12px;
                 font-size: 0.85rem;
                 min-width: 40px;
             }
-            
+
             .pagination-btn.prev-next {
                 padding: 8px 15px;
             }
-            
+
             .pagination-ellipsis {
                 padding: 8px 3px;
             }
-            
+
             .pagination-info {
                 font-size: 0.8rem;
                 padding: 0 10px;
             }
-            
+
             .pagination-jump {
                 flex-direction: column;
                 gap: 10px;
             }
-            
+
             .pagination-jump input {
                 width: 80px;
             }
         }
-        
+
         /* Modo Lista */
         .products-list {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        
+
         .product-card-list {
             width: 100%;
         }
-        
+
         .product-list-content {
             display: flex;
             gap: 20px;
             align-items: flex-start;
             padding: 20px;
         }
-        
+
         .product-image-list {
             width: 120px;
             height: 120px;
@@ -888,30 +899,30 @@
             border-radius: var(--border-radius-sm);
             flex-shrink: 0;
         }
-        
+
         .product-info-list {
             flex: 1;
             min-width: 0;
         }
-        
+
         .product-info-list .product-name {
             margin-bottom: 10px;
         }
-        
+
         .product-description-list {
             color: var(--text-muted);
             font-size: 0.9rem;
             line-height: 1.5;
             margin-bottom: 10px;
         }
-        
+
         .product-meta-list {
             display: flex;
             gap: 15px;
             font-size: 0.85rem;
             color: var(--text-muted);
         }
-        
+
         .product-category {
             background: rgba(139, 92, 246, 0.1);
             color: var(--primary);
@@ -919,7 +930,7 @@
             border-radius: 12px;
             font-weight: 500;
         }
-        
+
         .product-prices-list {
             display: flex;
             flex-direction: column;
@@ -927,31 +938,31 @@
             gap: 5px;
             margin-right: 15px;
         }
-        
+
         .product-prices-list .price {
             margin: 0;
         }
-        
+
         .product-actions-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
             min-width: 120px;
         }
-        
+
         .product-actions-list .btn {
             justify-content: center;
             padding: 10px 15px;
             font-size: 0.9rem;
         }
-        
+
         /* Mobile Menu Styles */
         .nav-actions {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        
+
         .mobile-menu-btn {
             display: none;
             flex-direction: column;
@@ -965,7 +976,7 @@
             z-index: 1001;
             position: relative;
         }
-        
+
         .hamburger-line {
             width: 25px;
             height: 2px;
@@ -973,19 +984,19 @@
             transition: all 0.3s ease;
             margin: 3px 0;
         }
-        
+
         .mobile-menu-btn.active .hamburger-line:nth-child(1) {
             transform: rotate(45deg) translate(6px, 6px);
         }
-        
+
         .mobile-menu-btn.active .hamburger-line:nth-child(2) {
             opacity: 0;
         }
-        
+
         .mobile-menu-btn.active .hamburger-line:nth-child(3) {
             transform: rotate(-45deg) translate(6px, -6px);
         }
-        
+
         .mobile-menu {
             position: fixed;
             top: 0;
@@ -997,18 +1008,18 @@
             transition: right 0.3s ease;
             box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
         }
-        
+
         .mobile-menu.active {
             right: 0;
         }
-        
+
         .mobile-menu-content {
             height: 100%;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
         }
-        
+
         .mobile-menu-header {
             display: flex;
             justify-content: space-between;
@@ -1017,7 +1028,7 @@
             border-bottom: 1px solid rgba(139, 92, 246, 0.1);
             background: var(--gradient-dark);
         }
-        
+
         .mobile-logo {
             display: flex;
             align-items: center;
@@ -1026,12 +1037,12 @@
             font-size: 1.2rem;
             font-weight: 700;
         }
-        
+
         .mobile-logo i {
             color: var(--primary);
             font-size: 1.4rem;
         }
-        
+
         .mobile-menu-close {
             background: none;
             border: none;
@@ -1042,17 +1053,17 @@
             border-radius: 50%;
             transition: all 0.3s ease;
         }
-        
+
         .mobile-menu-close:hover {
             background: rgba(139, 92, 246, 0.1);
             color: var(--primary);
         }
-        
+
         .mobile-nav {
             flex: 1;
             padding: 20px 0;
         }
-        
+
         .mobile-nav-item {
             display: flex;
             align-items: center;
@@ -1063,23 +1074,23 @@
             transition: all 0.3s ease;
             border-bottom: 1px solid rgba(139, 92, 246, 0.05);
         }
-        
+
         .mobile-nav-item:hover,
         .mobile-nav-item.active {
             background: rgba(139, 92, 246, 0.1);
             padding-left: 30px;
         }
-        
+
         .mobile-nav-item i {
             width: 20px;
             color: var(--primary);
             font-size: 1.1rem;
         }
-        
+
         .mobile-nav-item span {
             font-weight: 500;
         }
-        
+
         .mobile-cart-count {
             background: var(--yellow);
             color: var(--dark);
@@ -1089,14 +1100,14 @@
             font-weight: 600;
             margin-left: auto;
         }
-        
+
         .mobile-quick-actions {
             padding: 20px;
             border-top: 1px solid rgba(139, 92, 246, 0.1);
             display: flex;
             gap: 10px;
         }
-        
+
         .mobile-action-btn {
             flex: 1;
             display: flex;
@@ -1110,33 +1121,33 @@
             font-size: 0.9rem;
             transition: all 0.3s ease;
         }
-        
+
         .mobile-action-btn.whatsapp-btn {
             background: #25D366;
             color: white;
         }
-        
+
         .mobile-action-btn.whatsapp-btn:hover {
             background: #1DA851;
             color: white;
         }
-        
+
         .mobile-action-btn.primary-btn {
             background: var(--gradient-primary);
             color: white;
         }
-        
+
         .mobile-action-btn.primary-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
         }
-        
+
         .mobile-contact-info {
             padding: 20px;
             border-top: 1px solid rgba(139, 92, 246, 0.1);
             background: var(--gray);
         }
-        
+
         .contact-item {
             display: flex;
             align-items: center;
@@ -1145,12 +1156,12 @@
             color: var(--text-muted);
             font-size: 0.9rem;
         }
-        
+
         .contact-item i {
             color: var(--primary);
             width: 16px;
         }
-        
+
         .mobile-menu-overlay {
             position: fixed;
             top: 0;
@@ -1163,26 +1174,26 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .mobile-menu-overlay.active {
             opacity: 1;
             visibility: visible;
         }
-        
+
         @media (max-width: 768px) {
             .nav-links {
                 display: none;
             }
-            
+
             .mobile-menu-btn {
                 display: flex;
             }
-            
+
             .cart-icon {
                 display: none;
             }
         }
-        
+
         @media (max-width: 480px) {
             .mobile-menu {
                 width: 100%;
@@ -1211,4 +1222,5 @@
     </script>
 
 </body>
+
 </html>

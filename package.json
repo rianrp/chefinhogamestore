@@ -4,8 +4,8 @@
   "description": "Loja online de produtos gaming com integração Supabase e WhatsApp",
   "main": "index.html",
   "scripts": {
-    "dev": "npx http-server . -p 3000 -o",
-    "start": "npx http-server . -p 3000"
+    "dev": "npx http-server . -p 3001 -o",
+    "start": "npx http-server . -p 3001"
   },
   "repository": {
     "type": "git",
