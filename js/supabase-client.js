@@ -21,7 +21,6 @@ class ImageKitUploader {
         try {
             console.log('📤 [ImageKit] Iniciando upload:', file.name);
             
-            // 1. Buscar autenticação do servidor
             console.log('🔐 [ImageKit] Solicitando credenciais...');
             const authResponse = await fetch(this.authEndpoint, {
                 method: 'POST'

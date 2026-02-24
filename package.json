@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/rianrp/chefinhogamestore/issues"
   },
-  "homepage": "https://github.com/rianrp/chefinhogamestore#readme"
+  "homepage": "https://github.com/rianrp/chefinhogamestore#readme",
+  "dependencies": {
+    "@vercel/analytics": "^1.6.1"
+  }
 }
